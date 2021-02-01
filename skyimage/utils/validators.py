@@ -51,7 +51,7 @@ def validate_station_positions(positions: str or List[str] = None) -> Stations:
     return valid_positions
 
 
-def validate_modis_target_layers(target_layers: List[str]) -> List[str]:
+def validate_modis_target_sublayers(target_layers: List[str]) -> List[str]:
 
     valid_layers = []
 

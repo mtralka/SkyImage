@@ -9,14 +9,64 @@ from skyimage.utils.models import Stations
 from skyimage.utils.validators import validate_coords
 from skyimage.utils.validators import validate_datetime
 from skyimage.utils.validators import validate_file_path
-from skyimage.utils.validators import validate_modis_target_layers
+from skyimage.utils.validators import validate_modis_target_sublayers
 from skyimage.utils.validators import validate_station_positions
 
 
 class Sky:
+    """
+    Object with data from the MODIS platform
+
+    ...
+
+    Attributes
+    ----------
+    path : str
+        File path to platform data
+
+    target_sublayers : list of str
+        Targetted sublayers
+
+    station_positions : dict
+        Dict of all possible station positions
+
+    station : str
+        Name of desired station
+
+    coords: List of float
+        Spatial coordinates of `station`
+
+    j_days : list of str
+        Julian days to extract data for
+
+    stds : list of datetime
+        Datetime objects to extract data for
+
+    file_format : str
+        File format of parent file to `target_sublayers`
+
+    scenes : Dict[year + julian day , file path]
+        File paths to scenes matching class paramters from `path`
+
+    scenes_metadata : Dict[year + julian day : file metadata]
+        Metadata of scenes matching class paramters from `path`
+
+    scenes_sublayers : Dict[ year + julian day : Dict[ layer abbreviation : matching sublayers ]]
+        Matching sublayers to each scene from `scenes`
+
+    raw_poi : Dict[ year + julian day : Dict[ layer abbreviation : Numpy array ]]
+        Extracted arrays for `target_sublayers` in all `scenes`
+
+    poi : Dict [ year + julian day : dict ]
+        Processed final product extracted from `raw_poi`
+
+    Methods
+    -------
+
+    """
     def __init__(
         self,
-        j_days: int or str or list = None,
+        j_day: int or str or list = None,
         year: int = None,
         path: str = None,
         file_format: str = "hdf",
@@ -24,16 +74,16 @@ class Sky:
         station: str = None,
         station_positions: Stations = None,
         skip_validation: bool = False,
-        target_layers: List[str] = None,
+        target_sublayers: List[str] = None,
     ):
 
         self.path: str = validate_file_path(path, "MODIS")
-        self.target_layers: List[str] = validate_modis_target_layers(target_layers)
+        self.target_sublayers: List[str] = validate_modis_target_sublayers(target_sublayers)
         self.station_positions: Stations = validate_station_positions(station_positions)
         self.coords: List[float, float] = validate_coords(
             coords, station, self.station_positions
         )
-        self.j_days, self.stds = validate_datetime(j_days, year)
+        self.j_days, self.stds = validate_datetime(j_day, year)
         self.file_format: str = file_format
 
         self.scenes: Dict[str, str] = self.find_matching_scenes()
@@ -49,17 +99,78 @@ class Sky:
         self.poi: Dict[str, dict] = {
             k: self.process_poi_data(v) for k, v in self.raw_poi.items()
         }
-        # self.process_poi_data()
 
     def __decimal_to_binary(self, decimal: int or str) -> str:
+        """Convert decimal to binary
+
+        Parameters
+        ----------
+        decimal : int or str
+            Decimal form.
+
+        Returns
+        ----------
+        str
+            Binary form.
+
+        Examples
+        ----------
+        >>> __decimal_to_binary(59)
+        111011
+        >>> __decimal_to_binary("462")
+        111001110
+        """
         if type(decimal) is str:
             decimal = int(decimal)
         return str(bin(decimal))[2:]
 
     def __binary_to_decimal(self, binary: str) -> int:
+        """Convert binary to decimal
+
+        Parameters
+        ----------
+        binary : str
+            Binary form.
+
+        Returns
+        ----------
+        int
+            Decimal form.
+
+        Examples
+        ----------
+        >>> __binary_to_decimal(111001110)
+        462
+        >>> __decimal_to_binary(110001)
+        49
+        """
         return int(binary, 2)
 
     def find_matching_scenes(self) -> Dict:
+        """Find scenes matching class variables
+
+        Parameters
+        ----------
+        year : str
+            Year of target scenes.
+        j_days : list of str
+            List of target Julian days
+        path : str
+            Path to scene directory
+        file_format : str
+            File format of target scenes
+
+        Returns
+        ----------
+        Dict
+            [ year + Julian day : layer file path]
+
+        Raises
+        ----------
+        FileNotFoundError
+            If no files match input paramters
+
+        """
 
         year: str = str(self.stds[0].year)
         j_days: list = self.j_days
@@ -89,30 +200,84 @@ class Sky:
         return matching_scenes
 
     def get_metadata(self, target) -> Dict:
+        """Returns metadata of `target`
+
+        Parameters
+        ----------
+        target : str
+            path to `target` spatial data file
+
+        Returns
+        ----------
+        Dict
+            Dictionary of metadata.
+
+        """
         with rio.open(target) as ds:
             meta = ds.meta
         return meta
 
     def find_target_sublayers(self, layer: str) -> Dict:
-        target_layers = self.target_layers
+        """Finds file path to sublayers of `layer`
+
+        Parameters
+        ----------
+        layer : str
+            Path to target layer.
+        target_sublayers : list of str
+            List of desired sublayers.
+
+        Returns
+        ----------
+        Dict
+            [ sublayer abbreviation : path to sublayer ]
+
+        Raises
+        ----------
+        FileNotFoundError
+            If not all requested sublayers are present in target file
+
+        """
+        target_sublayers = self.target_sublayers
         found_layers = {}
 
         with rio.open(layer) as ds:
             crs = ds.read_crs()
             for name in ds.subdatasets:
-                for target in target_layers:
+                for target in target_sublayers:
                     if target in name:
                         logging.info(f"{target} layer found")
                         abbrev = "".join([word[0] for word in target.split()]).upper()
                         found_layers[abbrev] = name
+        for target in target_sublayers:
+            if target not in found_layers:
+                raise FileNotFoundError(f"Could not find {target} in sublayers. Check {layer}")
         return found_layers
 
-    def extract_poi_data(self, sub_layers: Dict) -> Dict:
+    def extract_poi_data(self, sublayer_paths: Dict) -> Dict:
+        """Extract windowed data from `sublayer_paths`
+
+        Parameters
+        ----------
+        sublayer_paths : dict
+            [ sublayer abbreviation : path to sublayer ]
+        lat : float
+            Latitude of poi.
+        lon : float
+            Longitude of poi.
+
+        Returns
+        ----------
+        Dict
+            [ sublayer abbreviation : windowed sublayer data ]
+
+        """
+        # TODO add custom window
         lat = self.coords[0]
         lon = self.coords[1]
         poi_dict = {}
 
-        for key, val in sub_layers.items():
+        for key, val in sublayer_paths.items():
             with rio.open(val) as ds:
                 self.crs = ds.read_crs()
                 py, px = ds.index(lon, lat)
@@ -124,6 +289,32 @@ class Sky:
         return poi_dict
 
     def process_poi_data(self, raw_data: Dict) -> Dict:
+        """Processes usable information from `raw_data`
+
+        Parameters
+        ----------
+        raw_data : dict
+            [ sublayer abbreviation : Numpy matrix of extracted data ]
+
+        Returns
+        ----------
+        Dict
+            [ sublayer abbreviation : path to sublayer ]
+
+        Raises
+        ----------
+        KeyError
+            If Coarse Resolution Granule Time (CRGT) not in `raw_data`
+        KeyError
+            If Coarse Resolution Number Mapping (CRNM) or n Pixel Amount (NPA) not in `raw_data`
+
+        Notes
+        ----------
+
+        TODO add information about execution
+
+        """
+
         def __find_percent(num, total=None) -> float:
             if not total:
                 total = pixel_total

@@ -56,6 +56,6 @@ class SkyImage:
     def run(self):
 
         self.Sky = Sky(
-            j_days=self.j_days, year=self.year, path=self.modis_path, coords=self.coords
+            j_day=self.j_days, year=self.year, path=self.modis_path, coords=self.coords
         )
         # self.Ground = Ground(self)
