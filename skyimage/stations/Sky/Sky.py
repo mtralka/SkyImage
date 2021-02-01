@@ -5,7 +5,6 @@ from typing import List
 
 import numpy as np
 import rasterio as rio
-from skyimage import stations
 from skyimage.utils.models import Stations
 from skyimage.utils.validators import validate_coords
 from skyimage.utils.validators import validate_datetime
@@ -65,6 +64,7 @@ class Sky:
     -------
 
     """
+
     def __init__(
         self,
         j_day: int or str or list = None,
@@ -78,7 +78,9 @@ class Sky:
     ):
 
         self.path: str = validate_file_path(path, "MODIS")
-        self.target_sublayers: List[str] = validate_modis_target_sublayers(target_sublayers)
+        self.target_sublayers: List[str] = validate_modis_target_sublayers(
+            target_sublayers
+        )
         self.station_positions: Stations = validate_station_positions(station_positions)
         self.station_name: str = station
         self.coords: List[float, float] = validate_coords(
@@ -268,7 +270,7 @@ class Sky:
         found_layers = {}
 
         def __make_abbrev(name: str) -> str:
-            """ Make abbreviation of str
+            """Make abbreviation of str
 
             Join first letter of each word
 
@@ -286,7 +288,9 @@ class Sky:
         for target in target_sublayers:
             abbrev = __make_abbrev(target)
             if abbrev not in found_layers.keys():
-                raise FileNotFoundError(f"Could not find {target} in sublayers. Check {layer}")
+                raise FileNotFoundError(
+                    f"Could not find {target} in sublayers. Check {layer}"
+                )
         return found_layers
 
     def extract_poi_data(self, sublayer_paths: Dict) -> Dict:
@@ -396,7 +400,7 @@ class Sky:
             processed_dict["prcnt_CLD_SHW"] = __find_percent(cld_shdw)
             processed_dict["prcnt_ADJ_CLD"] = __find_percent(adj_cld)
             processed_dict["prcnt_SNW"] = __find_percent(snw)
-            
+
             # processed_dict["prcnt_cover"] = {
             #     "CLD": __find_percent(cld),
             #     "CLD_SHW": __find_percent(cld_shdw),

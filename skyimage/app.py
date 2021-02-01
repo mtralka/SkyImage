@@ -38,7 +38,9 @@ class SkyImage:
 
         self.ground_path = validate_file_path(ground_path, "ground")
         self.modis_path = validate_file_path(modis_path, "MODIS")
-        self.modis_target_layers = validate_modis_target_sublayers(modis_target_sublayers)
+        self.modis_target_layers = validate_modis_target_sublayers(
+            modis_target_sublayers
+        )
         self.station_positions = validate_station_positions(station_positions)
         self.station_name: str = station
         self.coords = validate_coords(coords, station, self.station_positions)
@@ -51,13 +53,17 @@ class SkyImage:
         #     raise Exception("Run Run")
 
         if dataframe:
-            return pd.DataFrame.from_dict(self.Sky.poi, orient='index')
+            return pd.DataFrame.from_dict(self.Sky.poi, orient="index")
 
         return {"SKY": self.Sky, "GROUND": "NULL"}
 
     def run(self):
 
         self.Sky = Sky(
-            j_day=self.j_days, year=self.year, path=self.modis_path, coords=self.coords, station=self.station_name
+            j_day=self.j_days,
+            year=self.year,
+            path=self.modis_path,
+            coords=self.coords,
+            station=self.station_name,
         )
         # self.Ground = Ground(self)
