@@ -5,6 +5,7 @@ from typing import List
 
 import numpy as np
 import rasterio as rio
+from skyimage import stations
 from skyimage.utils.models import Stations
 from skyimage.utils.validators import validate_coords
 from skyimage.utils.validators import validate_datetime
@@ -30,8 +31,8 @@ class Sky:
     station_positions : dict
         Dict of all possible station positions
 
-    station : str
-        Name of desired station
+    station_name : str
+        Name of target station
 
     coords: List of float
         Spatial coordinates of `station`
@@ -73,13 +74,13 @@ class Sky:
         coords: List[float] = None,
         station: str = None,
         station_positions: Stations = None,
-        skip_validation: bool = False,
         target_sublayers: List[str] = None,
     ):
 
         self.path: str = validate_file_path(path, "MODIS")
         self.target_sublayers: List[str] = validate_modis_target_sublayers(target_sublayers)
         self.station_positions: Stations = validate_station_positions(station_positions)
+        self.station_name: str = station
         self.coords: List[float, float] = validate_coords(
             coords, station, self.station_positions
         )
@@ -99,6 +100,27 @@ class Sky:
         self.poi: Dict[str, dict] = {
             k: self.process_poi_data(v) for k, v in self.raw_poi.items()
         }
+
+    def __str__(self):
+
+        return f"""
+        Sky platform
+        --------
+        Data Path : {self.path}
+        File Format : {self.file_format}
+        Target Sublayers : {self.target_sublayers}
+        --------
+        Station : {self.station_name}
+        Coords : {self.coords}
+        Year : {self.stds[0].year}
+        Julian Days : {self.j_days[0]} - {self.j_days[-1]}
+
+        {len(self.scenes)} scenes found
+
+        INFO
+        --------
+        {self.poi}
+        """
 
     def __decimal_to_binary(self, decimal: int or str) -> str:
         """Convert decimal to binary
@@ -153,10 +175,13 @@ class Sky:
         ----------
         year : str
             Year of target scenes.
+
         j_days : list of str
             List of target Julian days
+
         path : str
             Path to scene directory
+
         file_format : str
             File format of target scenes
 
@@ -224,6 +249,7 @@ class Sky:
         ----------
         layer : str
             Path to target layer.
+
         target_sublayers : list of str
             List of desired sublayers.
 
@@ -241,28 +267,39 @@ class Sky:
         target_sublayers = self.target_sublayers
         found_layers = {}
 
+        def __make_abbrev(name: str) -> str:
+            """ Make abbreviation of str
+
+            Join first letter of each word
+
+            """
+            return "".join([word[0] for word in target.split()]).upper()
+
         with rio.open(layer) as ds:
             crs = ds.read_crs()
             for name in ds.subdatasets:
                 for target in target_sublayers:
                     if target in name:
                         logging.info(f"{target} layer found")
-                        abbrev = "".join([word[0] for word in target.split()]).upper()
+                        abbrev = __make_abbrev(target)
                         found_layers[abbrev] = name
         for target in target_sublayers:
-            if target not in found_layers:
+            abbrev = __make_abbrev(target)
+            if abbrev not in found_layers.keys():
                 raise FileNotFoundError(f"Could not find {target} in sublayers. Check {layer}")
         return found_layers
 
     def extract_poi_data(self, sublayer_paths: Dict) -> Dict:
-        """Extract windowed data from `sublayer_paths`
+        """Extract windowed data array from `sublayer_paths`
 
         Parameters
         ----------
         sublayer_paths : dict
             [ sublayer abbreviation : path to sublayer ]
+
         lat : float
             Latitude of poi.
+
         lon : float
             Longitude of poi.
 
@@ -305,6 +342,7 @@ class Sky:
         ----------
         KeyError
             If Coarse Resolution Granule Time (CRGT) not in `raw_data`
+
         KeyError
             If Coarse Resolution Number Mapping (CRNM) or n Pixel Amount (NPA) not in `raw_data`
 

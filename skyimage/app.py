@@ -11,12 +11,13 @@ import numpy as np
 import pandas as pd
 import rasterio as rio
 
+from skyimage import stations
 from skyimage.stations import Ground
 from skyimage.stations import Sky
 from skyimage.utils.validators import validate_coords
 from skyimage.utils.validators import validate_datetime
 from skyimage.utils.validators import validate_file_path
-from skyimage.utils.validators import validate_modis_target_layers
+from skyimage.utils.validators import validate_modis_target_sublayers
 from skyimage.utils.validators import validate_station_positions
 from skyimage.utils.validators import validate_year
 
@@ -32,13 +33,14 @@ class SkyImage:
         modis_path: str = None,
         ground_path: str = None,
         modis_file_format: str = "hdf",
-        modis_target_layers: List = None,
+        modis_target_sublayers: List = None,
     ):
 
         self.ground_path = validate_file_path(ground_path, "ground")
         self.modis_path = validate_file_path(modis_path, "MODIS")
-        self.modis_target_layers = validate_modis_target_layers(modis_target_layers)
+        self.modis_target_layers = validate_modis_target_sublayers(modis_target_sublayers)
         self.station_positions = validate_station_positions(station_positions)
+        self.station_name: str = station
         self.coords = validate_coords(coords, station, self.station_positions)
         self.j_days, self.stds = validate_datetime(j_day, year)
         self.year = validate_year(year)
@@ -56,6 +58,6 @@ class SkyImage:
     def run(self):
 
         self.Sky = Sky(
-            j_day=self.j_days, year=self.year, path=self.modis_path, coords=self.coords
+            j_day=self.j_days, year=self.year, path=self.modis_path, coords=self.coords, station=self.station_name
         )
         # self.Ground = Ground(self)
