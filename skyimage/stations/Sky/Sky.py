@@ -4,7 +4,9 @@ from typing import Dict
 from typing import List
 
 import numpy as np
+import pandas as pd
 import rasterio as rio
+from scipy import stats
 from skyimage.utils.models import Stations
 from skyimage.utils.validators import validate_coords
 from skyimage.utils.validators import validate_datetime
@@ -36,7 +38,7 @@ class Sky:
     coords: List of float
         Spatial coordinates of `station`
 
-    j_days : list of str
+    j_day : list of str
         Julian days to extract data for
 
     stds : list of datetime
@@ -62,6 +64,8 @@ class Sky:
 
     Methods
     -------
+    results
+        return process results
 
     """
 
@@ -125,7 +129,7 @@ class Sky:
         """
 
     def __decimal_to_binary(self, decimal: int or str) -> str:
-        """Convert decimal to binary
+        """Convert decimal to binary 32-bit
 
         Parameters
         ----------
@@ -146,7 +150,9 @@ class Sky:
         """
         if type(decimal) is str:
             decimal = int(decimal)
-        return str(bin(decimal))[2:]
+
+        binary = str(bin(decimal))[2:]
+        return f"{int(binary):032}"
 
     def __binary_to_decimal(self, binary: str) -> int:
         """Convert binary to decimal
@@ -278,7 +284,6 @@ class Sky:
             return "".join([word[0] for word in target.split()]).upper()
 
         with rio.open(layer) as ds:
-            crs = ds.read_crs()
             for name in ds.subdatasets:
                 for target in target_sublayers:
                     if target in name:
@@ -313,6 +318,7 @@ class Sky:
             [ sublayer abbreviation : windowed sublayer data ]
 
         """
+
         # TODO add custom window
         lat = self.coords[0]
         lon = self.coords[1]
@@ -320,10 +326,11 @@ class Sky:
 
         for key, val in sublayer_paths.items():
             with rio.open(val) as ds:
+
                 self.crs = ds.read_crs()
                 py, px = ds.index(lon, lat)
-                # window = rio.windows.Window(px - 1, py - 1, 3, 3)
-                window = rio.windows.Window(px - 1, py - 1, 1, 1)
+                #  window = rio.windows.Window(px - 1, py - 1, 3, 3)
+                window = rio.windows.Window(px, py, 1, 1)
                 arr = ds.read(1, window=window)
                 logging.info(f"{key}\n{window}\n{arr}")
                 poi_dict[key] = arr
@@ -345,10 +352,7 @@ class Sky:
         Raises
         ----------
         KeyError
-            If Coarse Resolution Granule Time (CRGT) not in `raw_data`
-
-        KeyError
-            If Coarse Resolution Number Mapping (CRNM) or n Pixel Amount (NPA) not in `raw_data`
+            If `ESSENTIAL_SUBLAYERS` (default=CRGT, CRNM, NPA) not in `raw_data`
 
         Notes
         ----------
@@ -357,66 +361,71 @@ class Sky:
 
         """
 
-        def __find_percent(num, total=None) -> float:
-            if not total:
-                total = pixel_total
-            return num / total
+        processed_dict: dict = {}
+        ESSENTIAL_SUBLAYERS = ["CRGT", "CRNM", "NPA"]
 
-        processed_dict = {}
+        for sub_layer in ESSENTIAL_SUBLAYERS:
+            if sub_layer not in raw_data.keys():
+                raise KeyError(
+                    "Unable to assert main MODIS statistics. \
+                    Check {sub_layer} sublayer"
+                )
 
-        if "CRGT" in raw_data.keys():
-            processed_dict["time_utc"] = int(np.mean(raw_data["CRGT"]))
-        else:
-            raise KeyError(
-                "Unable to assert MODIS scene aquisition time. Check CRGT sublayer "
-            )
+        time_mode, _ = stats.mode(raw_data["CRGT"])
+        processed_dict["time_utc"] = time_mode[0][0]
 
-        if "CRNM" and "NPA" in raw_data.keys():
+        NUM_MAPPINGS: Dict[str, str] = {
+            "CLD": "0-7",
+            "CLD_SHDW": "8-15",
+            "ADJ_CLD": "16-23",
+            "SNW": "24-31",
+        }
 
-            NUM_MAPPINGS = {
-                "CLD": "0-7",
-                "CLD_SHDW": "8-15",
-                "ADJ_CLD": "16-23",
-                "SNW": "24-31",
-            }
+        avg_pixel_total = raw_data["NPA"].sum()
+        processed_dict["n_TOTAL"] = avg_pixel_total
 
-            pixel_total = raw_data["NPA"].sum()
-            # processed_dict["n_pixel_total"] = n_pixel_total
+        crnm = raw_data["CRNM"].flatten()
 
-            crnm = raw_data["CRNM"].flatten()
+        for pixel in crnm:
 
-            cld, cld_shdw, adj_cld, snw = 0, 0, 0, 0
-            for pixel in crnm:
-                binary = self.__decimal_to_binary(str(pixel))
-                # TODO binary solving for cover
+            binary: str = self.__decimal_to_binary(str(pixel))
 
-            processed_dict["n_CLD"] = cld
-            processed_dict["n_CLD_SHW"] = cld_shdw
-            processed_dict["n_ADJ_CLD"] = adj_cld
-            processed_dict["n_SNW"] = snw
-            processed_dict["n_TOTAL"] = pixel_total
+            for k, v in NUM_MAPPINGS.items():
 
-            processed_dict["prcnt_CLD"] = __find_percent(cld)
-            processed_dict["prcnt_CLD_SHW"] = __find_percent(cld_shdw)
-            processed_dict["prcnt_ADJ_CLD"] = __find_percent(adj_cld)
-            processed_dict["prcnt_SNW"] = __find_percent(snw)
+                start_bit, end_bit = [int(x) for x in v.split("-")]
+                end_i = len(binary) - start_bit
+                start_i = end_i - (end_bit - start_bit) - 1
 
-            # processed_dict["prcnt_cover"] = {
-            #     "CLD": __find_percent(cld),
-            #     "CLD_SHW": __find_percent(cld_shdw),
-            #     "ADJ_CLD": __find_percent(adj_cld),
-            #     "SNW": __find_percent(snw),
-            # }
-            # processed_dict["n_pixels"] = {
-            #     "CLD": cld,
-            #     "CLD_SHW": cld_shdw,
-            #     "ADJ_CLD": adj_cld,
-            #     "SNW": snw,
-            #     "TOTAL": pixel_total,
-            # }
-        else:
-            raise KeyError(
-                "Unable to assert MODIS cloud cover. Check CRNM and NPA sublayers"
-            )
+                mapped_octet: str = binary[start_i:end_i:1]
+                mapped_decimal: int = self.__binary_to_decimal(mapped_octet)
+
+                processed_dict[k] = mapped_decimal + processed_dict.get(k, 0)
+
+        for k, v in NUM_MAPPINGS.items():
+
+            n_present_pixels: int = processed_dict.get(k, 0)
+
+            prcnt_of_total: float = (n_present_pixels / avg_pixel_total) * 100
+            processed_dict[f"prcnt_{k}"] = prcnt_of_total
 
         return processed_dict
+
+    def results(self, as_dataframe: bool = True):
+        """Get processed results
+
+        Parameters
+        ----------
+        as_dataframe : bool
+            return as pandas dataframe
+
+        Returns
+        ----------
+        Dict : dict
+            results as Dict
+
+        """
+
+        if as_dataframe:
+            return pd.DataFrame.from_dict(self.poi, orient="index")
+
+        return self.poi

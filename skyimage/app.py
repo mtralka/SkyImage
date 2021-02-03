@@ -48,12 +48,18 @@ class SkyImage:
         self.year = validate_year(year)
         self.modis_file_format = modis_file_format
 
-    def results(self, dataframe: bool = False):
+    def results(self, as_dataframe: bool = False):
         # if not self.Sky and self.Ground:
         #     raise Exception("Run Run")
 
-        if dataframe:
-            return pd.DataFrame.from_dict(self.Sky.poi, orient="index")
+        results: dict = {}
+
+        if self.Sky:
+            results | self.Sky.results(as_dataframe=False)
+        if self.Ground:
+            results | self.Ground.results()
+        if as_dataframe:
+            return pd.DataFrame.from_dict(results, orient="index")
 
         return {"SKY": self.Sky, "GROUND": "NULL"}
 
