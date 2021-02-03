@@ -1,3 +1,4 @@
+from datetime import datetime
 import glob
 import logging
 from typing import Dict
@@ -41,6 +42,9 @@ class Sky:
     j_day : list of str
         Julian days to extract data for
 
+    year: int
+        Year to extract data for
+
     stds : list of datetime
         Datetime objects to extract data for
 
@@ -66,6 +70,9 @@ class Sky:
     -------
     results
         return process results
+
+    extract_std
+        return datetime representing found scene(s) aquistion times
 
     """
 
@@ -429,3 +436,31 @@ class Sky:
             return pd.DataFrame.from_dict(self.poi, orient="index")
 
         return self.poi
+
+    def extract_stds(self) -> dict:
+        """Get datetime results
+
+        Returns
+        ----------
+        Dict : [str : datetime object]
+            results as Dict
+
+        """
+
+        poi: dict = self.poi
+        stds: dict = self.stds
+        matched_stds: dict = {}
+
+        for k, v in poi.items():
+            std_taken = datetime.strptime(k, "%Y%j")
+            time_taken: str = str(v["time_utc"])
+            for time in stds:
+                if std_taken == time:
+                    hour: int = int(time_taken[0:2])
+                    minute: int = int(time_taken[2::])
+                    matched_stds[k] = time.replace(hour=hour, minute=minute)
+
+        return matched_stds
+                    
+
+

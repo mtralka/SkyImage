@@ -82,6 +82,7 @@ def validate_file_path(path: str, name: str) -> str:
 
 
 def validate_datetime(j_day: str or int or list, year: int) -> List[str] and list:
+    
     def validate_j_day(j_day: str or int) -> bool:
         if type(j_day) is str:
             j_day = int(j_day)
@@ -96,7 +97,7 @@ def validate_datetime(j_day: str or int or list, year: int) -> List[str] and lis
     valid_stds: list = []
 
     if not j_day or not year:
-        raise ValueError("Julian day or month / day not defined")
+        raise ValueError("Julian day or year not defined")
 
     if type(j_day) is int:
         processed_j_day = [str(j_day)]
