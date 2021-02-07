@@ -58,10 +58,11 @@ class SkyImage:
             results | self.Sky.results(as_dataframe=False)
         if self.Ground:
             results | self.Ground.results()
+
         if as_dataframe:
             return pd.DataFrame.from_dict(results, orient="index")
 
-        return {"SKY": self.Sky, "GROUND": "NULL"}
+        return {"SKY": self.Sky, "GROUND": self.Ground}
 
     def run(self):
 
@@ -71,5 +72,15 @@ class SkyImage:
             path=self.modis_path,
             coords=self.coords,
             station=self.station_name,
+        )
+
+        matched_stds: dict = self.Sky.extract_stds()
+
+        self.Ground = Ground(
+            year=self.year,
+            path=self.ground_path,
+            coords=self.coords,
+            station=self.station_name,
+            stds=matched_stds,
         )
         # self.Ground = Ground(self)

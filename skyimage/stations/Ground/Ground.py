@@ -2,11 +2,17 @@ import glob
 import logging
 from typing import Dict
 from typing import List
+import warnings
 
+from matplotlib.pyplot import show
 import numpy as np
 import pandas as pd
-from skyimage.stations.Ground.utils.validators import validate_target_time
+from skyimage.stations.Ground.utils.image import open_image
+from skyimage.stations.Ground.utils.image import open_mask
+from skyimage.stations.Ground.utils.image import show_image
+#from skyimage.stations.Ground.utils.validators import validate_target_time
 from skyimage.utils.models import Stations
+from skyimage.utils.utils import buffer_value
 from skyimage.utils.validators import validate_coords
 from skyimage.utils.validators import validate_datetime
 from skyimage.utils.validators import validate_file_path
@@ -62,36 +68,44 @@ class Ground:
         station: str = None,
         file_format: str = "jpg",
         station_positions: Stations = None,
-        stds: Dict[str: object] = None,
+        stds: dict = None,
         target_time: str = None,
     ):
-   
+
         self.path: str = validate_file_path(path, "GROUND")
-        self.station_positions: Stations = validate_station_positions(station_positions)
+        self.station_positions: Stations = validate_station_positions(
+            station_positions)
         self.station_name: str = station
         self.coords: List[float, float] = validate_coords(
             coords, station, self.station_positions
         )
+
         if j_day:
+            if not target_time:
+                warnings.warn("No `target_time` set, defaulting to 12:00",
+                            UserWarning, stacklevel=2,)
+
+                target_time = "12:00"
+
             self.j_days, self.stds = validate_datetime(j_day, year)
+            hour, minute = target_time.split(":")
+
+            for std in self.stds:
+                std.replace(hour=int(hour), minute=int(minute))
+
         elif stds:
             self.stds = stds
         else:
             raise ValueError("Must provide j_day + year or stds")
+        
 
         self.file_format: str = file_format
-        
         self.target_time = target_time
-        # self.scenes: Dict[str, str] = self.find_matching_scenes()
-        # self.scenes_metadata: Dict[str, dict] = {
-        #     k: self.get_metadata(v) for k, v in self.scenes.items()
-        # }
-        # self.scenes_sublayers: Dict[str, str] = {
-        #     k: self.find_target_sublayers(v) for k, v in self.scenes.items()
-        # }
-        # self.raw_poi: Dict[str, Dict[str, object]] = {
-        #     k: self.extract_poi_data(v) for k, v in self.scenes_sublayers.items()
-        # }
+        self.crop_mask = open_mask()
+        self.images: Dict[str, str] = self.find_matching_images()
+        self.raw_poi: Dict[str, Dict[str, object]] = {
+            k: self.extract_poi_data(v) for k, v in self.images.items()
+        }
         # self.poi: Dict[str, dict] = {
         #     k: self.process_poi_data(v) for k, v in self.raw_poi.items()
         # }
@@ -117,73 +131,128 @@ class Ground:
         {self.poi}
         """
 
+    def find_matching_images(self) -> Dict:
+        """Find images matching class variables
 
-def find_matching_scenes(self) -> Dict:
-    """Find scenes matching class variables
+        Parameters
+        ----------
+        year : str
+            Year of target scenes.
 
-    Parameters
-    ----------
-    year : str
-        Year of target scenes.
+        stds : dict of str
+            Dict of target datetimes
 
-    j_days : list of str
-        List of target Julian days
+        path : str
+            Path to image directory
 
-    path : str
-        Path to scene directory
+        file_format : str
+            File format of target scenes
+    
+        station_name : str
+            Name of target station
 
-    file_format : str
-        File format of target scenes
+        Returns
+        ----------
+        Dict
+            [ year + Julian day : image file path]
 
-    Returns
-    ----------
-    Dict
-        [ year + Julian day : layer file path]
+        Raises
+        ----------
+        FileNotFoundError
+            If no files match input paramters
 
-    Raises
-    ----------
-    FileNotFoundError
-        If no files match input paramters
+        """
 
-    """
+        path: str = self.path
+        station_name: str = self.station_name
+        file_format: str = self.file_format
+        target_stds: dict = self.stds
+        matching_images: dict = {}
 
-    path: str = self.path
-    station_name: str = self.station_name
-    file_format: str = self.file_format
-    target_stds: dict = self.stds
-    target_time: str = self.target_time
-    matching_images: dict = {}
+        print("matching ", len(target_stds), " items")
 
-    for std in target_stds:
+        for k, std in target_stds.items():
+
+            user_selection = 0
+
+            year = str(std.year)
+            month = buffer_value(std.month, 2)
+            day = buffer_value(std.day, 2)
+            #  j_day = buffer_value(std.timetuple().tm_yday, 3)
+            hour = buffer_value(std.hour, 2)
+            minute = buffer_value(std.minute, 2)
+
+            matching_file_list = list(
+                glob.iglob(path + f"/{station_name}/{year}/{month}/{day}/*{year + month + day}*{hour + minute}*.{file_format}")
+            )
+
+            if not matching_file_list:
+                raise FileNotFoundError(f"GROUND image {year}-{day} not found")
+            elif len(matching_file_list) > 1:
+                #  for index, file in enumerate(matching_file_list):
+                #     print(f"{index} | {file}") # TODO make this prettier and present time
+                #  user_selection = int(input("Which file would you like?"))
+                raise LookupError("Multiple matching files found")
+
+            logging.info(f"GROUND scene {std} found")
+
+            matching_images[std] = matching_file_list[user_selection]
+
+        return matching_images
+
+    def extract_poi_data(self, image_path: dict) -> dict:
+        """Extract and process image from `image_path`.
+
+
+        Parameters
+        ----------
+        image_path : dict
+            [ std : path to image ]
+
+        Returns
+        ----------
+        Dict
+            [ std : windowed sublayer data ]
+
+        """
+        crop_mask = self.crop_mask
+        img_arr = open_image(image_path)
+
+        img = img_arr * crop_mask
         
-        user_selection = 0
+        #show_image(img)
+        img = img.astype('float')
+        img[img == 0] = np.nan
+        R = img[:, :, 0]
+        G = img[:, :, 1]
+        B = img[:, :, 2]
 
-        day = std.day
-        month = std.month
-        year = std.year
-        j_day = std.timetuple().tm_yday
-        
-        if std.hour == "0":
-            hour = target_time[0:2]
-            pass
-        # TODO continue 
+        R = R / 255
+        B = B / 255
+        G = G / 255
 
-        # path / station_name / year / month / day / time ()
-        # GSFC_20200401T150502_SKY1
-        matching_file_list = list(
-            glob.iglob(path + f"/{station_name}/{year}/{month}/{day}/*{year + j_day}*{}*.{file_format}")
-        )
+        SI = (B - R) / (B + R)
+        SI = SI.flatten()
+        SI = SI.astype('float')
+        SI[SI == 0] = np.nan
+        print("SI", np.nanmean(SI))
 
-        if not matching_file_list:
-            raise FileNotFoundError(f"GROUND image {year}-{day} not found")
-        elif len(matching_file_list) > 1:
-            #  for index, file in enumerate(matching_file_list):
-            #     print(f"{index} | {file}") # TODO make this prettier and present time
-            #  user_selection = int(input("Which file would you like?"))
-            raise LookupError("Multiple matching files found")
-        
-        logging.info(f"MODIS scene {year}-{day} found")
+        BI = (R + G + B) / 3
+        BI = BI.astype('float')
+        BI[BI == 0] = np.nan
+        print("BI", np.nanmean(BI))
 
-        matching_scenes[year + day] = matching_file_list[user_selection]
+        if not hasattr(self, 'BI'):
+            print("checl")
+            self.BI = BI.flatten()
+            self.SI = SI.flatten()
+        else:
+            print(len(self.BI.flatten()))
+            self.BI = np.hstack((self.BI, BI.flatten()))
+            self.BI = self.BI.flatten()
 
-    return matching_scenes
+            self.SI = np.hstack((self.SI, SI.flatten()))
+            self.SI = self.SI.flatten()
+
+
+        return img

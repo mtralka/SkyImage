@@ -305,7 +305,7 @@ class Sky:
                 )
         return found_layers
 
-    def extract_poi_data(self, sublayer_paths: Dict) -> Dict:
+    def extract_poi_data(self, sublayer_paths: dict) -> dict:
         """Extract windowed data array from `sublayer_paths`
 
         Parameters
@@ -461,6 +461,4 @@ class Sky:
                     matched_stds[k] = time.replace(hour=hour, minute=minute)
 
         return matched_stds
-                    
-
 
