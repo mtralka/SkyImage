@@ -1,4 +1,5 @@
 from typing import Dict
+from typing import Optional
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -9,8 +10,10 @@ def open_image(path: str):
     return imread(path)
 
 
-def open_mask():
-    return np.load("skyimage\stations\Ground\mask.npy")
+def open_mask(path: Optional[str] =
+              "skyimage\\stations\\Ground\\mask.npy"):
+
+    return np.load(path)
 
 
 def show_image(img):

@@ -262,7 +262,7 @@ class Ground:
         ----------
         Dict: [ BI : BI_stats, SI : SI_stats ]
             Dict with statistics
-            
+
 
         """
 
@@ -274,6 +274,8 @@ class Ground:
 
         BI = np.logical_not(np.isnan(BI))
         SI = np.logical_not(np.isnan(SI))
+
+        
 
         #
         # FIND OUT HOW MANY PIXELS ABOVE OR BELOW LINE
@@ -303,6 +305,11 @@ class Ground:
 
         x = BI[np.logical_not(np.isnan(BI))]
         y = SI[np.logical_not(np.isnan(SI))]
-        # TODO add step function
+
         plt.hist2d(x, y, (50, 50), cmap=plt.cm.jet)
+
+        x_step = [0, .1, .35, .7, .8, 1]
+        y_step = [1, .6, .35, .15, .1, 0]
+        plt.plot(x_step, y_step, "w")
+
         plt.colorbar()
