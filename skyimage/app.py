@@ -5,6 +5,8 @@ import re
 import sys
 from typing import Dict
 from typing import List
+from typing import Optional
+from typing import Union
 
 import geopandas as gpd
 import numpy as np
@@ -28,12 +30,12 @@ class SkyImage:
         year: int = None,
         station: str = None,
         station_positions: Dict = None,
-        coords: List or int = None,
-        j_day: int or str = None,
+        coords: Optional[Union[list, int]] = None,
+        j_day: Union[int, str] = None,
         modis_path: str = None,
         ground_path: str = None,
-        modis_file_format: str = "hdf",
-        modis_target_sublayers: List = None,
+        modis_file_format: Optional[str] = "hdf",
+        modis_target_sublayers: Optional[List] = None,
     ):
 
         self.ground_path = validate_file_path(ground_path, "ground")
@@ -55,14 +57,16 @@ class SkyImage:
         results: dict = {}
 
         if self.Sky:
-            results | self.Sky.results(as_dataframe=False)
+            sky_results = self.Sky.results(as_dataframe=False)
+            results = {**results, **sky_results}
         if self.Ground:
-            results | self.Ground.results()
+            pass
+            #results | self.Ground.results()
 
         if as_dataframe:
             return pd.DataFrame.from_dict(results, orient="index")
 
-        return {"SKY": self.Sky, "GROUND": self.Ground}
+        return {"SKY": sky_results, "GROUND": self.Ground}
 
     def run(self):
 

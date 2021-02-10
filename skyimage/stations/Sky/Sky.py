@@ -3,6 +3,8 @@ import glob
 import logging
 from typing import Dict
 from typing import List
+from typing import Optional
+from typing import Union
 
 import numpy as np
 import pandas as pd
@@ -78,7 +80,7 @@ class Sky:
 
     def __init__(
         self,
-        j_day: int or str or list = None,
+        j_day: Optional[Union[int, str, list]] = None,
         year: int = None,
         path: str = None,
         file_format: str = "hdf",
@@ -135,7 +137,8 @@ class Sky:
         {self.poi}
         """
 
-    def __decimal_to_binary(self, decimal: int or str) -> str:
+    @staticmethod
+    def __decimal_to_binary(decimal: Union[int, str]) -> str:
         """Convert decimal to binary 32-bit
 
         Parameters
@@ -161,7 +164,8 @@ class Sky:
         binary = str(bin(decimal))[2:]
         return f"{int(binary):032}"
 
-    def __binary_to_decimal(self, binary: str) -> int:
+    @staticmethod
+    def __binary_to_decimal(binary: str) -> int:
         """Convert binary to decimal
 
         Parameters
@@ -239,7 +243,8 @@ class Sky:
 
         return matching_scenes
 
-    def get_metadata(self, target) -> Dict:
+    @staticmethod
+    def get_metadata(target) -> Dict:
         """Returns metadata of `target`
 
         Parameters
@@ -461,4 +466,3 @@ class Sky:
                     matched_stds[k] = time.replace(hour=hour, minute=minute)
 
         return matched_stds
-

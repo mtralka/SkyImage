@@ -2,11 +2,18 @@ import glob
 import logging
 from typing import Dict
 from typing import List
+from typing import Optional
+from typing import Union
 import warnings
 
+import matplotlib.pyplot as plt
 from matplotlib.pyplot import show
 import numpy as np
 import pandas as pd
+from skyimage.stations.Ground.utils.image import calc_BI
+from skyimage.stations.Ground.utils.image import calc_SI
+from skyimage.stations.Ground.utils.image import extract_color_bands
+from skyimage.stations.Ground.utils.image import extract_stats
 from skyimage.stations.Ground.utils.image import open_image
 from skyimage.stations.Ground.utils.image import open_mask
 from skyimage.stations.Ground.utils.image import show_image
@@ -61,15 +68,15 @@ class Ground:
 
     def __init__(
         self,
-        j_day: int or str or list = None,
+        j_day: Union[int, str, list] = None,
         year: int = None,
         path: str = None,
-        coords: List[float] = None,
-        station: str = None,
-        file_format: str = "jpg",
+        coords: Optional[List[float]] = None,
+        station: Optional[str] = None,
+        file_format: Optional[str] = "jpg",
         station_positions: Stations = None,
-        stds: dict = None,
-        target_time: str = None,
+        stds: Optional[dict] = None,
+        target_time: Optional[str] = None,
     ):
 
         self.path: str = validate_file_path(path, "GROUND")
@@ -90,25 +97,35 @@ class Ground:
             self.j_days, self.stds = validate_datetime(j_day, year)
             hour, minute = target_time.split(":")
 
+            stds_dict = {}
+
             for std in self.stds:
-                std.replace(hour=int(hour), minute=int(minute))
+                j_day = buffer_value(std.timetuple().tm_yday, 3)
+                stds_dict[str(std.year) + j_day] = std.replace(
+                    hour=int(hour), minute=int(minute))
+
+            self.stds = stds_dict
 
         elif stds:
             self.stds = stds
+            self.j_days = []
+
+            for j_day in self.stds.keys():
+                self.j_days.append(j_day[-3:])
+
         else:
             raise ValueError("Must provide j_day + year or stds")
-        
 
+        self.crop_mask = open_mask()
         self.file_format: str = file_format
         self.target_time = target_time
-        self.crop_mask = open_mask()
         self.images: Dict[str, str] = self.find_matching_images()
         self.raw_poi: Dict[str, Dict[str, object]] = {
             k: self.extract_poi_data(v) for k, v in self.images.items()
         }
-        # self.poi: Dict[str, dict] = {
-        #     k: self.process_poi_data(v) for k, v in self.raw_poi.items()
-        # }
+        self.poi: Dict[str, dict] = {
+            k: self.process_poi_data(v) for k, v in self.raw_poi.items()
+        }
 
     def __str__(self):
 
@@ -147,7 +164,7 @@ class Ground:
 
         file_format : str
             File format of target scenes
-    
+
         station_name : str
             Name of target station
 
@@ -169,8 +186,6 @@ class Ground:
         target_stds: dict = self.stds
         matching_images: dict = {}
 
-        print("matching ", len(target_stds), " items")
-
         for k, std in target_stds.items():
 
             user_selection = 0
@@ -178,7 +193,7 @@ class Ground:
             year = str(std.year)
             month = buffer_value(std.month, 2)
             day = buffer_value(std.day, 2)
-            #  j_day = buffer_value(std.timetuple().tm_yday, 3)
+            j_day = buffer_value(std.timetuple().tm_yday, 3)
             hour = buffer_value(std.hour, 2)
             minute = buffer_value(std.minute, 2)
 
@@ -187,7 +202,8 @@ class Ground:
             )
 
             if not matching_file_list:
-                raise FileNotFoundError(f"GROUND image {year}-{day} not found")
+                raise FileNotFoundError(f"GROUND image {year}-{month}-{day}-{hour}:{minute} not found")
+                # TODO implement match closest
             elif len(matching_file_list) > 1:
                 #  for index, file in enumerate(matching_file_list):
                 #     print(f"{index} | {file}") # TODO make this prettier and present time
@@ -196,63 +212,97 @@ class Ground:
 
             logging.info(f"GROUND scene {std} found")
 
-            matching_images[std] = matching_file_list[user_selection]
+            matching_images[k] = matching_file_list[user_selection]
 
         return matching_images
 
-    def extract_poi_data(self, image_path: dict) -> dict:
-        """Extract and process image from `image_path`.
-
+    def extract_poi_data(self, image_path: str) -> dict:
+        """Extract `BI` and `SI` for image at `image_path`.
 
         Parameters
         ----------
-        image_path : dict
-            [ std : path to image ]
+        image_path : str
+            path to image `C:\\path\\to\\image`
 
         Returns
         ----------
         Dict
-            [ std : windowed sublayer data ]
+            [ BI : BI_array, SI : SI_array ]
 
         """
+
         crop_mask = self.crop_mask
+
         img_arr = open_image(image_path)
 
         img = img_arr * crop_mask
-        
-        #show_image(img)
-        img = img.astype('float')
+        img = img.astype("float")
         img[img == 0] = np.nan
-        R = img[:, :, 0]
-        G = img[:, :, 1]
-        B = img[:, :, 2]
 
-        R = R / 255
-        B = B / 255
-        G = G / 255
+        R, G, B = extract_color_bands(img)
 
-        SI = (B - R) / (B + R)
+        SI = calc_SI(R, B)
+        BI = calc_BI(R, G, B)
+
+        print(BI.shape)
+        print(SI.shape)
+
+        return {"BI": BI, "SI": SI}
+
+    def process_poi_data(self, raw_data: dict) -> dict:
+        """Process image 
+
+        Parameters
+        ----------
+        raw_data : Dict[ BI : BI_array, SI : SI_array ]
+            Dict containing `BI` and `SI` statistics
+            as extracted with `extract_poi_data()`
+
+        Returns
+        ----------
+        Dict: [ BI : BI_stats, SI : SI_stats ]
+            Dict with statistics
+            
+
+        """
+
+        BI = raw_data["BI"]
+        SI = raw_data["SI"]
+
+        BI_stats: dict = extract_stats(BI)
+        SI_stats: dict = extract_stats(SI)
+
+        BI = np.logical_not(np.isnan(BI))
+        SI = np.logical_not(np.isnan(SI))
+
+        #
+        # FIND OUT HOW MANY PIXELS ABOVE OR BELOW LINE
+        # COUNT JUST LIKE BEFORE
+        # TOTAL
+        # CLOUD
+        # CLEAR
+        # prcnt_CLD
+        # prcnt_CLR
+        #
+        #
+
+
+        return {"BI": BI_stats, "SI": SI_stats}
+
+    @staticmethod
+    def show_graph(poi: dict = None, BI=None, SI=None):
+
+        if poi:
+            BI = poi["BI"]
+            SI = poi["SI"]
+        elif not BI and not SI:
+            raise TypeError("Require poi Dict ['BI' : array, 'SI': array ] or BI / SI") 
+
+        BI = BI.flatten()
         SI = SI.flatten()
-        SI = SI.astype('float')
-        SI[SI == 0] = np.nan
-        print("SI", np.nanmean(SI))
 
-        BI = (R + G + B) / 3
-        BI = BI.astype('float')
-        BI[BI == 0] = np.nan
-        print("BI", np.nanmean(BI))
-
-        if not hasattr(self, 'BI'):
-            print("checl")
-            self.BI = BI.flatten()
-            self.SI = SI.flatten()
-        else:
-            print(len(self.BI.flatten()))
-            self.BI = np.hstack((self.BI, BI.flatten()))
-            self.BI = self.BI.flatten()
-
-            self.SI = np.hstack((self.SI, SI.flatten()))
-            self.SI = self.SI.flatten()
-
-
-        return img
+        x = BI[np.logical_not(np.isnan(BI))]
+        y = SI[np.logical_not(np.isnan(SI))]
+        # TODO add step function
+        plt.hist2d(x, y, (50, 50), cmap=plt.cm.jet)
+        plt.colorbar()

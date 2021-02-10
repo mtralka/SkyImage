@@ -82,7 +82,7 @@ def validate_file_path(path: str, name: str) -> str:
 
 
 def validate_datetime(j_day: str or int or list, year: int) -> List[str] and list:
-    
+
     def validate_j_day(j_day: str or int) -> bool:
         if type(j_day) is str:
             j_day = int(j_day)
