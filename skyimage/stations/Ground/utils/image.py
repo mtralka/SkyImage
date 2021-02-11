@@ -21,6 +21,10 @@ def show_image(img):
     plt.show()
 
 
+def save_image(name: str, img):
+    plt.imsave(name, img)
+
+
 def extract_color_bands(img):
 
     R = img[:, :, 0] / 255
@@ -48,8 +52,56 @@ def calc_BI(R, G, B):
 
 def extract_stats(array) -> dict:
 
-    mean = np.nanmean(array)
-    max = np.nanmax(array)
-    min = np.nanmin(array)
+    mean = round(np.nanmean(array), 2)
+    max = round(np.nanmax(array), 2)
+    min = round(np.nanmin(array), 2)
 
     return {"mean": mean, "max": max, "min": min}
+
+
+def f_above_or_below(p: np.ndarray, boundary: np.ndarray) -> int:
+    """ Determine if given point `p` is above
+        or below decision `boundary`
+
+        Parameters
+        ----------
+        p : numpy.ndarray
+            given point
+
+        boundary: numpy.ndarray
+            decision boundary line
+
+        Returns
+        ----------
+        int
+            `1` if point is above domain
+            else (implied below) `0`
+
+        Raises
+        ----------
+        KeyError
+            If `point` falls outside domain of decision `boundary`
+
+        Examples
+        ----------
+        # TODO 
+
+        """
+
+    if p[0] < np.min(boundary[:, 0]) or \
+            p[0] > np.max(boundary[:, 0]):
+        raise ValueError(
+            "`(BI, SI)` point falls outside `boundary` decision line")
+
+    idx = None
+
+    for i in range(boundary.shape[0]):
+        if p[1] > boundary[i, 1]:
+            idx = i
+            break
+    if idx is None:
+        return 0
+    elif p[0] < boundary[idx, 0]:
+        return 0
+    else:
+        return 1

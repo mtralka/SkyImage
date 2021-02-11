@@ -51,8 +51,6 @@ class SkyImage:
         self.modis_file_format = modis_file_format
 
     def results(self, as_dataframe: bool = False):
-        # if not self.Sky and self.Ground:
-        #     raise Exception("Run Run")
 
         results: dict = {}
 
@@ -60,13 +58,13 @@ class SkyImage:
             sky_results = self.Sky.results(as_dataframe=False)
             results = {**results, **sky_results}
         if self.Ground:
-            pass
-            #results | self.Ground.results()
+            ground_results = self.Ground.results(as_dataframe=False)
+            results = {**results, **ground_results}
 
         if as_dataframe:
             return pd.DataFrame.from_dict(results, orient="index")
 
-        return {"SKY": sky_results, "GROUND": self.Ground}
+        return {"SKY": sky_results, "GROUND": ground_results}
 
     def run(self):
 

@@ -1,4 +1,6 @@
+from collections import namedtuple
 import glob
+from itertools import product
 import logging
 from typing import Dict
 from typing import List
@@ -7,15 +9,16 @@ from typing import Union
 import warnings
 
 import matplotlib.pyplot as plt
-from matplotlib.pyplot import show
 import numpy as np
 import pandas as pd
 from skyimage.stations.Ground.utils.image import calc_BI
 from skyimage.stations.Ground.utils.image import calc_SI
 from skyimage.stations.Ground.utils.image import extract_color_bands
 from skyimage.stations.Ground.utils.image import extract_stats
+from skyimage.stations.Ground.utils.image import f_above_or_below
 from skyimage.stations.Ground.utils.image import open_image
 from skyimage.stations.Ground.utils.image import open_mask
+from skyimage.stations.Ground.utils.image import save_image
 from skyimage.stations.Ground.utils.image import show_image
 #from skyimage.stations.Ground.utils.validators import validate_target_time
 from skyimage.utils.models import Stations
@@ -121,10 +124,10 @@ class Ground:
         self.target_time = target_time
         self.images: Dict[str, str] = self.find_matching_images()
         self.raw_poi: Dict[str, Dict[str, object]] = {
-            k: self.extract_poi_data(v) for k, v in self.images.items()
+            k: self.extract_poi_data(k, v) for k, v in self.images.items()
         }
         self.poi: Dict[str, dict] = {
-            k: self.process_poi_data(v) for k, v in self.raw_poi.items()
+            k: self.process_poi_data(k, v) for k, v in self.raw_poi.items()
         }
 
     def __str__(self):
@@ -216,7 +219,7 @@ class Ground:
 
         return matching_images
 
-    def extract_poi_data(self, image_path: str) -> dict:
+    def extract_poi_data(self, image_name: str, image_path: str) -> dict:
         """Extract `BI` and `SI` for image at `image_path`.
 
         Parameters
@@ -236,6 +239,11 @@ class Ground:
         img_arr = open_image(image_path)
 
         img = img_arr * crop_mask
+
+        # show_image(img)
+        img_file_name = image_name + ".png"
+        save_image(img_file_name, img.astype("uint8"))
+
         img = img.astype("float")
         img[img == 0] = np.nan
 
@@ -244,12 +252,9 @@ class Ground:
         SI = calc_SI(R, B)
         BI = calc_BI(R, G, B)
 
-        print(BI.shape)
-        print(SI.shape)
-
         return {"BI": BI, "SI": SI}
 
-    def process_poi_data(self, raw_data: dict) -> dict:
+    def process_poi_data(self, image_name: str, raw_data: dict) -> dict:
         """Process image 
 
         Parameters
@@ -269,30 +274,62 @@ class Ground:
         BI = raw_data["BI"]
         SI = raw_data["SI"]
 
+        # BI = BI[np.logical_not(np.isnan(BI))]
+        # SI = SI[np.logical_not(np.isnan(SI))]
+
         BI_stats: dict = extract_stats(BI)
         SI_stats: dict = extract_stats(SI)
+        BI_SI_points = np.column_stack((BI.flatten(), SI.flatten()))
 
-        BI = np.logical_not(np.isnan(BI))
-        SI = np.logical_not(np.isnan(SI))
+        x_step = [0, .1, .35, .7, .8, 1]
+        y_step = [1, .6, .35, .15, .1, 0]
+        boundary = np.column_stack((x_step, y_step))
 
-        
+        pixel_total: int = BI_SI_points[np.logical_not(
+            np.isnan(BI_SI_points))].size / 2
 
-        #
-        # FIND OUT HOW MANY PIXELS ABOVE OR BELOW LINE
-        # COUNT JUST LIKE BEFORE
-        # TOTAL
-        # CLOUD
-        # CLEAR
-        # prcnt_CLD
-        # prcnt_CLR
-        #
-        #
+        cloud_mask: list = []
+        img_shape: tuple = BI.shape[0:2]
+        number_clear: int = 0
 
+        for point in BI_SI_points:
+            results: int = f_above_or_below(point, boundary)
+            cloud_mask.append(results)
+            number_clear = number_clear + results
 
-        return {"BI": BI_stats, "SI": SI_stats}
+        cloud_mask = np.array(cloud_mask).reshape(img_shape)
+        img_file_name = image_name + "_cld_mask.png"
+        save_image(img_file_name, cloud_mask)
+        # show_image(cloud_mask)
+
+        percent_cloud: float = round(
+            ((pixel_total - number_clear) / pixel_total) * 100, 2)
+
+        return {"BI": BI_stats, "SI": SI_stats,
+                "n_TOTAL": pixel_total, "prcnt_CLD": percent_cloud}
+
+    def results(self, as_dataframe: bool = True):
+        """Get processed results
+
+        Parameters
+        ----------
+        as_dataframe : bool
+            return as pandas dataframe
+
+        Returns
+        ----------
+        Dict : dict
+            results as Dict
+
+        """
+
+        if as_dataframe:
+            return pd.DataFrame.from_dict(self.poi, orient="index")
+
+        return self.poi
 
     @staticmethod
-    def show_graph(poi: dict = None, BI=None, SI=None):
+    def show_graph(poi: dict = None, BI=None, SI=None, save: bool = None, file_name: str= None):
 
         if poi:
             BI = poi["BI"]
@@ -313,3 +350,6 @@ class Ground:
         plt.plot(x_step, y_step, "w")
 
         plt.colorbar()
+
+        if save:
+            plt.savefig(file_name, dpi=100)
