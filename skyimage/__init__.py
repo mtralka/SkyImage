@@ -2,7 +2,7 @@ from importlib import reload
 import logging
 import sys
 
-from skyimage.app import SkyImage as Rectifier
+from skyimage.app import SkyImage as SkyImage
 from skyimage.stations import Ground
 from skyimage.stations import Sky
 

@@ -1,4 +1,4 @@
-from skyimage.app import SkyImage as Rectifier
+from skyimage.app import SkyImage
 
 
 def main():

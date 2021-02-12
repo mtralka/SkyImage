@@ -3,11 +3,15 @@ import glob
 import logging
 from typing import Dict
 from typing import List
+from typing import Optional
+from typing import Union
 
 import numpy as np
 import pandas as pd
 import rasterio as rio
 from scipy import stats
+from skyimage.stations.Sky.utils.utils import binary_to_decimal
+from skyimage.stations.Sky.utils.utils import decimal_to_binary
 from skyimage.utils.models import Stations
 from skyimage.utils.validators import validate_coords
 from skyimage.utils.validators import validate_datetime
@@ -78,7 +82,7 @@ class Sky:
 
     def __init__(
         self,
-        j_day: int or str or list = None,
+        j_day: Optional[Union[int, str, list]] = None,
         year: int = None,
         path: str = None,
         file_format: str = "hdf",
@@ -135,54 +139,6 @@ class Sky:
         {self.poi}
         """
 
-    def __decimal_to_binary(self, decimal: int or str) -> str:
-        """Convert decimal to binary 32-bit
-
-        Parameters
-        ----------
-        decimal : int or str
-            Decimal form.
-
-        Returns
-        ----------
-        str
-            Binary form.
-
-        Examples
-        ----------
-        >>> __decimal_to_binary(59)
-        111011
-        >>> __decimal_to_binary("462")
-        111001110
-        """
-        if type(decimal) is str:
-            decimal = int(decimal)
-
-        binary = str(bin(decimal))[2:]
-        return f"{int(binary):032}"
-
-    def __binary_to_decimal(self, binary: str) -> int:
-        """Convert binary to decimal
-
-        Parameters
-        ----------
-        binary : str
-            Binary form.
-
-        Returns
-        ----------
-        int
-            Decimal form.
-
-        Examples
-        ----------
-        >>> __binary_to_decimal(111001110)
-        462
-        >>> __decimal_to_binary(110001)
-        49
-        """
-        return int(binary, 2)
-
     def find_matching_scenes(self) -> Dict:
         """Find scenes matching class variables
 
@@ -221,7 +177,7 @@ class Sky:
         for day in j_days:
             user_selection = 0
             matching_file_list = list(
-                glob.iglob(path + f"/{year}/*{year + day}*.{file_format}")
+                glob.iglob(path + f"/{year}/*A{year + day}*.{file_format}")
             )
 
             if not matching_file_list:
@@ -239,7 +195,8 @@ class Sky:
 
         return matching_scenes
 
-    def get_metadata(self, target) -> Dict:
+    @staticmethod
+    def get_metadata(target) -> Dict:
         """Returns metadata of `target`
 
         Parameters
@@ -288,7 +245,7 @@ class Sky:
             Join first letter of each word
 
             """
-            return "".join([word[0] for word in target.split()]).upper()
+            return "".join([word[0] for word in name.split()]).upper()
 
         with rio.open(layer) as ds:
             for name in ds.subdatasets:
@@ -325,7 +282,7 @@ class Sky:
             [ sublayer abbreviation : windowed sublayer data ]
 
         """
-
+        # current window is 2X2 pixels
         # TODO add custom window
         lat = self.coords[0]
         lon = self.coords[1]
@@ -336,7 +293,9 @@ class Sky:
 
                 self.crs = ds.read_crs()
                 py, px = ds.index(lon, lat)
-                #  window = rio.windows.Window(px - 1, py - 1, 3, 3)
+                # WINDOW ADJUST
+                # first is 2x2, next is just 1
+                # window = rio.windows.Window(px - 1, py - 1, 3, 3)
                 window = rio.windows.Window(px, py, 1, 1)
                 arr = ds.read(1, window=window)
                 logging.info(f"{key}\n{window}\n{arr}")
@@ -395,7 +354,7 @@ class Sky:
 
         for pixel in crnm:
 
-            binary: str = self.__decimal_to_binary(str(pixel))
+            binary: str = decimal_to_binary(str(pixel))
 
             for k, v in NUM_MAPPINGS.items():
 
@@ -404,20 +363,20 @@ class Sky:
                 start_i = end_i - (end_bit - start_bit) - 1
 
                 mapped_octet: str = binary[start_i:end_i:1]
-                mapped_decimal: int = self.__binary_to_decimal(mapped_octet)
+                mapped_decimal: int = binary_to_decimal(mapped_octet)
 
                 processed_dict[k] = mapped_decimal + processed_dict.get(k, 0)
 
         for k, v in NUM_MAPPINGS.items():
 
             n_present_pixels: int = processed_dict.get(k, 0)
+            prcnt_of_total: float = round((n_present_pixels / avg_pixel_total) * 100, 2)
 
-            prcnt_of_total: float = (n_present_pixels / avg_pixel_total) * 100
             processed_dict[f"prcnt_{k}"] = prcnt_of_total
 
         return processed_dict
 
-    def results(self, as_dataframe: bool = True):
+    def results(self, as_dataframe: Optional[bool] = True):
         """Get processed results
 
         Parameters
@@ -461,4 +420,3 @@ class Sky:
                     matched_stds[k] = time.replace(hour=hour, minute=minute)
 
         return matched_stds
-
