@@ -177,7 +177,7 @@ class Sky:
         for day in j_days:
             user_selection = 0
             matching_file_list = list(
-                glob.iglob(path + f"/{year}/*{year + day}*.{file_format}")
+                glob.iglob(path + f"/{year}/*A{year + day}*.{file_format}")
             )
 
             if not matching_file_list:
@@ -293,8 +293,10 @@ class Sky:
 
                 self.crs = ds.read_crs()
                 py, px = ds.index(lon, lat)
-                window = rio.windows.Window(px - 1, py - 1, 3, 3)
-                #window = rio.windows.Window(px, py, 1, 1)
+                # WINDOW ADJUST
+                # first is 2x2, next is just 1
+                # window = rio.windows.Window(px - 1, py - 1, 3, 3)
+                window = rio.windows.Window(px, py, 1, 1)
                 arr = ds.read(1, window=window)
                 logging.info(f"{key}\n{window}\n{arr}")
                 poi_dict[key] = arr
@@ -368,8 +370,7 @@ class Sky:
         for k, v in NUM_MAPPINGS.items():
 
             n_present_pixels: int = processed_dict.get(k, 0)
-            prcnt_of_total: float = round(
-                (n_present_pixels / avg_pixel_total) * 100, 2)
+            prcnt_of_total: float = round((n_present_pixels / avg_pixel_total) * 100, 2)
 
             processed_dict[f"prcnt_{k}"] = prcnt_of_total
 

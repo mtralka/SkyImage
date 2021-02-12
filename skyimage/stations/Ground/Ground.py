@@ -1,6 +1,3 @@
-from collections import namedtuple
-import glob
-from itertools import product
 import logging
 from typing import Dict
 from typing import List
@@ -20,7 +17,8 @@ from skyimage.stations.Ground.utils.image import open_image
 from skyimage.stations.Ground.utils.image import open_mask
 from skyimage.stations.Ground.utils.image import save_image
 from skyimage.stations.Ground.utils.image import show_image
-#from skyimage.stations.Ground.utils.validators import validate_target_time
+
+#  from skyimage.stations.Ground.utils.validators import validate_target_time
 from skyimage.utils.models import Stations
 from skyimage.utils.utils import buffer_value
 from skyimage.utils.validators import validate_coords
@@ -55,13 +53,13 @@ class Ground:
 
     file_format : str
         File format of parent file to `target_sublayers`
-    
+
     year: int
         Year to extract data for
 
     stds : list of datetime
         Datetime objects to extract data for
-    
+
     save_images: bool
         Boolean for saving photo and cloud mask results
 
@@ -91,8 +89,7 @@ class Ground:
     ):
 
         self.path: str = validate_file_path(path, "GROUND")
-        self.station_positions: Stations = validate_station_positions(
-            station_positions)
+        self.station_positions: Stations = validate_station_positions(station_positions)
         self.station_name: str = station
         self.coords: List[float, float] = validate_coords(
             coords, station, self.station_positions
@@ -100,8 +97,11 @@ class Ground:
 
         if j_day:
             if not target_time:
-                warnings.warn("No `target_time` set, defaulting to 12:00",
-                            UserWarning, stacklevel=2,)
+                warnings.warn(
+                    "No `target_time` set, defaulting to 12:00",
+                    UserWarning,
+                    stacklevel=2,
+                )
 
                 target_time = "12:00"
 
@@ -113,7 +113,8 @@ class Ground:
             for std in self.stds:
                 j_day = buffer_value(std.timetuple().tm_yday, 3)
                 stds_dict[str(std.year) + j_day] = std.replace(
-                    hour=int(hour), minute=int(minute))
+                    hour=int(hour), minute=int(minute)
+                )
 
             self.stds = stds_dict
 
@@ -211,16 +212,21 @@ class Ground:
             minute = buffer_value(std.minute, 2)
 
             matching_file_list = list(
-                glob.iglob(path + f"/{station_name}/{year}/{month}/{day}/*{year + month + day}*{hour + minute}*.{file_format}")
+                glob.iglob(
+                    path
+                    + f"/{station_name}/{year}/{month}/{day}/*{year + month + day}*{hour + minute}*.{file_format}"
+                )
             )
 
             if not matching_file_list:
-                raise FileNotFoundError(f"GROUND image {year}-{month}-{day}-{hour}:{minute} not found")
+                raise FileNotFoundError(
+                    f"GROUND image {year}-{month}-{day}-{hour}:{minute} not found"
+                )
                 # TODO implement match closest
             elif len(matching_file_list) > 1:
                 # TODO present use selection
                 #  for index, file in enumerate(matching_file_list):
-                #     print(f"{index} | {file}") 
+                #     print(f"{index} | {file}")
                 #  user_selection = int(input("Which file would you like?"))
                 raise LookupError("Multiple matching files found")
 
@@ -297,12 +303,11 @@ class Ground:
         SI_stats: dict = extract_stats(SI)
         BI_SI_points = np.column_stack((BI.flatten(), SI.flatten()))
 
-        x_step = [0, .1, .35, .7, .8, 1]
-        y_step = [1, .6, .35, .15, .1, 0]
+        x_step = [0, 0.1, 0.35, 0.7, 0.8, 1]
+        y_step = [1, 0.6, 0.35, 0.15, 0.1, 0]
         boundary = np.column_stack((x_step, y_step))
 
-        pixel_total: int = BI_SI_points[np.logical_not(
-            np.isnan(BI_SI_points))].size / 2
+        pixel_total: int = BI_SI_points[np.logical_not(np.isnan(BI_SI_points))].size / 2
 
         cloud_mask: list = []
         img_shape: tuple = BI.shape[0:2]
@@ -323,10 +328,15 @@ class Ground:
             save_image(img_file_name, cloud_mask)
 
         percent_cloud: float = round(
-            ((pixel_total - number_clear) / pixel_total) * 100, 2)
+            ((pixel_total - number_clear) / pixel_total) * 100, 2
+        )
 
-        return {"BI": BI_stats, "SI": SI_stats,
-                "n_TOTAL": pixel_total, "prcnt_CLD": percent_cloud}
+        return {
+            "BI": BI_stats,
+            "SI": SI_stats,
+            "n_TOTAL": pixel_total,
+            "prcnt_CLD": percent_cloud,
+        }
 
     def results(self, as_dataframe: Optional[bool] = True):
         """Get processed results
@@ -349,13 +359,19 @@ class Ground:
         return self.poi
 
     @staticmethod
-    def show_graph(poi: dict = None, BI=None, SI=None, save: Optional[bool] = None, file_name: Optional[str]= None):
+    def show_graph(
+        poi: dict = None,
+        BI=None,
+        SI=None,
+        save: Optional[bool] = None,
+        file_name: Optional[str] = None,
+    ):
 
         if poi:
             BI = poi["BI"]
             SI = poi["SI"]
         elif not BI and not SI:
-            raise TypeError("Require poi Dict ['BI' : array, 'SI': array ] or BI / SI") 
+            raise TypeError("Require poi Dict ['BI' : array, 'SI': array ] or BI / SI")
 
         BI = BI.flatten()
         SI = SI.flatten()
@@ -368,13 +384,19 @@ class Ground:
 
         plt.hist2d(x, y, (50, 50), cmap=plt.cm.jet)
 
-        x_step = [0, .1, .35, .7, .8, 1]
-        y_step = [1, .6, .35, .15, .1, 0]
+        x_step = [0, 0.1, 0.35, 0.7, 0.8, 1]
+        y_step = [1, 0.6, 0.35, 0.15, 0.1, 0]
         plt.plot(x_step, y_step, "w")
 
-        plt.colorbar()
+        cb = plt.colorbar()
 
         if save:
             plt.savefig(file_name, dpi=100)
 
+        # TODO fix
+        # one of these works
+        cb.remove()
+        plt.close()
+        plt.close("all")
         plt.clf()
+        plt.cla()

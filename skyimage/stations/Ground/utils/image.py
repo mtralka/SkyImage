@@ -17,8 +17,7 @@ def open_image(path: str):
     return imread(path)
 
 
-def open_mask(path: Optional[str] =
-              "skyimage\\stations\\Ground\\mask.npy"):
+def open_mask(path: Optional[str] = "skyimage\\stations\\Ground\\mask.npy"):
 
     return np.load(path)
 
@@ -67,38 +66,36 @@ def extract_stats(array) -> dict:
 
 
 def f_above_or_below(p: np.ndarray, boundary: np.ndarray) -> int:
-    """ Determine if given point `p` is above
-        or below decision `boundary`
+    """Determine if given point `p` is above
+    or below decision `boundary`
 
-        Parameters
-        ----------
-        p : numpy.ndarray
-            given point
+    Parameters
+    ----------
+    p : numpy.ndarray
+        given point
 
-        boundary: numpy.ndarray
-            decision boundary line
+    boundary: numpy.ndarray
+        decision boundary line
 
-        Returns
-        ----------
-        int
-            `1` if point is above domain
-            else (implied below) `0`
+    Returns
+    ----------
+    int
+        `1` if point is above domain
+        else (implied below) `0`
 
-        Raises
-        ----------
-        KeyError
-            If `point` falls outside domain of decision `boundary`
+    Raises
+    ----------
+    KeyError
+        If `point` falls outside domain of decision `boundary`
 
-        Examples
-        ----------
-        # TODO 
+    Examples
+    ----------
+    # TODO
 
-        """
+    """
 
-    if p[0] < np.min(boundary[:, 0]) or \
-            p[0] > np.max(boundary[:, 0]):
-        raise ValueError(
-            "`(BI, SI)` point falls outside `boundary` decision domain")
+    if p[0] < np.min(boundary[:, 0]) or p[0] > np.max(boundary[:, 0]):
+        raise ValueError("`(BI, SI)` point falls outside `boundary` decision domain")
 
     idx: int = None
 

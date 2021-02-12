@@ -1,4 +1,3 @@
-
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -92,32 +91,6 @@ class SkyImage:
         self.save_images: bool = save_images
         self.show_images: bool = show_images
 
-    def results(self,
-                as_dataframe: Optional[bool] = False, 
-                save_path: Optional[str] = ""):
-
-        if not hasattr(self, "Sky") or not hasattr(self, "Ground"):
-            raise ValueError("Sky or Ground model uninitiated")
-
-        sky_results: dict = self.Sky.results(as_dataframe=False)
-        ground_results: dict = self.Ground.results(as_dataframe=False)
-
-        if not as_dataframe:
-            return {"SKY": sky_results, "GROUND": ground_results}
-
-        sky_df = pd.DataFrame.from_dict(
-            sky_results, orient="index").add_prefix("sky_")
-        ground_df = pd.DataFrame.from_dict(
-            ground_results, orient="index").add_prefix("grnd_")
-
-        combined_df = pd.merge(
-            sky_df, ground_df, left_index=True, right_index=True)
-
-        if save_path:
-            combined_df.to_csv(save_path)
-
-        return combined_df
-
     def run(self):
 
         self.Sky = Sky(
@@ -137,6 +110,31 @@ class SkyImage:
             station=self.station_name,
             stds=matched_stds,
             save_images=self.save_images,
-            show_images=self.show_images
+            show_images=self.show_images,
         )
         # self.Ground = Ground(self)
+
+    def results(
+        self, as_dataframe: Optional[bool] = False, save_path: Optional[str] = ""
+    ):
+
+        if not hasattr(self, "Sky") or not hasattr(self, "Ground"):
+            raise ValueError("Sky or Ground model uninitiated")
+
+        sky_results: dict = self.Sky.results(as_dataframe=False)
+        ground_results: dict = self.Ground.results(as_dataframe=False)
+
+        if not as_dataframe:
+            return {"SKY": sky_results, "GROUND": ground_results}
+
+        sky_df = pd.DataFrame.from_dict(sky_results, orient="index").add_prefix("sky_")
+        ground_df = pd.DataFrame.from_dict(ground_results, orient="index").add_prefix(
+            "grnd_"
+        )
+
+        combined_df = pd.merge(sky_df, ground_df, left_index=True, right_index=True)
+
+        if save_path:
+            combined_df.to_csv(save_path)
+
+        return combined_df
