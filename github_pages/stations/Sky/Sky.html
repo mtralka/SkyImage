@@ -1,0 +1,1400 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.9.2" />
+<title>skyimage.stations.Sky.Sky API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>skyimage.stations.Sky.Sky</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">from datetime import datetime
+import glob
+import logging
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Union
+
+import numpy as np
+import pandas as pd
+import rasterio as rio
+from scipy import stats
+from skyimage.stations.Sky.utils.utils import binary_to_decimal
+from skyimage.stations.Sky.utils.utils import decimal_to_binary
+from skyimage.utils.models import Stations
+from skyimage.utils.validators import validate_coords
+from skyimage.utils.validators import validate_datetime
+from skyimage.utils.validators import validate_file_path
+from skyimage.utils.validators import validate_modis_target_sublayers
+from skyimage.utils.validators import validate_station_positions
+
+
+class Sky:
+    &#34;&#34;&#34;
+    Object with data from the MODIS platform
+
+    ...
+
+    Attributes
+    ----------
+    path : str
+        File path to platform data
+
+    target_sublayers : list of str
+        Targetted sublayers
+
+    station_positions : dict
+        Dict of all possible station positions
+
+    station_name : str
+        Name of target station
+
+    coords: List of float
+        Spatial coordinates of `station`
+
+    j_day : list of str
+        Julian days to extract data for
+
+    year: int
+        Year to extract data for
+
+    stds : list of datetime
+        Datetime objects to extract data for
+
+    file_format : str
+        File format of parent file to `target_sublayers`
+
+    scenes : Dict[year + julian day , file path]
+        File paths to scenes matching class paramters from `path`
+
+    scenes_metadata : Dict[year + julian day : file metadata]
+        Metadata of scenes matching class paramters from `path`
+
+    scenes_sublayers : Dict[ year + julian day : Dict[ layer abbreviation : matching sublayers ]]
+        Matching sublayers to each scene from `scenes`
+
+    raw_poi : Dict[ year + julian day : Dict[ layer abbreviation : Numpy array ]]
+        Extracted arrays for `target_sublayers` in all `scenes`
+
+    poi : Dict [ year + julian day : dict ]
+        Processed final product extracted from `raw_poi`
+
+    Methods
+    -------
+    results
+        return process results
+
+    extract_std
+        return datetime representing found scene(s) aquistion times
+
+    &#34;&#34;&#34;
+
+    def __init__(
+        self,
+        j_day: Optional[Union[int, str, list]] = None,
+        year: int = None,
+        path: str = None,
+        file_format: str = &#34;hdf&#34;,
+        coords: List[float] = None,
+        station: str = None,
+        station_positions: Stations = None,
+        target_sublayers: List[str] = None,
+    ):
+
+        self.path: str = validate_file_path(path, &#34;MODIS&#34;)
+        self.target_sublayers: List[str] = validate_modis_target_sublayers(
+            target_sublayers
+        )
+        self.station_positions: Stations = validate_station_positions(station_positions)
+        self.station_name: str = station
+        self.coords: List[float, float] = validate_coords(
+            coords, station, self.station_positions
+        )
+        self.j_days, self.stds = validate_datetime(j_day, year)
+        self.file_format: str = file_format
+
+        self.scenes: Dict[str, str] = self.find_matching_scenes()
+        self.scenes_metadata: Dict[str, dict] = {
+            k: self.get_metadata(v) for k, v in self.scenes.items()
+        }
+        self.scenes_sublayers: Dict[str, str] = {
+            k: self.find_target_sublayers(v) for k, v in self.scenes.items()
+        }
+        self.raw_poi: Dict[str, Dict[str, object]] = {
+            k: self.extract_poi_data(v) for k, v in self.scenes_sublayers.items()
+        }
+        self.poi: Dict[str, dict] = {
+            k: self.process_poi_data(v) for k, v in self.raw_poi.items()
+        }
+
+    def __str__(self):
+
+        return f&#34;&#34;&#34;
+        Sky platform
+        --------
+        Data Path : {self.path}
+        File Format : {self.file_format}
+        Target Sublayers : {self.target_sublayers}
+        --------
+        Station : {self.station_name}
+        Coords : {self.coords}
+        Year : {self.stds[0].year}
+        Julian Days : {self.j_days[0]} - {self.j_days[-1]}
+
+        {len(self.scenes)} scenes found
+
+        INFO
+        --------
+        {self.poi}
+        &#34;&#34;&#34;
+
+    def find_matching_scenes(self) -&gt; Dict:
+        &#34;&#34;&#34;Find scenes matching class variables
+
+        Parameters
+        ----------
+        year : str
+            Year of target scenes.
+
+        j_days : list of str
+            List of target Julian days
+
+        path : str
+            Path to scene directory
+
+        file_format : str
+            File format of target scenes
+
+        Returns
+        ----------
+        Dict
+            [ year + Julian day : layer file path]
+
+        Raises
+        ----------
+        FileNotFoundError
+            If no files match input paramters
+
+        &#34;&#34;&#34;
+
+        year: str = str(self.stds[0].year)
+        j_days: list = self.j_days
+        path = self.path
+        file_format = self.file_format
+        matching_scenes: Dict = {}
+
+        for day in j_days:
+            user_selection = 0
+            matching_file_list = list(
+                glob.iglob(path + f&#34;/{year}/*A{year + day}*.{file_format}&#34;)
+            )
+
+            if not matching_file_list:
+                raise FileNotFoundError(f&#34;MODIS scene {year}-{day} not found&#34;)
+            elif len(matching_file_list) &gt; 1:
+                pass
+                #  for index, file in enumerate(matching_file_list):
+                #     print(f&#34;{index} | {file}&#34;) # TODO make this prettier and present time
+                #  user_selection = int(input(&#34;Which file would you like?&#34;))
+                #  raise LookupError(&#34;Multiple matching files found&#34;)
+            else:
+                logging.info(f&#34;MODIS scene {year}-{day} found&#34;)
+
+            matching_scenes[year + day] = matching_file_list[user_selection]
+
+        return matching_scenes
+
+    @staticmethod
+    def get_metadata(target) -&gt; Dict:
+        &#34;&#34;&#34;Returns metadata of `target`
+
+        Parameters
+        ----------
+        target : str
+            path to `target` spatial data file
+
+        Returns
+        ----------
+        Dict
+            Dictionary of metadata.
+
+        &#34;&#34;&#34;
+        with rio.open(target) as ds:
+            meta = ds.meta
+        return meta
+
+    def find_target_sublayers(self, layer: str) -&gt; Dict:
+        &#34;&#34;&#34;Finds file path to sublayers of `layer`
+
+        Parameters
+        ----------
+        layer : str
+            Path to target layer.
+
+        target_sublayers : list of str
+            List of desired sublayers.
+
+        Returns
+        ----------
+        Dict
+            [ sublayer abbreviation : path to sublayer ]
+
+        Raises
+        ----------
+        FileNotFoundError
+            If not all requested sublayers are present in target file
+
+        &#34;&#34;&#34;
+        target_sublayers = self.target_sublayers
+        found_layers = {}
+
+        def __make_abbrev(name: str) -&gt; str:
+            &#34;&#34;&#34;Make abbreviation of str
+
+            Join first letter of each word
+
+            &#34;&#34;&#34;
+            return &#34;&#34;.join([word[0] for word in name.split()]).upper()
+
+        with rio.open(layer) as ds:
+            for name in ds.subdatasets:
+                for target in target_sublayers:
+                    if target in name:
+                        logging.info(f&#34;{target} layer found&#34;)
+                        abbrev = __make_abbrev(target)
+                        found_layers[abbrev] = name
+        for target in target_sublayers:
+            abbrev = __make_abbrev(target)
+            if abbrev not in found_layers.keys():
+                raise FileNotFoundError(
+                    f&#34;Could not find {target} in sublayers. Check {layer}&#34;
+                )
+        return found_layers
+
+    def extract_poi_data(self, sublayer_paths: dict) -&gt; dict:
+        &#34;&#34;&#34;Extract windowed data array from `sublayer_paths`
+
+        Parameters
+        ----------
+        sublayer_paths : dict
+            [ sublayer abbreviation : path to sublayer ]
+
+        lat : float
+            Latitude of poi.
+
+        lon : float
+            Longitude of poi.
+
+        Returns
+        ----------
+        Dict
+            [ sublayer abbreviation : windowed sublayer data ]
+
+        &#34;&#34;&#34;
+        # current window is 2X2 pixels
+        # TODO add custom window
+        lat = self.coords[0]
+        lon = self.coords[1]
+        poi_dict = {}
+
+        for key, val in sublayer_paths.items():
+            with rio.open(val) as ds:
+
+                self.crs = ds.read_crs()
+                py, px = ds.index(lon, lat)
+                # WINDOW ADJUST
+                # first is 2x2, next is just 1
+                # window = rio.windows.Window(px - 1, py - 1, 3, 3)
+                window = rio.windows.Window(px, py, 1, 1)
+                arr = ds.read(1, window=window)
+                logging.info(f&#34;{key}\n{window}\n{arr}&#34;)
+                poi_dict[key] = arr
+        return poi_dict
+
+    def process_poi_data(self, raw_data: Dict) -&gt; Dict:
+        &#34;&#34;&#34;Processes usable information from `raw_data`
+
+        Parameters
+        ----------
+        raw_data : dict
+            [ sublayer abbreviation : Numpy matrix of extracted data ]
+
+        Returns
+        ----------
+        Dict
+            [ sublayer abbreviation : path to sublayer ]
+
+        Raises
+        ----------
+        KeyError
+            If `ESSENTIAL_SUBLAYERS` (default=CRGT, CRNM, NPA) not in `raw_data`
+
+        Notes
+        ----------
+
+        TODO add information about execution
+
+        &#34;&#34;&#34;
+
+        processed_dict: dict = {}
+        ESSENTIAL_SUBLAYERS = [&#34;CRGT&#34;, &#34;CRNM&#34;, &#34;NPA&#34;]
+
+        for sub_layer in ESSENTIAL_SUBLAYERS:
+            if sub_layer not in raw_data.keys():
+                raise KeyError(
+                    &#34;Unable to assert main MODIS statistics. \
+                    Check {sub_layer} sublayer&#34;
+                )
+
+        time_mode, _ = stats.mode(raw_data[&#34;CRGT&#34;])
+        processed_dict[&#34;time_utc&#34;] = time_mode[0][0]
+
+        NUM_MAPPINGS: Dict[str, str] = {
+            &#34;CLD&#34;: &#34;0-7&#34;,
+            &#34;CLD_SHDW&#34;: &#34;8-15&#34;,
+            &#34;ADJ_CLD&#34;: &#34;16-23&#34;,
+            &#34;SNW&#34;: &#34;24-31&#34;,
+        }
+
+        avg_pixel_total = raw_data[&#34;NPA&#34;].sum()
+        processed_dict[&#34;n_TOTAL&#34;] = avg_pixel_total
+
+        crnm = raw_data[&#34;CRNM&#34;].flatten()
+
+        for pixel in crnm:
+
+            binary: str = decimal_to_binary(str(pixel))
+
+            for k, v in NUM_MAPPINGS.items():
+
+                start_bit, end_bit = [int(x) for x in v.split(&#34;-&#34;)]
+                end_i = len(binary) - start_bit
+                start_i = end_i - (end_bit - start_bit) - 1
+
+                mapped_octet: str = binary[start_i:end_i:1]
+                mapped_decimal: int = binary_to_decimal(mapped_octet)
+
+                processed_dict[k] = mapped_decimal + processed_dict.get(k, 0)
+
+        for k, v in NUM_MAPPINGS.items():
+
+            n_present_pixels: int = processed_dict.get(k, 0)
+            prcnt_of_total: float = round((n_present_pixels / avg_pixel_total) * 100, 2)
+
+            processed_dict[f&#34;prcnt_{k}&#34;] = prcnt_of_total
+
+        return processed_dict
+
+    def results(self, as_dataframe: Optional[bool] = True):
+        &#34;&#34;&#34;Get processed results
+
+        Parameters
+        ----------
+        as_dataframe : bool
+            return as pandas dataframe
+
+        Returns
+        ----------
+        Dict : dict
+            results as Dict
+
+        &#34;&#34;&#34;
+
+        if as_dataframe:
+            return pd.DataFrame.from_dict(self.poi, orient=&#34;index&#34;)
+
+        return self.poi
+
+    def extract_stds(self) -&gt; dict:
+        &#34;&#34;&#34;Get datetime results
+
+        Returns
+        ----------
+        Dict : [str : datetime object]
+            results as Dict
+
+        &#34;&#34;&#34;
+
+        poi: dict = self.poi
+        stds: dict = self.stds
+        matched_stds: dict = {}
+
+        for k, v in poi.items():
+            std_taken = datetime.strptime(k, &#34;%Y%j&#34;)
+            time_taken: str = str(v[&#34;time_utc&#34;])
+            for time in stds:
+                if std_taken == time:
+                    hour: int = int(time_taken[0:2])
+                    minute: int = int(time_taken[2::])
+                    matched_stds[k] = time.replace(hour=hour, minute=minute)
+
+        return matched_stds</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="skyimage.stations.Sky.Sky.Sky"><code class="flex name class">
+<span>class <span class="ident">Sky</span></span>
+<span>(</span><span>j_day: Union[int, str, list, NoneType] = None, year: int = None, path: str = None, file_format: str = 'hdf', coords: List[float] = None, station: str = None, station_positions: Dict[str, Dict[str, float]] = None, target_sublayers: List[str] = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Object with data from the MODIS platform</p>
+<p>&hellip;</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>path</code></strong> :&ensp;<code>str</code></dt>
+<dd>File path to platform data</dd>
+<dt><strong><code>target_sublayers</code></strong> :&ensp;<code>list</code> of <code>str</code></dt>
+<dd>Targetted sublayers</dd>
+<dt><strong><code>station_positions</code></strong> :&ensp;<code>dict</code></dt>
+<dd>Dict of all possible station positions</dd>
+<dt><strong><code>station_name</code></strong> :&ensp;<code>str</code></dt>
+<dd>Name of target station</dd>
+<dt><strong><code>coords</code></strong> :&ensp;<code>List</code> of <code>float</code></dt>
+<dd>Spatial coordinates of <code>station</code></dd>
+<dt><strong><code>j_day</code></strong> :&ensp;<code>list</code> of <code>str</code></dt>
+<dd>Julian days to extract data for</dd>
+<dt><strong><code>year</code></strong> :&ensp;<code>int</code></dt>
+<dd>Year to extract data for</dd>
+<dt><strong><code>stds</code></strong> :&ensp;<code>list</code> of <code>datetime</code></dt>
+<dd>Datetime objects to extract data for</dd>
+<dt><strong><code>file_format</code></strong> :&ensp;<code>str</code></dt>
+<dd>File format of parent file to <code>target_sublayers</code></dd>
+<dt><strong><code>scenes</code></strong> :&ensp;<code>Dict[year + julian day , file path]</code></dt>
+<dd>File paths to scenes matching class paramters from <code>path</code></dd>
+<dt><strong><code>scenes_metadata</code></strong> :&ensp;<code>Dict[year + julian day : file metadata]</code></dt>
+<dd>Metadata of scenes matching class paramters from <code>path</code></dd>
+<dt><strong><code>scenes_sublayers</code></strong> :&ensp;<code>Dict[ year + julian day : Dict[ layer abbreviation : matching sublayers ]]</code></dt>
+<dd>Matching sublayers to each scene from <code>scenes</code></dd>
+<dt><strong><code>raw_poi</code></strong> :&ensp;<code>Dict[ year + julian day : Dict[ layer abbreviation : Numpy array ]]</code></dt>
+<dd>Extracted arrays for <code>target_sublayers</code> in all <code>scenes</code></dd>
+<dt><strong><code>poi</code></strong> :&ensp;<code>Dict [ year + julian day : dict ]</code></dt>
+<dd>Processed final product extracted from <code>raw_poi</code></dd>
+</dl>
+<h2 id="methods">Methods</h2>
+<p>results
+return process results</p>
+<p>extract_std
+return datetime representing found scene(s) aquistion times</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Sky:
+    &#34;&#34;&#34;
+    Object with data from the MODIS platform
+
+    ...
+
+    Attributes
+    ----------
+    path : str
+        File path to platform data
+
+    target_sublayers : list of str
+        Targetted sublayers
+
+    station_positions : dict
+        Dict of all possible station positions
+
+    station_name : str
+        Name of target station
+
+    coords: List of float
+        Spatial coordinates of `station`
+
+    j_day : list of str
+        Julian days to extract data for
+
+    year: int
+        Year to extract data for
+
+    stds : list of datetime
+        Datetime objects to extract data for
+
+    file_format : str
+        File format of parent file to `target_sublayers`
+
+    scenes : Dict[year + julian day , file path]
+        File paths to scenes matching class paramters from `path`
+
+    scenes_metadata : Dict[year + julian day : file metadata]
+        Metadata of scenes matching class paramters from `path`
+
+    scenes_sublayers : Dict[ year + julian day : Dict[ layer abbreviation : matching sublayers ]]
+        Matching sublayers to each scene from `scenes`
+
+    raw_poi : Dict[ year + julian day : Dict[ layer abbreviation : Numpy array ]]
+        Extracted arrays for `target_sublayers` in all `scenes`
+
+    poi : Dict [ year + julian day : dict ]
+        Processed final product extracted from `raw_poi`
+
+    Methods
+    -------
+    results
+        return process results
+
+    extract_std
+        return datetime representing found scene(s) aquistion times
+
+    &#34;&#34;&#34;
+
+    def __init__(
+        self,
+        j_day: Optional[Union[int, str, list]] = None,
+        year: int = None,
+        path: str = None,
+        file_format: str = &#34;hdf&#34;,
+        coords: List[float] = None,
+        station: str = None,
+        station_positions: Stations = None,
+        target_sublayers: List[str] = None,
+    ):
+
+        self.path: str = validate_file_path(path, &#34;MODIS&#34;)
+        self.target_sublayers: List[str] = validate_modis_target_sublayers(
+            target_sublayers
+        )
+        self.station_positions: Stations = validate_station_positions(station_positions)
+        self.station_name: str = station
+        self.coords: List[float, float] = validate_coords(
+            coords, station, self.station_positions
+        )
+        self.j_days, self.stds = validate_datetime(j_day, year)
+        self.file_format: str = file_format
+
+        self.scenes: Dict[str, str] = self.find_matching_scenes()
+        self.scenes_metadata: Dict[str, dict] = {
+            k: self.get_metadata(v) for k, v in self.scenes.items()
+        }
+        self.scenes_sublayers: Dict[str, str] = {
+            k: self.find_target_sublayers(v) for k, v in self.scenes.items()
+        }
+        self.raw_poi: Dict[str, Dict[str, object]] = {
+            k: self.extract_poi_data(v) for k, v in self.scenes_sublayers.items()
+        }
+        self.poi: Dict[str, dict] = {
+            k: self.process_poi_data(v) for k, v in self.raw_poi.items()
+        }
+
+    def __str__(self):
+
+        return f&#34;&#34;&#34;
+        Sky platform
+        --------
+        Data Path : {self.path}
+        File Format : {self.file_format}
+        Target Sublayers : {self.target_sublayers}
+        --------
+        Station : {self.station_name}
+        Coords : {self.coords}
+        Year : {self.stds[0].year}
+        Julian Days : {self.j_days[0]} - {self.j_days[-1]}
+
+        {len(self.scenes)} scenes found
+
+        INFO
+        --------
+        {self.poi}
+        &#34;&#34;&#34;
+
+    def find_matching_scenes(self) -&gt; Dict:
+        &#34;&#34;&#34;Find scenes matching class variables
+
+        Parameters
+        ----------
+        year : str
+            Year of target scenes.
+
+        j_days : list of str
+            List of target Julian days
+
+        path : str
+            Path to scene directory
+
+        file_format : str
+            File format of target scenes
+
+        Returns
+        ----------
+        Dict
+            [ year + Julian day : layer file path]
+
+        Raises
+        ----------
+        FileNotFoundError
+            If no files match input paramters
+
+        &#34;&#34;&#34;
+
+        year: str = str(self.stds[0].year)
+        j_days: list = self.j_days
+        path = self.path
+        file_format = self.file_format
+        matching_scenes: Dict = {}
+
+        for day in j_days:
+            user_selection = 0
+            matching_file_list = list(
+                glob.iglob(path + f&#34;/{year}/*A{year + day}*.{file_format}&#34;)
+            )
+
+            if not matching_file_list:
+                raise FileNotFoundError(f&#34;MODIS scene {year}-{day} not found&#34;)
+            elif len(matching_file_list) &gt; 1:
+                pass
+                #  for index, file in enumerate(matching_file_list):
+                #     print(f&#34;{index} | {file}&#34;) # TODO make this prettier and present time
+                #  user_selection = int(input(&#34;Which file would you like?&#34;))
+                #  raise LookupError(&#34;Multiple matching files found&#34;)
+            else:
+                logging.info(f&#34;MODIS scene {year}-{day} found&#34;)
+
+            matching_scenes[year + day] = matching_file_list[user_selection]
+
+        return matching_scenes
+
+    @staticmethod
+    def get_metadata(target) -&gt; Dict:
+        &#34;&#34;&#34;Returns metadata of `target`
+
+        Parameters
+        ----------
+        target : str
+            path to `target` spatial data file
+
+        Returns
+        ----------
+        Dict
+            Dictionary of metadata.
+
+        &#34;&#34;&#34;
+        with rio.open(target) as ds:
+            meta = ds.meta
+        return meta
+
+    def find_target_sublayers(self, layer: str) -&gt; Dict:
+        &#34;&#34;&#34;Finds file path to sublayers of `layer`
+
+        Parameters
+        ----------
+        layer : str
+            Path to target layer.
+
+        target_sublayers : list of str
+            List of desired sublayers.
+
+        Returns
+        ----------
+        Dict
+            [ sublayer abbreviation : path to sublayer ]
+
+        Raises
+        ----------
+        FileNotFoundError
+            If not all requested sublayers are present in target file
+
+        &#34;&#34;&#34;
+        target_sublayers = self.target_sublayers
+        found_layers = {}
+
+        def __make_abbrev(name: str) -&gt; str:
+            &#34;&#34;&#34;Make abbreviation of str
+
+            Join first letter of each word
+
+            &#34;&#34;&#34;
+            return &#34;&#34;.join([word[0] for word in name.split()]).upper()
+
+        with rio.open(layer) as ds:
+            for name in ds.subdatasets:
+                for target in target_sublayers:
+                    if target in name:
+                        logging.info(f&#34;{target} layer found&#34;)
+                        abbrev = __make_abbrev(target)
+                        found_layers[abbrev] = name
+        for target in target_sublayers:
+            abbrev = __make_abbrev(target)
+            if abbrev not in found_layers.keys():
+                raise FileNotFoundError(
+                    f&#34;Could not find {target} in sublayers. Check {layer}&#34;
+                )
+        return found_layers
+
+    def extract_poi_data(self, sublayer_paths: dict) -&gt; dict:
+        &#34;&#34;&#34;Extract windowed data array from `sublayer_paths`
+
+        Parameters
+        ----------
+        sublayer_paths : dict
+            [ sublayer abbreviation : path to sublayer ]
+
+        lat : float
+            Latitude of poi.
+
+        lon : float
+            Longitude of poi.
+
+        Returns
+        ----------
+        Dict
+            [ sublayer abbreviation : windowed sublayer data ]
+
+        &#34;&#34;&#34;
+        # current window is 2X2 pixels
+        # TODO add custom window
+        lat = self.coords[0]
+        lon = self.coords[1]
+        poi_dict = {}
+
+        for key, val in sublayer_paths.items():
+            with rio.open(val) as ds:
+
+                self.crs = ds.read_crs()
+                py, px = ds.index(lon, lat)
+                # WINDOW ADJUST
+                # first is 2x2, next is just 1
+                # window = rio.windows.Window(px - 1, py - 1, 3, 3)
+                window = rio.windows.Window(px, py, 1, 1)
+                arr = ds.read(1, window=window)
+                logging.info(f&#34;{key}\n{window}\n{arr}&#34;)
+                poi_dict[key] = arr
+        return poi_dict
+
+    def process_poi_data(self, raw_data: Dict) -&gt; Dict:
+        &#34;&#34;&#34;Processes usable information from `raw_data`
+
+        Parameters
+        ----------
+        raw_data : dict
+            [ sublayer abbreviation : Numpy matrix of extracted data ]
+
+        Returns
+        ----------
+        Dict
+            [ sublayer abbreviation : path to sublayer ]
+
+        Raises
+        ----------
+        KeyError
+            If `ESSENTIAL_SUBLAYERS` (default=CRGT, CRNM, NPA) not in `raw_data`
+
+        Notes
+        ----------
+
+        TODO add information about execution
+
+        &#34;&#34;&#34;
+
+        processed_dict: dict = {}
+        ESSENTIAL_SUBLAYERS = [&#34;CRGT&#34;, &#34;CRNM&#34;, &#34;NPA&#34;]
+
+        for sub_layer in ESSENTIAL_SUBLAYERS:
+            if sub_layer not in raw_data.keys():
+                raise KeyError(
+                    &#34;Unable to assert main MODIS statistics. \
+                    Check {sub_layer} sublayer&#34;
+                )
+
+        time_mode, _ = stats.mode(raw_data[&#34;CRGT&#34;])
+        processed_dict[&#34;time_utc&#34;] = time_mode[0][0]
+
+        NUM_MAPPINGS: Dict[str, str] = {
+            &#34;CLD&#34;: &#34;0-7&#34;,
+            &#34;CLD_SHDW&#34;: &#34;8-15&#34;,
+            &#34;ADJ_CLD&#34;: &#34;16-23&#34;,
+            &#34;SNW&#34;: &#34;24-31&#34;,
+        }
+
+        avg_pixel_total = raw_data[&#34;NPA&#34;].sum()
+        processed_dict[&#34;n_TOTAL&#34;] = avg_pixel_total
+
+        crnm = raw_data[&#34;CRNM&#34;].flatten()
+
+        for pixel in crnm:
+
+            binary: str = decimal_to_binary(str(pixel))
+
+            for k, v in NUM_MAPPINGS.items():
+
+                start_bit, end_bit = [int(x) for x in v.split(&#34;-&#34;)]
+                end_i = len(binary) - start_bit
+                start_i = end_i - (end_bit - start_bit) - 1
+
+                mapped_octet: str = binary[start_i:end_i:1]
+                mapped_decimal: int = binary_to_decimal(mapped_octet)
+
+                processed_dict[k] = mapped_decimal + processed_dict.get(k, 0)
+
+        for k, v in NUM_MAPPINGS.items():
+
+            n_present_pixels: int = processed_dict.get(k, 0)
+            prcnt_of_total: float = round((n_present_pixels / avg_pixel_total) * 100, 2)
+
+            processed_dict[f&#34;prcnt_{k}&#34;] = prcnt_of_total
+
+        return processed_dict
+
+    def results(self, as_dataframe: Optional[bool] = True):
+        &#34;&#34;&#34;Get processed results
+
+        Parameters
+        ----------
+        as_dataframe : bool
+            return as pandas dataframe
+
+        Returns
+        ----------
+        Dict : dict
+            results as Dict
+
+        &#34;&#34;&#34;
+
+        if as_dataframe:
+            return pd.DataFrame.from_dict(self.poi, orient=&#34;index&#34;)
+
+        return self.poi
+
+    def extract_stds(self) -&gt; dict:
+        &#34;&#34;&#34;Get datetime results
+
+        Returns
+        ----------
+        Dict : [str : datetime object]
+            results as Dict
+
+        &#34;&#34;&#34;
+
+        poi: dict = self.poi
+        stds: dict = self.stds
+        matched_stds: dict = {}
+
+        for k, v in poi.items():
+            std_taken = datetime.strptime(k, &#34;%Y%j&#34;)
+            time_taken: str = str(v[&#34;time_utc&#34;])
+            for time in stds:
+                if std_taken == time:
+                    hour: int = int(time_taken[0:2])
+                    minute: int = int(time_taken[2::])
+                    matched_stds[k] = time.replace(hour=hour, minute=minute)
+
+        return matched_stds</code></pre>
+</details>
+<h3>Static methods</h3>
+<dl>
+<dt id="skyimage.stations.Sky.Sky.Sky.get_metadata"><code class="name flex">
+<span>def <span class="ident">get_metadata</span></span>(<span>target) ‑> Dict</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns metadata of <code>target</code></p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>target</code></strong> :&ensp;<code>str</code></dt>
+<dd>path to <code>target</code> spatial data file</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Dict</code></dt>
+<dd>Dictionary of metadata.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod
+def get_metadata(target) -&gt; Dict:
+    &#34;&#34;&#34;Returns metadata of `target`
+
+    Parameters
+    ----------
+    target : str
+        path to `target` spatial data file
+
+    Returns
+    ----------
+    Dict
+        Dictionary of metadata.
+
+    &#34;&#34;&#34;
+    with rio.open(target) as ds:
+        meta = ds.meta
+    return meta</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="skyimage.stations.Sky.Sky.Sky.extract_poi_data"><code class="name flex">
+<span>def <span class="ident">extract_poi_data</span></span>(<span>self, sublayer_paths: dict) ‑> dict</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Extract windowed data array from <code>sublayer_paths</code></p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>sublayer_paths</code></strong> :&ensp;<code>dict</code></dt>
+<dd>[ sublayer abbreviation : path to sublayer ]</dd>
+<dt><strong><code>lat</code></strong> :&ensp;<code>float</code></dt>
+<dd>Latitude of poi.</dd>
+<dt><strong><code>lon</code></strong> :&ensp;<code>float</code></dt>
+<dd>Longitude of poi.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Dict</code></dt>
+<dd>[ sublayer abbreviation : windowed sublayer data ]</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def extract_poi_data(self, sublayer_paths: dict) -&gt; dict:
+    &#34;&#34;&#34;Extract windowed data array from `sublayer_paths`
+
+    Parameters
+    ----------
+    sublayer_paths : dict
+        [ sublayer abbreviation : path to sublayer ]
+
+    lat : float
+        Latitude of poi.
+
+    lon : float
+        Longitude of poi.
+
+    Returns
+    ----------
+    Dict
+        [ sublayer abbreviation : windowed sublayer data ]
+
+    &#34;&#34;&#34;
+    # current window is 2X2 pixels
+    # TODO add custom window
+    lat = self.coords[0]
+    lon = self.coords[1]
+    poi_dict = {}
+
+    for key, val in sublayer_paths.items():
+        with rio.open(val) as ds:
+
+            self.crs = ds.read_crs()
+            py, px = ds.index(lon, lat)
+            # WINDOW ADJUST
+            # first is 2x2, next is just 1
+            # window = rio.windows.Window(px - 1, py - 1, 3, 3)
+            window = rio.windows.Window(px, py, 1, 1)
+            arr = ds.read(1, window=window)
+            logging.info(f&#34;{key}\n{window}\n{arr}&#34;)
+            poi_dict[key] = arr
+    return poi_dict</code></pre>
+</details>
+</dd>
+<dt id="skyimage.stations.Sky.Sky.Sky.extract_stds"><code class="name flex">
+<span>def <span class="ident">extract_stds</span></span>(<span>self) ‑> dict</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get datetime results</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>Dict</code></strong> :&ensp;<code>[str : datetime object]</code></dt>
+<dd>results as Dict</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def extract_stds(self) -&gt; dict:
+    &#34;&#34;&#34;Get datetime results
+
+    Returns
+    ----------
+    Dict : [str : datetime object]
+        results as Dict
+
+    &#34;&#34;&#34;
+
+    poi: dict = self.poi
+    stds: dict = self.stds
+    matched_stds: dict = {}
+
+    for k, v in poi.items():
+        std_taken = datetime.strptime(k, &#34;%Y%j&#34;)
+        time_taken: str = str(v[&#34;time_utc&#34;])
+        for time in stds:
+            if std_taken == time:
+                hour: int = int(time_taken[0:2])
+                minute: int = int(time_taken[2::])
+                matched_stds[k] = time.replace(hour=hour, minute=minute)
+
+    return matched_stds</code></pre>
+</details>
+</dd>
+<dt id="skyimage.stations.Sky.Sky.Sky.find_matching_scenes"><code class="name flex">
+<span>def <span class="ident">find_matching_scenes</span></span>(<span>self) ‑> Dict</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Find scenes matching class variables</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>year</code></strong> :&ensp;<code>str</code></dt>
+<dd>Year of target scenes.</dd>
+<dt><strong><code>j_days</code></strong> :&ensp;<code>list</code> of <code>str</code></dt>
+<dd>List of target Julian days</dd>
+<dt><strong><code>path</code></strong> :&ensp;<code>str</code></dt>
+<dd>Path to scene directory</dd>
+<dt><strong><code>file_format</code></strong> :&ensp;<code>str</code></dt>
+<dd>File format of target scenes</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Dict</code></dt>
+<dd>[ year + Julian day : layer file path]</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>FileNotFoundError</code></dt>
+<dd>If no files match input paramters</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def find_matching_scenes(self) -&gt; Dict:
+    &#34;&#34;&#34;Find scenes matching class variables
+
+    Parameters
+    ----------
+    year : str
+        Year of target scenes.
+
+    j_days : list of str
+        List of target Julian days
+
+    path : str
+        Path to scene directory
+
+    file_format : str
+        File format of target scenes
+
+    Returns
+    ----------
+    Dict
+        [ year + Julian day : layer file path]
+
+    Raises
+    ----------
+    FileNotFoundError
+        If no files match input paramters
+
+    &#34;&#34;&#34;
+
+    year: str = str(self.stds[0].year)
+    j_days: list = self.j_days
+    path = self.path
+    file_format = self.file_format
+    matching_scenes: Dict = {}
+
+    for day in j_days:
+        user_selection = 0
+        matching_file_list = list(
+            glob.iglob(path + f&#34;/{year}/*A{year + day}*.{file_format}&#34;)
+        )
+
+        if not matching_file_list:
+            raise FileNotFoundError(f&#34;MODIS scene {year}-{day} not found&#34;)
+        elif len(matching_file_list) &gt; 1:
+            pass
+            #  for index, file in enumerate(matching_file_list):
+            #     print(f&#34;{index} | {file}&#34;) # TODO make this prettier and present time
+            #  user_selection = int(input(&#34;Which file would you like?&#34;))
+            #  raise LookupError(&#34;Multiple matching files found&#34;)
+        else:
+            logging.info(f&#34;MODIS scene {year}-{day} found&#34;)
+
+        matching_scenes[year + day] = matching_file_list[user_selection]
+
+    return matching_scenes</code></pre>
+</details>
+</dd>
+<dt id="skyimage.stations.Sky.Sky.Sky.find_target_sublayers"><code class="name flex">
+<span>def <span class="ident">find_target_sublayers</span></span>(<span>self, layer: str) ‑> Dict</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Finds file path to sublayers of <code>layer</code></p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>layer</code></strong> :&ensp;<code>str</code></dt>
+<dd>Path to target layer.</dd>
+<dt><strong><code>target_sublayers</code></strong> :&ensp;<code>list</code> of <code>str</code></dt>
+<dd>List of desired sublayers.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Dict</code></dt>
+<dd>[ sublayer abbreviation : path to sublayer ]</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>FileNotFoundError</code></dt>
+<dd>If not all requested sublayers are present in target file</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def find_target_sublayers(self, layer: str) -&gt; Dict:
+    &#34;&#34;&#34;Finds file path to sublayers of `layer`
+
+    Parameters
+    ----------
+    layer : str
+        Path to target layer.
+
+    target_sublayers : list of str
+        List of desired sublayers.
+
+    Returns
+    ----------
+    Dict
+        [ sublayer abbreviation : path to sublayer ]
+
+    Raises
+    ----------
+    FileNotFoundError
+        If not all requested sublayers are present in target file
+
+    &#34;&#34;&#34;
+    target_sublayers = self.target_sublayers
+    found_layers = {}
+
+    def __make_abbrev(name: str) -&gt; str:
+        &#34;&#34;&#34;Make abbreviation of str
+
+        Join first letter of each word
+
+        &#34;&#34;&#34;
+        return &#34;&#34;.join([word[0] for word in name.split()]).upper()
+
+    with rio.open(layer) as ds:
+        for name in ds.subdatasets:
+            for target in target_sublayers:
+                if target in name:
+                    logging.info(f&#34;{target} layer found&#34;)
+                    abbrev = __make_abbrev(target)
+                    found_layers[abbrev] = name
+    for target in target_sublayers:
+        abbrev = __make_abbrev(target)
+        if abbrev not in found_layers.keys():
+            raise FileNotFoundError(
+                f&#34;Could not find {target} in sublayers. Check {layer}&#34;
+            )
+    return found_layers</code></pre>
+</details>
+</dd>
+<dt id="skyimage.stations.Sky.Sky.Sky.process_poi_data"><code class="name flex">
+<span>def <span class="ident">process_poi_data</span></span>(<span>self, raw_data: Dict) ‑> Dict</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Processes usable information from <code>raw_data</code></p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>raw_data</code></strong> :&ensp;<code>dict</code></dt>
+<dd>[ sublayer abbreviation : Numpy matrix of extracted data ]</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Dict</code></dt>
+<dd>[ sublayer abbreviation : path to sublayer ]</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>KeyError</code></dt>
+<dd>If <code>ESSENTIAL_SUBLAYERS</code> (default=CRGT, CRNM, NPA) not in <code>raw_data</code></dd>
+</dl>
+<h2 id="notes">Notes</h2>
+<p>TODO add information about execution</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def process_poi_data(self, raw_data: Dict) -&gt; Dict:
+    &#34;&#34;&#34;Processes usable information from `raw_data`
+
+    Parameters
+    ----------
+    raw_data : dict
+        [ sublayer abbreviation : Numpy matrix of extracted data ]
+
+    Returns
+    ----------
+    Dict
+        [ sublayer abbreviation : path to sublayer ]
+
+    Raises
+    ----------
+    KeyError
+        If `ESSENTIAL_SUBLAYERS` (default=CRGT, CRNM, NPA) not in `raw_data`
+
+    Notes
+    ----------
+
+    TODO add information about execution
+
+    &#34;&#34;&#34;
+
+    processed_dict: dict = {}
+    ESSENTIAL_SUBLAYERS = [&#34;CRGT&#34;, &#34;CRNM&#34;, &#34;NPA&#34;]
+
+    for sub_layer in ESSENTIAL_SUBLAYERS:
+        if sub_layer not in raw_data.keys():
+            raise KeyError(
+                &#34;Unable to assert main MODIS statistics. \
+                Check {sub_layer} sublayer&#34;
+            )
+
+    time_mode, _ = stats.mode(raw_data[&#34;CRGT&#34;])
+    processed_dict[&#34;time_utc&#34;] = time_mode[0][0]
+
+    NUM_MAPPINGS: Dict[str, str] = {
+        &#34;CLD&#34;: &#34;0-7&#34;,
+        &#34;CLD_SHDW&#34;: &#34;8-15&#34;,
+        &#34;ADJ_CLD&#34;: &#34;16-23&#34;,
+        &#34;SNW&#34;: &#34;24-31&#34;,
+    }
+
+    avg_pixel_total = raw_data[&#34;NPA&#34;].sum()
+    processed_dict[&#34;n_TOTAL&#34;] = avg_pixel_total
+
+    crnm = raw_data[&#34;CRNM&#34;].flatten()
+
+    for pixel in crnm:
+
+        binary: str = decimal_to_binary(str(pixel))
+
+        for k, v in NUM_MAPPINGS.items():
+
+            start_bit, end_bit = [int(x) for x in v.split(&#34;-&#34;)]
+            end_i = len(binary) - start_bit
+            start_i = end_i - (end_bit - start_bit) - 1
+
+            mapped_octet: str = binary[start_i:end_i:1]
+            mapped_decimal: int = binary_to_decimal(mapped_octet)
+
+            processed_dict[k] = mapped_decimal + processed_dict.get(k, 0)
+
+    for k, v in NUM_MAPPINGS.items():
+
+        n_present_pixels: int = processed_dict.get(k, 0)
+        prcnt_of_total: float = round((n_present_pixels / avg_pixel_total) * 100, 2)
+
+        processed_dict[f&#34;prcnt_{k}&#34;] = prcnt_of_total
+
+    return processed_dict</code></pre>
+</details>
+</dd>
+<dt id="skyimage.stations.Sky.Sky.Sky.results"><code class="name flex">
+<span>def <span class="ident">results</span></span>(<span>self, as_dataframe: Union[bool, NoneType] = True)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get processed results</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>as_dataframe</code></strong> :&ensp;<code>bool</code></dt>
+<dd>return as pandas dataframe</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>Dict</code></strong> :&ensp;<code>dict</code></dt>
+<dd>results as Dict</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def results(self, as_dataframe: Optional[bool] = True):
+    &#34;&#34;&#34;Get processed results
+
+    Parameters
+    ----------
+    as_dataframe : bool
+        return as pandas dataframe
+
+    Returns
+    ----------
+    Dict : dict
+        results as Dict
+
+    &#34;&#34;&#34;
+
+    if as_dataframe:
+        return pd.DataFrame.from_dict(self.poi, orient=&#34;index&#34;)
+
+    return self.poi</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="skyimage.stations.Sky" href="index.html">skyimage.stations.Sky</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="skyimage.stations.Sky.Sky.Sky" href="#skyimage.stations.Sky.Sky.Sky">Sky</a></code></h4>
+<ul class="">
+<li><code><a title="skyimage.stations.Sky.Sky.Sky.extract_poi_data" href="#skyimage.stations.Sky.Sky.Sky.extract_poi_data">extract_poi_data</a></code></li>
+<li><code><a title="skyimage.stations.Sky.Sky.Sky.extract_stds" href="#skyimage.stations.Sky.Sky.Sky.extract_stds">extract_stds</a></code></li>
+<li><code><a title="skyimage.stations.Sky.Sky.Sky.find_matching_scenes" href="#skyimage.stations.Sky.Sky.Sky.find_matching_scenes">find_matching_scenes</a></code></li>
+<li><code><a title="skyimage.stations.Sky.Sky.Sky.find_target_sublayers" href="#skyimage.stations.Sky.Sky.Sky.find_target_sublayers">find_target_sublayers</a></code></li>
+<li><code><a title="skyimage.stations.Sky.Sky.Sky.get_metadata" href="#skyimage.stations.Sky.Sky.Sky.get_metadata">get_metadata</a></code></li>
+<li><code><a title="skyimage.stations.Sky.Sky.Sky.process_poi_data" href="#skyimage.stations.Sky.Sky.Sky.process_poi_data">process_poi_data</a></code></li>
+<li><code><a title="skyimage.stations.Sky.Sky.Sky.results" href="#skyimage.stations.Sky.Sky.Sky.results">results</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.2</a>.</p>
+</footer>
+</body>
+</html>

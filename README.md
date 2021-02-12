@@ -6,6 +6,14 @@ This project and documentation is a work in progress and is thus subject to unex
 
 ## Quick Start Guide
 
+### Requirements
+
+This project uses [Conda](https://docs.conda.io/en/latest/). Please install the `requirements.txt` with the command:
+
+```
+    conda create --name <env> --file requirements.txt
+```
+
 ### Setting Stations
 
 `SkyImage` reads possible stations through a `stations.json` file in the root project directory. The structure is as follows
