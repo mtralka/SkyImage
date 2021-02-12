@@ -1,19 +1,11 @@
-import datetime
-import glob
-import os
-import re
-import sys
+
 from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Union
 
-import geopandas as gpd
-import numpy as np
 import pandas as pd
-import rasterio as rio
 
-from skyimage import stations
 from skyimage.stations import Ground
 from skyimage.stations import Sky
 from skyimage.utils.validators import validate_coords
@@ -25,17 +17,65 @@ from skyimage.utils.validators import validate_year
 
 
 class SkyImage:
+    """
+    Control object for reconciling Sky and Ground objects
+
+
+    Attributes
+    ----------
+    year: int
+        Year to extract data for
+
+    j_day : int or str
+        Julian days to extract data for
+
+    station : str
+        Name of target station
+
+    station_positions : dict
+        Dict of all possible station positions
+
+    coords: Optional[list or int]
+        Spatial coordinates of `station`
+
+    modis_path : str
+        File path to MODIS platform data
+
+    ground_path : str
+        File path to ground platform data
+
+    modis_file_format : Optional[str]
+        File format of parent file to `target_sublayers`
+
+    modis_target_layers: list
+        Matching sublayers to each MODIS scene
+
+    save_images: bool
+        Boolean for saving photo and cloud mask results
+
+    show_images: bool
+        Boolean for showing photo and cloud mask results
+
+    Methods
+    -------
+    results
+        return process results
+
+    """
+
     def __init__(
         self,
         year: int = None,
+        j_day: Union[int, str] = None,
         station: str = None,
         station_positions: Dict = None,
         coords: Optional[Union[list, int]] = None,
-        j_day: Union[int, str] = None,
         modis_path: str = None,
         ground_path: str = None,
         modis_file_format: Optional[str] = "hdf",
         modis_target_sublayers: Optional[List] = None,
+        save_images: Optional[bool] = None,
+        show_images: Optional[bool] = None,
     ):
 
         self.ground_path = validate_file_path(ground_path, "ground")
@@ -49,22 +89,34 @@ class SkyImage:
         self.j_days, self.stds = validate_datetime(j_day, year)
         self.year = validate_year(year)
         self.modis_file_format = modis_file_format
+        self.save_images: bool = save_images
+        self.show_images: bool = show_images
 
-    def results(self, as_dataframe: bool = False):
+    def results(self,
+                as_dataframe: Optional[bool] = False, 
+                save_path: Optional[str] = ""):
 
-        results: dict = {}
+        if not hasattr(self, "Sky") or not hasattr(self, "Ground"):
+            raise ValueError("Sky or Ground model uninitiated")
 
-        if self.Sky:
-            sky_results = self.Sky.results(as_dataframe=False)
-            results = {**results, **sky_results}
-        if self.Ground:
-            ground_results = self.Ground.results(as_dataframe=False)
-            results = {**results, **ground_results}
+        sky_results: dict = self.Sky.results(as_dataframe=False)
+        ground_results: dict = self.Ground.results(as_dataframe=False)
 
-        if as_dataframe:
-            return pd.DataFrame.from_dict(results, orient="index")
+        if not as_dataframe:
+            return {"SKY": sky_results, "GROUND": ground_results}
 
-        return {"SKY": sky_results, "GROUND": ground_results}
+        sky_df = pd.DataFrame.from_dict(
+            sky_results, orient="index").add_prefix("sky_")
+        ground_df = pd.DataFrame.from_dict(
+            ground_results, orient="index").add_prefix("grnd_")
+
+        combined_df = pd.merge(
+            sky_df, ground_df, left_index=True, right_index=True)
+
+        if save_path:
+            combined_df.to_csv(save_path)
+
+        return combined_df
 
     def run(self):
 
@@ -84,5 +136,7 @@ class SkyImage:
             coords=self.coords,
             station=self.station_name,
             stds=matched_stds,
+            save_images=self.save_images,
+            show_images=self.show_images
         )
         # self.Ground = Ground(self)

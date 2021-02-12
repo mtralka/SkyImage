@@ -245,7 +245,7 @@ class Sky:
             Join first letter of each word
 
             """
-            return "".join([word[0] for word in target.split()]).upper()
+            return "".join([word[0] for word in name.split()]).upper()
 
         with rio.open(layer) as ds:
             for name in ds.subdatasets:
@@ -282,7 +282,7 @@ class Sky:
             [ sublayer abbreviation : windowed sublayer data ]
 
         """
-
+        # current window is 2X2 pixels
         # TODO add custom window
         lat = self.coords[0]
         lon = self.coords[1]
@@ -375,7 +375,7 @@ class Sky:
 
         return processed_dict
 
-    def results(self, as_dataframe: bool = True):
+    def results(self, as_dataframe: Optional[bool] = True):
         """Get processed results
 
         Parameters

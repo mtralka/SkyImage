@@ -1,6 +1,10 @@
 *.ipynb
 *.ipynb_checkpoints
 testing.py
+logger*
+*.csv
+*.png
+stations.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

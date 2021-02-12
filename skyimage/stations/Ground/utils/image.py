@@ -1,9 +1,16 @@
-from typing import Dict
 from typing import Optional
 
 import matplotlib.pyplot as plt
 import numpy as np
 from skimage.io import imread
+
+
+"""
+
+image.py
+image and pixel processing utilities for Ground class
+
+"""
 
 
 def open_image(path: str):
@@ -91,9 +98,9 @@ def f_above_or_below(p: np.ndarray, boundary: np.ndarray) -> int:
     if p[0] < np.min(boundary[:, 0]) or \
             p[0] > np.max(boundary[:, 0]):
         raise ValueError(
-            "`(BI, SI)` point falls outside `boundary` decision line")
+            "`(BI, SI)` point falls outside `boundary` decision domain")
 
-    idx = None
+    idx: int = None
 
     for i in range(boundary.shape[0]):
         if p[1] > boundary[i, 1]:

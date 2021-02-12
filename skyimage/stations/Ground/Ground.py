@@ -61,6 +61,12 @@ class Ground:
 
     stds : list of datetime
         Datetime objects to extract data for
+    
+    save_images: bool
+        Boolean for saving photo and cloud mask results
+
+    show_images: bool
+        Boolean for showing photo and cloud mask results
 
     Methods
     -------
@@ -80,6 +86,8 @@ class Ground:
         station_positions: Stations = None,
         stds: Optional[dict] = None,
         target_time: Optional[str] = None,
+        save_images: Optional[bool] = None,
+        show_images: Optional[bool] = None,
     ):
 
         self.path: str = validate_file_path(path, "GROUND")
@@ -122,6 +130,8 @@ class Ground:
         self.crop_mask = open_mask()
         self.file_format: str = file_format
         self.target_time = target_time
+        self.save_images: bool = save_images
+        self.show_images: bool = show_images
         self.images: Dict[str, str] = self.find_matching_images()
         self.raw_poi: Dict[str, Dict[str, object]] = {
             k: self.extract_poi_data(k, v) for k, v in self.images.items()
@@ -196,7 +206,7 @@ class Ground:
             year = str(std.year)
             month = buffer_value(std.month, 2)
             day = buffer_value(std.day, 2)
-            j_day = buffer_value(std.timetuple().tm_yday, 3)
+            #  j_day = buffer_value(std.timetuple().tm_yday, 3)
             hour = buffer_value(std.hour, 2)
             minute = buffer_value(std.minute, 2)
 
@@ -208,8 +218,9 @@ class Ground:
                 raise FileNotFoundError(f"GROUND image {year}-{month}-{day}-{hour}:{minute} not found")
                 # TODO implement match closest
             elif len(matching_file_list) > 1:
+                # TODO present use selection
                 #  for index, file in enumerate(matching_file_list):
-                #     print(f"{index} | {file}") # TODO make this prettier and present time
+                #     print(f"{index} | {file}") 
                 #  user_selection = int(input("Which file would you like?"))
                 raise LookupError("Multiple matching files found")
 
@@ -240,9 +251,12 @@ class Ground:
 
         img = img_arr * crop_mask
 
-        # show_image(img)
-        img_file_name = image_name + ".png"
-        save_image(img_file_name, img.astype("uint8"))
+        if self.show_images:
+            show_image(img)
+
+        if self.save_images:
+            img_file_name = image_name + ".png"
+            save_image(img_file_name, img.astype("uint8"))
 
         img = img.astype("float")
         img[img == 0] = np.nan
@@ -255,7 +269,7 @@ class Ground:
         return {"BI": BI, "SI": SI}
 
     def process_poi_data(self, image_name: str, raw_data: dict) -> dict:
-        """Process image 
+        """Process image
 
         Parameters
         ----------
@@ -274,6 +288,8 @@ class Ground:
         BI = raw_data["BI"]
         SI = raw_data["SI"]
 
+        # we keep NaNs to preserve image shape
+        # for reconstitution after cloud mask creation
         # BI = BI[np.logical_not(np.isnan(BI))]
         # SI = SI[np.logical_not(np.isnan(SI))]
 
@@ -298,9 +314,13 @@ class Ground:
             number_clear = number_clear + results
 
         cloud_mask = np.array(cloud_mask).reshape(img_shape)
-        img_file_name = image_name + "_cld_mask.png"
-        save_image(img_file_name, cloud_mask)
-        # show_image(cloud_mask)
+
+        if self.show_images:
+            show_image(cloud_mask)
+
+        if self.save_images:
+            img_file_name = image_name + "_cld_mask.png"
+            save_image(img_file_name, cloud_mask)
 
         percent_cloud: float = round(
             ((pixel_total - number_clear) / pixel_total) * 100, 2)
@@ -308,7 +328,7 @@ class Ground:
         return {"BI": BI_stats, "SI": SI_stats,
                 "n_TOTAL": pixel_total, "prcnt_CLD": percent_cloud}
 
-    def results(self, as_dataframe: bool = True):
+    def results(self, as_dataframe: Optional[bool] = True):
         """Get processed results
 
         Parameters
@@ -329,7 +349,7 @@ class Ground:
         return self.poi
 
     @staticmethod
-    def show_graph(poi: dict = None, BI=None, SI=None, save: bool = None, file_name: str= None):
+    def show_graph(poi: dict = None, BI=None, SI=None, save: Optional[bool] = None, file_name: Optional[str]= None):
 
         if poi:
             BI = poi["BI"]
@@ -343,6 +363,9 @@ class Ground:
         x = BI[np.logical_not(np.isnan(BI))]
         y = SI[np.logical_not(np.isnan(SI))]
 
+        plt.xlabel("BI")
+        plt.ylabel("SI")
+
         plt.hist2d(x, y, (50, 50), cmap=plt.cm.jet)
 
         x_step = [0, .1, .35, .7, .8, 1]
@@ -353,3 +376,5 @@ class Ground:
 
         if save:
             plt.savefig(file_name, dpi=100)
+
+        plt.clf()
