@@ -282,7 +282,7 @@ class Sky:
             [ sublayer abbreviation : windowed sublayer data ]
 
         """
-        # current window is 2X2 pixels
+        # current window is 3X3 pixels
         # TODO add custom window
         lat = self.coords[0]
         lon = self.coords[1]
@@ -294,9 +294,9 @@ class Sky:
                 self.crs = ds.read_crs()
                 py, px = ds.index(lon, lat)
                 # WINDOW ADJUST
-                # first is 2x2, next is just 1
-                # window = rio.windows.Window(px - 1, py - 1, 3, 3)
-                window = rio.windows.Window(px, py, 1, 1)
+                # first is 3x3, next is just 1
+                window = rio.windows.Window(px - 1, py - 1, 3, 3)
+                #window = rio.windows.Window(px, py, 1, 1)
                 arr = ds.read(1, window=window)
                 logging.info(f"{key}\n{window}\n{arr}")
                 poi_dict[key] = arr
