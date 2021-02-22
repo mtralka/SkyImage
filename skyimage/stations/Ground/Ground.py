@@ -1,3 +1,4 @@
+from datetime import datetime
 import glob
 import logging
 from typing import Dict
@@ -18,6 +19,7 @@ from skyimage.stations.Ground.utils.image import open_image
 from skyimage.stations.Ground.utils.image import open_mask
 from skyimage.stations.Ground.utils.image import save_image
 from skyimage.stations.Ground.utils.image import show_image
+from skyimage.stations.Ground.utils.utils import STDDelta
 #  from skyimage.stations.Ground.utils.validators import validate_target_time
 from skyimage.utils.models import Stations
 from skyimage.utils.utils import buffer_value
@@ -202,37 +204,41 @@ class Ground:
 
         for k, std in target_stds.items():
 
-            user_selection = 0
+            year: str = str(std.year)
+            month: str = buffer_value(std.month, 2)
+            day: str = buffer_value(std.day, 2)
 
-            year = str(std.year)
-            month = buffer_value(std.month, 2)
-            day = buffer_value(std.day, 2)
-            #  j_day = buffer_value(std.timetuple().tm_yday, 3)
-            hour = buffer_value(std.hour, 2)
-            minute = buffer_value(std.minute, 2)
-
+            target_directory: str = f"/{station_name}/{year}/{month}/{day}/"
             matching_file_list = list(
                 glob.iglob(
-                    path
-                    + f"/{station_name}/{year}/{month}/{day}/*{year + month + day}*{hour + minute}*.{file_format}"
+                    path + f"{target_directory}*{year + month + day}*.{file_format}"
                 )
             )
 
             if not matching_file_list:
+                print(path + f"{target_directory}*.{file_format}")
                 raise FileNotFoundError(
-                    f"GROUND image {year}-{month}-{day}-{hour}:{minute} not found"
+                    f"GROUND image for {year}-{month}-{day} not found"
                 )
-                # TODO implement match closest
-            elif len(matching_file_list) > 1:
-                # TODO present use selection
-                #  for index, file in enumerate(matching_file_list):
-                #     print(f"{index} | {file}")
-                #  user_selection = int(input("Which file would you like?"))
-                raise LookupError("Multiple matching files found")
 
-            logging.info(f"GROUND scene {std} found")
+            time_delta: STDDelta = STDDelta()
+            for file in matching_file_list:
+                ground_std_idx: int = file.index(year + month + day)
+                ground_std = datetime.strptime(file[ground_std_idx: ground_std_idx + 15], "%Y%m%dT%H%M%S")
+                std_delta = ground_std - std
+                seconds_delta: int = std_delta.seconds
+                time_delta.min_resolver(ground_std, seconds_delta, file)
 
-            matching_images[k] = matching_file_list[user_selection]
+            if time_delta.seconds > 7200:
+                warnings.warn(
+                    f"GROUND photo {str(ground_std)} taken {seconds_delta} seconds from target {str(std)}",
+                    UserWarning,
+                    stacklevel=2,
+                )
+
+            logging.info(f"GROUND scene {ground_std} found {seconds_delta} seconds from target {std}")
+
+            matching_images[k] = time_delta.path
 
         return matching_images
 
@@ -392,11 +398,10 @@ class Ground:
 
         if save:
             plt.savefig(file_name, dpi=100)
-
-        # TODO fix
-        # one of these works
-        cb.remove()
-        plt.close()
-        plt.close("all")
-        plt.clf()
-        plt.cla()
+            # TODO fix
+            # one of these works
+            cb.remove()
+            plt.close()
+            plt.close("all")
+            plt.clf()
+            plt.cla()
