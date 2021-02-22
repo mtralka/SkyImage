@@ -6,7 +6,7 @@ from skyimage.app import SkyImage
 def main():
     print("CLI")
     # TODO do this
-    
+
     pass
 
 

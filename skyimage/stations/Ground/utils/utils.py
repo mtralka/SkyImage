@@ -5,7 +5,10 @@ class STDDelta:
     """
     Util object for optimizing time deltas
     """
-    def __init__(self, std: datetime = None, seconds: int = 86400, file_path: str = None):
+
+    def __init__(
+        self, std: datetime = None, seconds: int = 86400, file_path: str = None
+    ):
         self._std: datetime = std
         self._seconds: int = seconds
         self._path: str = file_path
@@ -30,7 +33,7 @@ class STDDelta:
 
     def min_resolver(self, std: datetime, seconds: int, file_path: str):
         """
-        Modifies object attributes if 'seconds' is 
+        Modifies object attributes if 'seconds' is
         smaller than current object val
         """
 

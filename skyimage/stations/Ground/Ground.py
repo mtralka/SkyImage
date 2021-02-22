@@ -20,6 +20,7 @@ from skyimage.stations.Ground.utils.image import open_mask
 from skyimage.stations.Ground.utils.image import save_image
 from skyimage.stations.Ground.utils.image import show_image
 from skyimage.stations.Ground.utils.utils import STDDelta
+
 #  from skyimage.stations.Ground.utils.validators import validate_target_time
 from skyimage.utils.models import Stations
 from skyimage.utils.utils import buffer_value
@@ -224,7 +225,9 @@ class Ground:
             time_delta: STDDelta = STDDelta()
             for file in matching_file_list:
                 ground_std_idx: int = file.index(year + month + day)
-                ground_std = datetime.strptime(file[ground_std_idx: ground_std_idx + 15], "%Y%m%dT%H%M%S")
+                ground_std = datetime.strptime(
+                    file[ground_std_idx : ground_std_idx + 15], "%Y%m%dT%H%M%S"
+                )
                 std_delta = ground_std - std
                 seconds_delta: int = std_delta.seconds
                 time_delta.min_resolver(ground_std, seconds_delta, file)
@@ -236,7 +239,9 @@ class Ground:
                     stacklevel=2,
                 )
 
-            logging.info(f"GROUND scene {ground_std} found {seconds_delta} seconds from target {std}")
+            logging.info(
+                f"GROUND scene {ground_std} found {seconds_delta} seconds from target {std}"
+            )
 
             matching_images[k] = time_delta.path
 

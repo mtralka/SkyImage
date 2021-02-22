@@ -295,9 +295,9 @@ class Sky:
                 py, px = ds.index(lon, lat)
                 # WINDOW ADJUST
                 # first is 3x3, next is 2X2, next 1
-                #window = rio.windows.Window(px - 1, py - 1, 3, 3)
+                # window = rio.windows.Window(px - 1, py - 1, 3, 3)
                 window = rio.windows.Window(px, py - 1, 2, 2)
-                #window = rio.windows.Window(px, py, 1, 1)
+                # window = rio.windows.Window(px, py, 1, 1)
                 arr = ds.read(1, window=window)
                 logging.info(f"{key}\n{window}\n{arr}")
                 poi_dict[key] = arr
