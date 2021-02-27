@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 
 
 class STDDelta:
@@ -14,10 +14,9 @@ class STDDelta:
         self._path: str = file_path
 
     def __repr__(self) -> str:
-        return f"""
+        return f"""Resolved Min STD
         Object : {self._std}
-        Seconds from target : {self._seconds}
-        """
+        Seconds from target : {self._seconds}"""
 
     @property
     def seconds(self):
@@ -43,3 +42,4 @@ class STDDelta:
             self._seconds = seconds
             self._std = std
             self._path = file_path
+

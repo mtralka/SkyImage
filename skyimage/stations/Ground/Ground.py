@@ -20,7 +20,6 @@ from skyimage.stations.Ground.utils.image import open_mask
 from skyimage.stations.Ground.utils.image import save_image
 from skyimage.stations.Ground.utils.image import show_image
 from skyimage.stations.Ground.utils.utils import STDDelta
-
 #  from skyimage.stations.Ground.utils.validators import validate_target_time
 from skyimage.utils.models import Stations
 from skyimage.utils.utils import buffer_value
@@ -129,14 +128,14 @@ class Ground:
                 self.j_days.append(j_day[-3:])
 
         else:
-            raise ValueError("Must provide j_day + year or stds")
+            raise ValueError("Must provide j_day and year or stds")
 
         self.crop_mask = open_mask()
         self.file_format: str = file_format
         self.target_time = target_time
         self.save_images: bool = save_images
         self.show_images: bool = show_images
-        self.images: Dict[str, str] = self.find_matching_images()
+        self.images: Dict[str, Dict[str, datetime, str]] = self.find_matching_images()
         self.raw_poi: Dict[str, Dict[str, object]] = {
             k: self.extract_poi_data(k, v) for k, v in self.images.items()
         }
@@ -165,7 +164,7 @@ class Ground:
         {self.poi}
         """
 
-    def find_matching_images(self) -> Dict:
+    def find_matching_images(self) -> Dict[str, Dict[str, datetime, int]]:
         """Find images matching class variables
 
         Parameters
@@ -188,7 +187,12 @@ class Ground:
         Returns
         ----------
         Dict
-            [ year + Julian day : image file path]
+            [ year + Julian day : [
+                `path`: str, image file path,
+                `aquisition time`: datetime, ground image
+                `sky_time_delta`: int, seconds delta from Sky imagery
+                ]
+            ]
 
         Raises
         ----------
@@ -208,8 +212,8 @@ class Ground:
             year: str = str(std.year)
             month: str = buffer_value(std.month, 2)
             day: str = buffer_value(std.day, 2)
-
             target_directory: str = f"/{station_name}/{year}/{month}/{day}/"
+
             matching_file_list = list(
                 glob.iglob(
                     path + f"{target_directory}*{year + month + day}*.{file_format}"
@@ -226,7 +230,7 @@ class Ground:
             for file in matching_file_list:
                 ground_std_idx: int = file.index(year + month + day)
                 ground_std = datetime.strptime(
-                    file[ground_std_idx : ground_std_idx + 15], "%Y%m%dT%H%M%S"
+                    file[ground_std_idx: ground_std_idx + 15], "%Y%m%dT%H%M%S"
                 )
                 std_delta = ground_std - std
                 seconds_delta: int = std_delta.seconds
@@ -234,24 +238,40 @@ class Ground:
 
             if time_delta.seconds > 7200:
                 warnings.warn(
-                    f"GROUND photo {str(ground_std)} taken {seconds_delta} seconds from target {str(std)}",
+                    f"""
+                    GROUND photo
+                    {time_delta}
+                    target: {str(std)}
+                    """,
                     UserWarning,
                     stacklevel=2,
                 )
 
             logging.info(
-                f"GROUND scene {ground_std} found {seconds_delta} seconds from target {std}"
+                f"""
+                GROUND photo
+                {time_delta}
+                target: {str(std)}
+                """,
             )
 
-            matching_images[k] = time_delta.path
+            matching_images[k] = {
+                "path": time_delta.path,
+                "aquisition_time": time_delta.ground_std,
+                "sky_time_delta": time_delta.time_delta
+            }
 
         return matching_images
 
-    def extract_poi_data(self, image_name: str, image_path: str) -> dict:
-        """Extract `BI` and `SI` for image at `image_path`.
+    def extract_poi_data(self, image_name: str, image_details: Dict[str, datetime, int]) -> dict:
+        """Extract `BI` and `SI` for image at `image_details['path']`.
 
         Parameters
         ----------
+        `image_name` : str
+            year + julian day of image
+        `image_details` : Dict[str, datetime, int]
+            Dictionary of image `path`, `aquisition_time`, `sky_time_delta`
         image_path : str
             path to image `C:\\path\\to\\image`
 
