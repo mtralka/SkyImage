@@ -52,7 +52,12 @@ class Station:
 
     """
 
-    def __init__(self, name: str, coords: Optional[List[float]] = None, path: str = "skyimage\\stations.json"):
+    def __init__(
+        self,
+        name: str,
+        coords: Optional[List[float]] = None,
+        path: str = "skyimage\\stations.json",
+    ):
 
         self.name = name
         self.path = path

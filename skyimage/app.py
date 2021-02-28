@@ -118,9 +118,7 @@ class SkyImage:
     def run(self):
 
         self.sky = SkyControl(
-            stds=self.stds,
-            path=self.modis_path,
-            station=self.station
+            stds=self.stds, path=self.modis_path, station=self.station
         )
 
         self.sky.run_all(show_time=self.show_time_stats)
@@ -137,15 +135,17 @@ class SkyImage:
 
         self.ground.run_all(show_time=self.show_time_stats)
 
-    def results(
-        self, as_dataframe: Optional[bool] = False, save: bool = False
-    ):
+    def results(self, as_dataframe: Optional[bool] = False, save: bool = False):
 
         if not hasattr(self, "sky"):
-            raise AssertionError("SkyControl object required, no SkyImage objects present")
+            raise AssertionError(
+                "SkyControl object required, no SkyImage objects present"
+            )
 
         if not hasattr(self, "ground"):
-            raise AssertionError("GroundControl object required, no GroundImage objects present")
+            raise AssertionError(
+                "GroundControl object required, no GroundImage objects present"
+            )
 
         if save and not as_dataframe:
             as_dataframe = True

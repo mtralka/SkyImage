@@ -94,15 +94,15 @@ class GroundImage:
         return f"{date}-{time}"
 
     def __str__(self) -> str:
-        self_str: str = \
-            f"""
+        self_str: str = f"""
             {self.name}
             {self.time_delta} second(s) from target
             """
 
         if self.processed:
-            self_str = self_str + \
-                f"""
+            self_str = (
+                self_str
+                + f"""
                 {self.prcnt_cld} % cloudy
                 {self.n_total} total pixels
                 BI
@@ -110,6 +110,7 @@ class GroundImage:
                 SI
                 {self.SI_stats}
                 """
+            )
         return self_str
 
     def __repr__(self) -> str:
@@ -138,38 +139,38 @@ class GroundImage:
     def __find_matching_image(
         self, target_time: datetime, station: str, path: str
     ) -> None:
-        """ Find path to desired image
+        """Find path to desired image
 
-            Uses
-            ----------
+        Uses
+        ----------
 
-            `self.file_format` : str
-                File format of target image
+        `self.file_format` : str
+            File format of target image
 
-            Parameters
-            ----------
+        Parameters
+        ----------
 
-            `target_time` : datetime
-                target image time
+        `target_time` : datetime
+            target image time
 
-            `station` : str
-                Name of target station
+        `station` : str
+            Name of target station
 
-            `path` : str
-                Path for image search
+        `path` : str
+            Path for image search
 
-            Defines
-            ----------
-            `self.direct_path`
-                path to target image
+        Defines
+        ----------
+        `self.direct_path`
+            path to target image
 
-            `self.actual_time`
-                time `direct_path` image was taken
+        `self.actual_time`
+            time `direct_path` image was taken
 
-            `self.time_delta`
-                time delta in seconds from target time
+        `self.time_delta`
+            time delta in seconds from target time
 
-            """
+        """
         file_format: str = self.file_format
         year: str = str(target_time.year)
         month: str = buffer_value(target_time.month, 2)
@@ -188,7 +189,7 @@ class GroundImage:
         for file in matching_file_list:
             ground_std_idx: int = file.index(year + month + day)
             ground_std = datetime.strptime(
-                file[ground_std_idx: ground_std_idx + 15], "%Y%m%dT%H%M%S"
+                file[ground_std_idx : ground_std_idx + 15], "%Y%m%dT%H%M%S"
             )
             std_delta = ground_std - target_time
             seconds_delta: int = std_delta.seconds
@@ -394,8 +395,8 @@ class GroundImage:
             "SI": self.SI_stats,
             "n_total": self.n_total,
             "prcnt_cld": self.prcnt_cld,
-            "time" : self.actual_time.strftime("%H%M"),
-            "seconds_delta" : self.time_delta
+            "time": self.actual_time.strftime("%H%M"),
+            "seconds_delta": self.time_delta,
         }
 
         if as_dataframe:

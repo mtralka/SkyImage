@@ -1,85 +1,16 @@
 import datetime
-import json
 import os
 from typing import List
-import warnings
-
-from skyimage.utils.models import Stations
 
 
 def validate_file_path(path: str, name: str) -> str:
-    assert (os.path.isdir(path)), f"{name} is not a directory"
+    assert os.path.isdir(path), f"{name} is not a directory"
 
     return path
 
+
 def validate_year(year: str or int) -> int:
     return int(year)
-
-
-def validate_coords(
-    coords: List[float], selected_station: str, stations: Stations
-) -> List[float]:
-
-    valid_coords = []
-
-    if coords and len(coords) == 2:
-        # TODO add coordinate validation
-        valid_coords = coords
-    elif selected_station:
-        if selected_station in stations:
-            target_station = stations[selected_station]
-            valid_coords = [target_station["lat"], target_station["lon"]]
-
-        if len(valid_coords) == 0:
-            raise KeyError("Selected Station not found")
-    else:
-        raise ValueError("lat / lon poi or station name not defined")
-
-    return valid_coords
-
-
-def validate_station_positions(positions: str or List[str] = None) -> Stations:
-    valid_positions = []
-
-    if positions:
-        warnings.warn(
-            "Overridding default station positions \
-                        Make sure station coordinate projections match that of the files",
-            UserWarning,
-            stacklevel=2,
-        )
-        valid_positions = positions
-
-    else:
-        with open("skyimage\\stations.json") as f:
-            valid_positions = json.load(f)
-
-    return valid_positions
-
-
-def validate_modis_target_sublayers(target_layers: List[str]) -> List[str]:
-
-    valid_layers = []
-
-    if target_layers:
-        valid_layers = target_layers
-
-        warnings.warn(
-            "Overridding default MODIS target layers. \
-                        Some layers are required for this program to function. Consult documentation",
-            UserWarning,
-            stacklevel=2,
-        )
-    else:
-        valid_layers = [
-            "Coarse Resolution Granule Time",
-            "Coarse Resolution Number Mapping",
-            "n pixels averaged",
-        ]
-
-    return valid_layers
-
-
 
 
 def validate_datetime(j_day: str or int or list, year: int) -> List[str] and list:

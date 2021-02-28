@@ -1,4 +1,3 @@
-
 from typing import List
 from typing import Optional
 from typing import Union
@@ -57,7 +56,9 @@ def binary_to_decimal(binary: str) -> int:
 
 
 class SkyPlatform:
-    def __init__(self, platform: str, override_layers: Optional[Union[str, list]] = None):
+    def __init__(
+        self, platform: str, override_layers: Optional[Union[str, list]] = None
+    ):
 
         self.possible_platforms = {"MODIS": MODIS}
 

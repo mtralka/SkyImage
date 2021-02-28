@@ -68,7 +68,7 @@ class SkyControl:
         station: Union[StationObject, str] = None,
         stds: Optional[dict] = None,
         file_format: str = "hdf",
-        target_platform: Union[SkyPlatform, str] = "MODIS"
+        target_platform: Union[SkyPlatform, str] = "MODIS",
     ):
 
         self.path: str = validate_file_path(path, "MODIS")
@@ -171,7 +171,7 @@ class SkyControl:
                 sky_path=self.path,
                 station=self.station,
                 target_time=std,
-                file_format=self.file_format
+                file_format=self.file_format,
             )
 
             matching_scenes[k] = scn_obj
@@ -198,7 +198,9 @@ class SkyControl:
         if show_time:
             print("SkyScene Done-", datetime.now() - start)
 
-    def results(self, as_dataframe: Optional[bool] = False) -> Union[dict, pd.DataFrame]:
+    def results(
+        self, as_dataframe: Optional[bool] = False
+    ) -> Union[dict, pd.DataFrame]:
         """Get processed results from all SkyScene objects
 
         Parameters

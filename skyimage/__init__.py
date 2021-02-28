@@ -9,6 +9,7 @@ from skyimage.app import SkyImage
 
 if not sys.warnoptions:
     import warnings
+
     warnings.simplefilter("default")
 
 reload(logging)

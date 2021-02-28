@@ -69,6 +69,7 @@ class GroundControl:
         Helper method to chart BI / SI values
 
     """
+
     def __init__(
         self,
         j_day: Union[int, str, list] = None,
@@ -189,7 +190,7 @@ class GroundControl:
                 station=self.station,
                 target_time=std,
                 show_image=self.show_images,
-                save_image=self.save_images
+                save_image=self.save_images,
             )
 
             matching_images[k] = img_obj
@@ -216,7 +217,9 @@ class GroundControl:
         if show_time:
             print("GroundImage Done-", datetime.now() - start)
 
-    def results(self, as_dataframe: Optional[bool] = False) -> Union[dict, pd.DataFrame]:
+    def results(
+        self, as_dataframe: Optional[bool] = False
+    ) -> Union[dict, pd.DataFrame]:
         """Get processed results from all GroundImage objects
 
         Parameters

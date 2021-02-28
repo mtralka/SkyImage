@@ -1,4 +1,3 @@
-
 from datetime import datetime
 import glob
 import logging
@@ -80,17 +79,18 @@ class SkyScene:
         return self.sub_layers.name + self.j_day_full
 
     def __str__(self) -> str:
-        self_str: str = \
-            f"""
+        self_str: str = f"""
             {self.target_sublayers.name}
             {self.j_day_full}
             """
 
         if self.processed:
-            self_str = self_str + \
-                f"""
+            self_str = (
+                self_str
+                + f"""
                 {self.data}
                 """
+            )
         return self_str
 
     def __repr__(self) -> str:
@@ -102,32 +102,30 @@ class SkyScene:
                 return True
         return False
 
-    def __find_matching_scene(
-        self, target_time: datetime, path: str
-    ) -> None:
-        """ Find path to desired scene
+    def __find_matching_scene(self, target_time: datetime, path: str) -> None:
+        """Find path to desired scene
 
-            Uses
-            ----------
+        Uses
+        ----------
 
-            `self.file_format` : str
-                File format of target image
+        `self.file_format` : str
+            File format of target image
 
-            Parameters
-            ----------
+        Parameters
+        ----------
 
-            `target_time` : datetime
-                target date of image
+        `target_time` : datetime
+            target date of image
 
-            `path` : str
-                Path for image search
+        `path` : str
+            Path for image search
 
-            Defines
-            ----------
-            `self.direct_path`
-                path to target scene
+        Defines
+        ----------
+        `self.direct_path`
+            path to target scene
 
-            """
+        """
         year: str = str(target_time.year)
         j_day: str = self.j_day
         file_format = self.file_format
@@ -149,7 +147,7 @@ class SkyScene:
         self,
         show_time: bool = False,
     ) -> None:
-        """ Run all requied processing
+        """Run all requied processing
 
         Parameters
         ----------
@@ -167,23 +165,23 @@ class SkyScene:
             print(self.j_day_full + "-", datetime.now() - start_time)
 
     def extract_sublayers(self) -> None:
-        """ Extract sublayers from `self.direct_path`
+        """Extract sublayers from `self.direct_path`
 
-            Uses
-            ----------
+        Uses
+        ----------
 
-            `self.direct_path` : str
-                direct path to target scene
+        `self.direct_path` : str
+            direct path to target scene
 
-            `self.target_sublayers` : SkyPlatform
-                target scene layers
+        `self.target_sublayers` : SkyPlatform
+            target scene layers
 
-            Defines
-            ----------
-            `self.direct_path`
-                path to target image
+        Defines
+        ----------
+        `self.direct_path`
+            path to target image
 
-            """
+        """
         found_layers: dict = {}
 
         with rio.open(self.direct_path) as ds:
@@ -243,7 +241,7 @@ class SkyScene:
         self.raw_data: dict = poi_dict
 
     def process(self) -> None:
-        """ Process `self.raw_data` 
+        """Process `self.raw_data`
 
         Uses
         ----------
@@ -279,7 +277,8 @@ class SkyScene:
 
         processed_dict["time_utc"] = time_mode
         self.actual_datetime = self.target_time.replace(
-            hour=int(time_mode[0:2]), minute=int(time_mode[2:]))
+            hour=int(time_mode[0:2]), minute=int(time_mode[2:])
+        )
 
         avg_pixel_total = self.raw_data["NPA"].sum()
         processed_dict["n_TOTAL"] = avg_pixel_total
