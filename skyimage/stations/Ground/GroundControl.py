@@ -1,6 +1,5 @@
 from datetime import datetime
 from typing import Dict
-from typing import List
 from typing import Optional
 from typing import Union
 import warnings
@@ -10,13 +9,10 @@ import numpy as np
 import pandas as pd
 from rich.progress import track
 from skyimage.stations.Ground.GroundImage import GroundImage
-from skyimage.utils.models import Stations
-from skyimage.utils.utils import Station
+from skyimage.utils.utils import Station as StationObject
 from skyimage.utils.utils import buffer_value
-from skyimage.utils.validators import validate_coords
 from skyimage.utils.validators import validate_datetime
 from skyimage.utils.validators import validate_file_path
-from skyimage.utils.validators import validate_station_positions
 
 
 class GroundControl:
@@ -35,23 +31,20 @@ class GroundControl:
     `path` : str
         File path to Ground station data
 
-    `coords` : List of float
-        Spatial coordinates of `station_name`
-
-    `station` : str
-        Target station name
+    `station` : StationObject or str
+        Target station object or station name
 
     `file_format` : str
         File format of Ground imagery
-
-    `station_positions`: dict
-        Dict overridding all possible station positions
 
     `stds` : list of datetime
         Datetime objects to extract data for
 
     `target_time` : str
         Target time to find Ground imagery
+
+    `file_format` : str
+        Override default 'jpg' file format
 
     `save_images`: bool
         Boolean for saving photo and cloud mask results
@@ -75,29 +68,30 @@ class GroundControl:
         Helper method to chart BI / SI values
 
     """
-
     def __init__(
         self,
         j_day: Union[int, str, list] = None,
         year: int = None,
         path: str = None,
-        coords: Optional[List[float]] = None,
-        station: Optional[str] = None,
-        station_positions: Stations = None,
+        station: Union[StationObject, str] = None,
         stds: Optional[dict] = None,
         target_time: Optional[str] = None,
+        file_format: str = "jpg",
         save_images: bool = False,
         show_images: bool = False,
     ):
 
         self.path: str = validate_file_path(path, "GROUND")
-        self.station_positions: Stations = validate_station_positions(station_positions)
-        self.station_name: str = station
-        self.coords: List[float, float] = validate_coords(
-            coords, station, self.station_positions
-        )
+
+        if isinstance(station, StationObject):
+            self.station = station
+        elif isinstance(station, str):
+            self.station = StationObject(name=station)
+        else:
+            raise ValueError("`station` must be a str or type Station")
 
         if j_day:
+
             if not target_time:
                 warnings.warn(
                     "No `target_time` set, defaulting to 12:00",
@@ -131,25 +125,29 @@ class GroundControl:
             raise ValueError("Must provide `j_day` and `year` or `stds`")
 
         self.target_time = target_time
+        self.file_format = file_format
         self.save_images: bool = save_images
         self.show_images: bool = show_images
-        self.images: Dict[str, GroundImage] = self.instantiate_image_objects()
+        self.images: Dict[str, GroundImage] = self.__instantiate_image_objects()
 
     def __str__(self):
-
-        return f"""
+        self_str: str = f"""
         Ground station
         --------
         Data Path : {self.path}
         File Format : {self.file_format}
         --------
-        Station : {self.station_name}
-        Coords : {self.coords}
+        Station : {self.station.name}
+        Coords : {self.station.coords}
 
         {len(self.images)} scene(s) found
         """
+        for k, v in self.images.items():
+            self_str = self_str + str(v)
 
-    def instantiate_image_objects(self) -> Dict[str, GroundImage]:
+        return self_str
+
+    def __instantiate_image_objects(self) -> Dict[str, GroundImage]:
         """Create matching `GroundImage` objects to `self` search parameters
 
         Uses
@@ -169,15 +167,15 @@ class GroundControl:
 
         Returns
         ----------
-        `matching_images` : Dict[year + julian day , `GroundImage`]
+        `matching_images` : Dict[str, `GroundImage`]
 
         """
-        matching_images: dict = {}
+        matching_images: Dict[str, StationObject] = {}
         for k, std in self.stds.items():
 
             found_image = GroundImage(
                 ground_path=self.path,
-                station=self.station_name,
+                station=self.station,
                 target_time=std
             )
 

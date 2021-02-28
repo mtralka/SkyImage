@@ -12,12 +12,10 @@ import rasterio as rio
 from scipy import stats
 from skyimage.stations.Sky.utils.utils import binary_to_decimal
 from skyimage.stations.Sky.utils.utils import decimal_to_binary
-from skyimage.utils.models import Stations
-from skyimage.utils.validators import validate_coords
+from skyimage.utils.utils import Station as StationObject
 from skyimage.utils.validators import validate_datetime
 from skyimage.utils.validators import validate_file_path
 from skyimage.utils.validators import validate_modis_target_sublayers
-from skyimage.utils.validators import validate_station_positions
 
 
 class Sky:
@@ -34,14 +32,8 @@ class Sky:
     target_sublayers : list of str
         Targetted sublayers
 
-    station_positions : dict
-        Dict of all possible station positions
-
-    station_name : str
-        Name of target station
-
-    coords: List of float
-        Spatial coordinates of `station`
+    station : Station or str
+        Target station
 
     j_day : list of str
         Julian days to extract data for
@@ -86,9 +78,7 @@ class Sky:
         year: int = None,
         path: str = None,
         file_format: str = "hdf",
-        coords: List[float] = None,
         station: str = None,
-        station_positions: Stations = None,
         target_sublayers: List[str] = None,
     ):
 
@@ -96,11 +86,14 @@ class Sky:
         self.target_sublayers: List[str] = validate_modis_target_sublayers(
             target_sublayers
         )
-        self.station_positions: Stations = validate_station_positions(station_positions)
-        self.station_name: str = station
-        self.coords: List[float, float] = validate_coords(
-            coords, station, self.station_positions
-        )
+
+        if isinstance(station, StationObject):
+            self.station = station
+        elif isinstance(station, str):
+            self.station = StationObject(name=station)
+        else:
+            raise ValueError("`station` must be a str or type Station")
+
         self.j_days, self.stds = validate_datetime(j_day, year)
         self.file_format: str = file_format
 
@@ -127,8 +120,8 @@ class Sky:
         File Format : {self.file_format}
         Target Sublayers : {self.target_sublayers}
         --------
-        Station : {self.station_name}
-        Coords : {self.coords}
+        Station : {self.station.name}
+        Coords : {self.station.coords}
         Year : {self.stds[0].year}
         Julian Days : {self.j_days[0]} - {self.j_days[-1]}
 
@@ -284,8 +277,8 @@ class Sky:
         """
         # current window is 3X3 pixels
         # TODO add custom window
-        lat = self.coords[0]
-        lon = self.coords[1]
+        lat = self.station.latitude
+        lon = self.station.longitude
         poi_dict = {}
 
         for key, val in sublayer_paths.items():

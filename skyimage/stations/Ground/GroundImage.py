@@ -13,6 +13,7 @@ import pandas as pd
 from skimage.io import imread
 from skyimage.stations.Ground.utils.image import f_above_or_below
 from skyimage.stations.Ground.utils.utils import STDDelta
+from skyimage.utils.utils import Station as StationObject
 from skyimage.utils.utils import buffer_value
 
 
@@ -21,9 +22,8 @@ class GroundImage:
         self,
         target_time: datetime = None,
         direct_path: Optional[str] = None,
-        actual_time: Optional[datetime] = None,
         ground_path: Optional[str] = None,
-        station: Optional[str] = None,
+        station: Optional[StationObject] = None,
         time_delta: Optional[int] = None,
         file_format: str = "jpg",
         mask_path: Optional[str] = "skyimage\\stations\\Ground\\mask.npy",
@@ -32,7 +32,6 @@ class GroundImage:
     ):
         self.target_time: datetime = target_time
         self.direct_path: str = direct_path
-        self.actual_time: datetime = actual_time
         self.file_format = file_format
 
         if direct_path and ground_path:
@@ -44,17 +43,13 @@ class GroundImage:
             )
 
             self.direct_path = direct_path
-
-        if direct_path and not actual_time:
-            # strip time from direct path
-            pass
-        elif not (direct_path and actual_time):
+        elif not direct_path:
 
             assert ground_path, "`ground_path` required when not using `direct_path`"
             assert target_time, "`target_time` required when not using `direct_path`"
             assert station, "`station` required when not using `direct_path"
 
-            self.__find_matching_image(target_time, station, ground_path)
+            self.__find_matching_image(target_time, station.name, ground_path)
         else:
             if not time_delta:
                 self.time_delta: int = self.time_delta()
@@ -91,16 +86,23 @@ class GroundImage:
         return f"{date}-{time}"
 
     def __str__(self) -> str:
-        return f"""
-        {self.name}
-        {self.time_delta} second(s) from target
-        {self.prcnt_cld} % cloudy
-        {self.n_total} total pixels
-        BI
-        {self.BI_stats}
-        SI
-        {self.SI_stats}
-        """
+        self_str: str = \
+            f"""
+            {self.name}
+            {self.time_delta} second(s) from target
+            """
+
+        if self.processed:
+            self_str = self_str + \
+                f"""
+                {self.prcnt_cld} % cloudy
+                {self.n_total} total pixels
+                BI
+                {self.BI_stats}
+                SI
+                {self.SI_stats}
+                """
+        return self_str
 
     def __repr__(self) -> str:
         return f"<GroundImage {self.name}>"
@@ -119,6 +121,38 @@ class GroundImage:
     def __find_matching_image(
         self, target_time: datetime, station: str, path: str
     ) -> None:
+        """ Find path to desired image
+
+            Uses
+            ----------
+
+            `self.file_format` : str
+                File format of target image
+
+            Parameters
+            ----------
+
+            `target_time` : datetime
+                target image time
+
+            `station` : str
+                Name of target station
+
+            `path` : str
+                Path for image search
+
+            Defines
+            ----------
+            `self.direct_path`
+                path to target image
+
+            `self.actual_time`
+                time `direct_path` image was taken
+
+            `self.time_delta`
+                time delta in seconds from target time
+
+            """
         file_format: str = self.file_format
         year: str = str(target_time.year)
         month: str = buffer_value(target_time.month, 2)
@@ -137,7 +171,7 @@ class GroundImage:
         for file in matching_file_list:
             ground_std_idx: int = file.index(year + month + day)
             ground_std = datetime.strptime(
-                file[ground_std_idx : ground_std_idx + 15], "%Y%m%dT%H%M%S"
+                file[ground_std_idx: ground_std_idx + 15], "%Y%m%dT%H%M%S"
             )
             std_delta = ground_std - target_time
             seconds_delta: int = std_delta.seconds
@@ -171,6 +205,7 @@ class GroundImage:
         save_image: bool = False,
         show_time: bool = False,
     ) -> None:
+
         start_time: datetime = datetime.now()
         self.show_image = show_image
         self.save_image = save_image

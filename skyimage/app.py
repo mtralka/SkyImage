@@ -7,6 +7,7 @@ import pandas as pd
 
 from skyimage.stations import Sky
 from skyimage.stations.Ground.GroundControl import GroundControl
+from skyimage.utils.utils import Station as StationObject
 from skyimage.utils.validators import validate_coords
 from skyimage.utils.validators import validate_datetime
 from skyimage.utils.validators import validate_file_path
@@ -70,8 +71,6 @@ class SkyImage:
         year: int = None,
         j_day: Union[int, str] = None,
         station: str = None,
-        station_positions: Optional[dict] = None,
-        coords: Optional[Union[list, int]] = None,
         modis_path: str = None,
         ground_path: str = None,
         modis_file_format: Optional[str] = "hdf",
@@ -86,9 +85,8 @@ class SkyImage:
         self.modis_target_layers = validate_modis_target_sublayers(
             modis_target_sublayers
         )
-        self.station_positions = validate_station_positions(station_positions)
-        self.station_name: str = station
-        self.coords = validate_coords(coords, station, self.station_positions)
+
+        self.station = StationObject(name=station)
         self.j_days, self.stds = validate_datetime(j_day, year)
         self.year = validate_year(year)
         self.modis_file_format = modis_file_format
@@ -102,8 +100,7 @@ class SkyImage:
             j_day=self.j_days,
             year=self.year,
             path=self.modis_path,
-            coords=self.coords,
-            station=self.station_name,
+            station=self.station
         )
 
         matched_stds: dict = self.Sky.extract_stds()
@@ -111,8 +108,7 @@ class SkyImage:
         self.Ground = GroundControl(
             year=self.year,
             path=self.ground_path,
-            coords=self.coords,
-            station=self.station_name,
+            station=self.station,
             stds=matched_stds,
             save_images=self.save_images,
             show_images=self.show_images,
