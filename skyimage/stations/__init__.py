@@ -1,2 +1,2 @@
-from skyimage.stations.Ground import Ground
+from skyimage.stations.Ground import GroundControl
 from skyimage.stations.Sky import Sky

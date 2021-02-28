@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import datetime
 
 
 class STDDelta:
@@ -42,4 +42,3 @@ class STDDelta:
             self._seconds = seconds
             self._std = std
             self._path = file_path
-

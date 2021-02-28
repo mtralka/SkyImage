@@ -5,8 +5,8 @@ from typing import Union
 
 import pandas as pd
 
-from skyimage.stations import Ground
 from skyimage.stations import Sky
+from skyimage.stations.Ground.GroundControl import GroundControl
 from skyimage.utils.validators import validate_coords
 from skyimage.utils.validators import validate_datetime
 from skyimage.utils.validators import validate_file_path
@@ -22,42 +22,45 @@ class SkyImage:
 
     Attributes
     ----------
-    year: int
+    `year`: int
         Year to extract data for
 
-    j_day : int or str
+    `j_day` : int or str
         Julian days to extract data for
 
-    station : str
+    `station` : str
         Name of target station
 
-    station_positions : dict
-        Dict of all possible station positions
+    `station_positions` : Optional[dict]
+        Optional override dict of all possible station positions
 
-    coords: Optional[list or int]
+    `coords`: Optional[list or int]
         Spatial coordinates of `station`
 
-    modis_path : str
-        File path to MODIS platform data
+    `modis_path` : str
+        File path to MODIS station data
 
-    ground_path : str
-        File path to ground platform data
+    `ground_path` : str
+        File path to ground station data
 
-    modis_file_format : Optional[str]
+    `modis_file_format` : Optional[str]
         File format of parent file to `target_sublayers`
 
-    modis_target_layers: list
+    `modis_target_layers`: list
         Matching sublayers to each MODIS scene
 
-    save_images: bool
+    `save_images`: bool
         Boolean for saving photo and cloud mask results
 
-    show_images: bool
+    `show_images`: bool
         Boolean for showing photo and cloud mask results
 
     Methods
     -------
-    results
+    `run()`
+        Run all computations to specifications
+
+    `results()`
         return process results
 
     """
@@ -67,14 +70,15 @@ class SkyImage:
         year: int = None,
         j_day: Union[int, str] = None,
         station: str = None,
-        station_positions: Dict = None,
+        station_positions: Optional[dict] = None,
         coords: Optional[Union[list, int]] = None,
         modis_path: str = None,
         ground_path: str = None,
         modis_file_format: Optional[str] = "hdf",
         modis_target_sublayers: Optional[List] = None,
-        save_images: Optional[bool] = None,
-        show_images: Optional[bool] = None,
+        save_images: Optional[bool] = False,
+        show_images: Optional[bool] = False,
+        show_time_stats: Optional[bool] = False,
     ):
 
         self.ground_path = validate_file_path(ground_path, "ground")
@@ -90,6 +94,7 @@ class SkyImage:
         self.modis_file_format = modis_file_format
         self.save_images: bool = save_images
         self.show_images: bool = show_images
+        self.show_time_stats: bool = show_time_stats
 
     def run(self):
 
@@ -103,7 +108,7 @@ class SkyImage:
 
         matched_stds: dict = self.Sky.extract_stds()
 
-        self.Ground = Ground(
+        self.Ground = GroundControl(
             year=self.year,
             path=self.ground_path,
             coords=self.coords,
@@ -112,7 +117,8 @@ class SkyImage:
             save_images=self.save_images,
             show_images=self.show_images,
         )
-        # self.Ground = Ground(self)
+
+        self.Ground.run_all(show_time=self.show_time_stats)
 
     def results(
         self, as_dataframe: Optional[bool] = False, save_path: Optional[str] = ""
