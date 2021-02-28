@@ -1,7 +1,9 @@
-from typing import Dict
+
 from typing import List
 from typing import Optional
 from typing import Union
+
+from skyimage.stations.Sky.ScenePlatforms import MODIS
 
 
 def decimal_to_binary(decimal: Union[int, str]) -> str:
@@ -54,23 +56,7 @@ def binary_to_decimal(binary: str) -> int:
     return int(binary, 2)
 
 
-class MODIS:
-    LAYERS: List[str] = [
-        "Coarse Resolution Granule Time",
-        "Coarse Resolution Number Mapping",
-        "n pixels averaged"
-    ]
-    ESSENTIAL: List[str] = ["CRGT", "CRNM", "NPA"]
-
-    NUM_MAPPINGS: Dict[str, str] = {
-            "CLD": "0-7",
-            "CLD_SHDW": "8-15",
-            "ADJ_CLD": "16-23",
-            "SNW": "24-31",
-        }
-
-
-class TargetSublayers:
+class SkyPlatform:
     def __init__(self, platform: str, override_layers: Optional[Union[str, list]] = None):
 
         self.possible_platforms = {"MODIS": MODIS}
@@ -87,7 +73,7 @@ class TargetSublayers:
     def __str__(self) -> str:
         return f"""
         {self.name}
-        {len(self.layers)} layer(s)
+        {len(self.layers)} Layer(s)
         {len(self.essential)} essential layer(s)
 
         Layers
@@ -126,8 +112,3 @@ class TargetSublayers:
 
         """
         return "".join([word[0] for word in target.split()]).upper()
-
-
-
-
-        

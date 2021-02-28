@@ -1,5 +1,6 @@
 from datetime import datetime
 from typing import Dict
+from typing import List
 from typing import Optional
 from typing import Union
 import warnings
@@ -90,8 +91,8 @@ class GroundControl:
         else:
             raise ValueError("`station` must be a str or type Station")
 
-        if j_day:
-
+        if j_day and year:
+            # turn j_day into datetime objects
             if not target_time:
                 warnings.warn(
                     "No `target_time` set, defaulting to 12:00",
@@ -101,11 +102,10 @@ class GroundControl:
 
                 target_time = "12:00"
 
-            self.j_days, self.stds = validate_datetime(j_day, year)
+            _, self.stds = validate_datetime(j_day, year)
             hour, minute = target_time.split(":")
 
-            stds_dict = {}
-
+            stds_dict: dict = {}
             for std in self.stds:
                 j_day = buffer_value(std.timetuple().tm_yday, 3)
                 stds_dict[str(std.year) + j_day] = std.replace(
@@ -116,16 +116,11 @@ class GroundControl:
 
         elif stds:
             self.stds = stds
-            self.j_days = []
-
-            for j_day in self.stds.keys():
-                self.j_days.append(j_day[-3:])
-
         else:
             raise ValueError("Must provide `j_day` and `year` or `stds`")
 
-        self.target_time = target_time
-        self.file_format = file_format
+        self.target_time: str = target_time
+        self.file_format: str = file_format
         self.save_images: bool = save_images
         self.show_images: bool = show_images
         self.images: Dict[str, GroundImage] = self.__instantiate_image_objects()
@@ -140,12 +135,28 @@ class GroundControl:
         Station : {self.station.name}
         Coords : {self.station.coords}
 
-        {len(self.images)} scene(s) found
+        {len(self.images)} images(s) found
         """
         for k, v in self.images.items():
             self_str = self_str + str(v)
 
         return self_str
+
+    @property
+    def j_days(self) -> List[str]:
+        j_days: list = []
+        for target in self.stds.values():
+            j_day = target.timetuple().tm_yday
+            j_days.append(buffer_value(j_day, 3))
+        return j_days
+
+    @property
+    def j_days_full(self) -> List[str]:
+        return list(self.stds.keys())
+
+    @property
+    def datetimes(self) -> List[datetime]:
+        return list(self.stds.values())
 
     def __instantiate_image_objects(self) -> Dict[str, GroundImage]:
         """Create matching `GroundImage` objects to `self` search parameters
@@ -170,16 +181,18 @@ class GroundControl:
         `matching_images` : Dict[str, `GroundImage`]
 
         """
-        matching_images: Dict[str, StationObject] = {}
+        matching_images: dict = {}
         for k, std in self.stds.items():
 
-            found_image = GroundImage(
+            img_obj = GroundImage(
                 ground_path=self.path,
                 station=self.station,
-                target_time=std
+                target_time=std,
+                show_image=self.show_images,
+                save_image=self.save_images
             )
 
-            matching_images[k] = found_image
+            matching_images[k] = img_obj
 
         return matching_images
 
@@ -201,9 +214,9 @@ class GroundControl:
             ground_obj.run_all(show_time=show_time)
 
         if show_time:
-            print("DONE-", datetime.now() - start)
+            print("GroundImage Done-", datetime.now() - start)
 
-    def results(self, as_dataframe: Optional[bool] = True) -> Union[dict, pd.DataFrame]:
+    def results(self, as_dataframe: Optional[bool] = False) -> Union[dict, pd.DataFrame]:
         """Get processed results from all GroundImage objects
 
         Parameters
@@ -229,7 +242,7 @@ class GroundControl:
             all_results[name] = results
 
         if as_dataframe:
-            return pd.DataFrame.from_dict(ground_obj, orient="index")
+            return pd.DataFrame.from_dict(all_results, orient="index")
 
         return all_results
 

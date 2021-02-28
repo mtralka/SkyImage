@@ -13,10 +13,13 @@ class STDDelta:
         self._seconds: int = seconds
         self._path: str = file_path
 
-    def __repr__(self) -> str:
+    def __str__(self) -> str:
         return f"""Resolved Min STD
         Object : {self._std}
         Seconds from target : {self._seconds}"""
+
+    def __repr__(self) -> str:
+        return f"<STDDelta {self.std}>"
 
     @property
     def seconds(self):

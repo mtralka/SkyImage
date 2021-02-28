@@ -1,10 +1,16 @@
 import datetime
 import json
+import os
 from typing import List
 import warnings
 
 from skyimage.utils.models import Stations
 
+
+def validate_file_path(path: str, name: str) -> str:
+    assert (os.path.isdir(path)), f"{name} is not a directory"
+
+    return path
 
 def validate_year(year: str or int) -> int:
     return int(year)
@@ -74,11 +80,6 @@ def validate_modis_target_sublayers(target_layers: List[str]) -> List[str]:
     return valid_layers
 
 
-def validate_file_path(path: str, name: str) -> str:
-    if not path:
-        raise LookupError(f"{name} path not specified")
-
-    return path
 
 
 def validate_datetime(j_day: str or int or list, year: int) -> List[str] and list:

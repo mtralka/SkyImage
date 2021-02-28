@@ -1,2 +1,2 @@
-from skyimage.stations.Ground.GroundControl import GroundControl
-from skyimage.stations.Ground.GroundImage import GroundImage
+from .GroundControl import GroundControl
+from .GroundImage import GroundImage

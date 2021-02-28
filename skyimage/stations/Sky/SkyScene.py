@@ -1,3 +1,4 @@
+
 from datetime import datetime
 import glob
 import logging
@@ -7,28 +8,28 @@ from typing import Optional
 from typing import Union
 import warnings
 
-from numpy import ndarray
 import pandas as pd
 import rasterio as rio
 from scipy import stats
-from skyimage.stations.Sky.utils.utils import TargetSublayers
+from skyimage.stations.Ground import GroundImage
+from skyimage.stations.Sky.utils.utils import SkyPlatform
 from skyimage.stations.Sky.utils.utils import binary_to_decimal
 from skyimage.stations.Sky.utils.utils import decimal_to_binary
 from skyimage.utils.utils import Station as StationObject
 from skyimage.utils.utils import buffer_value
 
 
-class SkyImage:
+class SkyScene:
     def __init__(
         self,
         direct_path: Optional[str] = None,
-        target_date: datetime = None,
+        target_time: datetime = None,
         station: Union[StationObject, str] = None,
         sky_path: str = None,
         file_format: str = "hdf",
     ):
 
-        self.target_date: datetime = target_date
+        self.target_time: datetime = target_time
         self.direct_path: str = direct_path
         self.file_format = file_format
 
@@ -44,9 +45,9 @@ class SkyImage:
         elif not direct_path:
 
             assert sky_path, "`sky_path` required when not using `direct_path`"
-            assert target_date, "`target_date` required when not using `direct_path`"
+            assert target_time, "`target_time` required when not using `direct_path`"
 
-            self.__find_matching_scene(target_date, sky_path)
+            self.__find_matching_scene(target_time, sky_path)
 
         if isinstance(station, StationObject):
             self.station = station
@@ -55,54 +56,54 @@ class SkyImage:
         else:
             raise ValueError("`station` must be a str or type Station")
 
-        self.target_sublayers: List[str] = TargetSublayers(platform="MODIS")
+        self.target_sublayers: List[str] = SkyPlatform(platform="MODIS")
         self.processed: bool = False
 
         self.sub_layers: list
         self.raw_data: dict
+        self.actual_datetime: datetime
         self.data: dict
 
     @property
     def j_day(self) -> str:
-        j_day: int = self.target_date.timetuple().tm_yday
+        j_day: int = self.target_time.timetuple().tm_yday
         return buffer_value(j_day, 3)
 
     @property
     def j_day_full(self) -> str:
-        j_day: int = self.target_date.timetuple().tm_yday
-        year: int = self.target_date.year
+        j_day: int = self.target_time.timetuple().tm_yday
+        year: int = self.target_time.year
         return str(year) + buffer_value(j_day, 3)
 
     @property
     def name(self) -> str:
-        date: str = self.j_day_full
-        time: str = str(self.actual_time.strftime("%H:%M"))
-        return f"{date}-{time}"
+        return self.sub_layers.name + self.j_day_full
 
     def __str__(self) -> str:
         self_str: str = \
             f"""
-            {self.name}
-            {self.time_delta} second(s) from target
+            {self.target_sublayers.name}
+            {self.j_day_full}
             """
 
         if self.processed:
             self_str = self_str + \
                 f"""
-                {self.prcnt_cld} % cloudy
-                {self.n_total} total pixels
-                BI
-                {self.BI_stats}
-                SI
-                {self.SI_stats}
+                {self.data}
                 """
         return self_str
 
     def __repr__(self) -> str:
-        return f"<SkyImage {self.name}>"
+        return f"<SkyImage {self.target_sublayers.name} {self.j_day_full}>"
+
+    def __eq__(self, o: object) -> bool:
+        if isinstance(o, GroundImage):
+            if o.j_day_full == self.j_day_full:
+                return True
+        return False
 
     def __find_matching_scene(
-        self, target_date: datetime, path: str
+        self, target_time: datetime, path: str
     ) -> None:
         """ Find path to desired scene
 
@@ -115,7 +116,7 @@ class SkyImage:
             Parameters
             ----------
 
-            `target_date` : datetime
+            `target_time` : datetime
                 target date of image
 
             `path` : str
@@ -127,7 +128,7 @@ class SkyImage:
                 path to target scene
 
             """
-        year: str = str(target_date.year)
+        year: str = str(target_time.year)
         j_day: str = self.j_day
         file_format = self.file_format
 
@@ -136,11 +137,11 @@ class SkyImage:
         )
 
         if not matching_file_list:
-            raise FileNotFoundError(f"Ground scene {str(target_date)} not found")
+            raise FileNotFoundError(f"Ground scene {str(target_time)} not found")
         elif len(matching_file_list) > 1:
-            raise LookupError(f"Multiple matching files found for {str(target_date)}")
+            raise LookupError(f"Multiple matching files found for {str(target_time)}")
         else:
-            logging.info(f"Ground scene {str(target_date)} found")
+            logging.info(f"Ground scene {str(target_time)} found")
 
         self.direct_path = matching_file_list[0]
 
@@ -148,7 +149,7 @@ class SkyImage:
         self,
         show_time: bool = False,
     ) -> None:
-        """ Run all class methods
+        """ Run all requied processing
 
         Parameters
         ----------
@@ -156,13 +157,14 @@ class SkyImage:
             show time statistics
 
         """
-        # TODO
+
         start_time: datetime = datetime.now()
+        self.extract_sublayers()
         self.extract()
         self.process()
 
         if show_time:
-            print(self.name + "-", datetime.now() - start_time)
+            print(self.j_day_full + "-", datetime.now() - start_time)
 
     def extract_sublayers(self) -> None:
         """ Extract sublayers from `self.direct_path`
@@ -173,7 +175,7 @@ class SkyImage:
             `self.direct_path` : str
                 direct path to target scene
 
-            `self.target_sublayers` : TargetSublayers
+            `self.target_sublayers` : SkyPlatform
                 target scene layers
 
             Defines
@@ -182,18 +184,18 @@ class SkyImage:
                 path to target image
 
             """
-        found_layers = {}
+        found_layers: dict = {}
 
         with rio.open(self.direct_path) as ds:
             for name in ds.subdatasets:
                 for target in self.target_sublayers.layers:
                     if target in name:
                         logging.info(f"{target} layer found")
-                        abbrev = TargetSublayers.make_abbreviation(target)
+                        abbrev = SkyPlatform.make_abbreviation(target)
                         found_layers[abbrev] = name
 
         for target in self.target_sublayers.layers:
-            abbrev = TargetSublayers.make_abbreviation(target)
+            abbrev = SkyPlatform.make_abbreviation(target)
             if abbrev not in found_layers.keys():
                 raise FileNotFoundError(
                     f"Could not find {target} in sublayers. Check {self.direct_path}"
@@ -245,7 +247,7 @@ class SkyImage:
 
         Uses
         ----------
-        `self.target_sublayers` : `TargetSublayers`
+        `self.target_sublayers` : `SkyPlatform`
             Platform sublayer object
 
         `self.raw_data` : dict
@@ -253,6 +255,9 @@ class SkyImage:
 
         Defines
         ----------
+        `self.actual_datetime` : datetime
+            Time of scenery aquisition
+
         `self.data` : dict
             Processed information
             concerning image
@@ -270,7 +275,11 @@ class SkyImage:
                 )
 
         time_mode, _ = stats.mode(self.raw_data["CRGT"])
-        processed_dict["time_utc"] = time_mode[0][0]
+        time_mode: str = str(time_mode[0][0])
+
+        processed_dict["time_utc"] = time_mode
+        self.actual_datetime = self.target_time.replace(
+            hour=int(time_mode[0:2]), minute=int(time_mode[2:]))
 
         avg_pixel_total = self.raw_data["NPA"].sum()
         processed_dict["n_TOTAL"] = avg_pixel_total
@@ -304,12 +313,10 @@ class SkyImage:
 
     def results(self, as_dataframe: bool = False) -> Union[dict, pd.DataFrame]:
 
-        results: dict = {self.j_day_full: self.data}
-
         if not self.processed:
             raise AssertionError("Object not processed")
 
         if as_dataframe:
-            return pd.DataFrame.from_dict(results, orient="index")
+            return pd.DataFrame.from_dict(self.data, orient="index")
 
-        return results
+        return self.data

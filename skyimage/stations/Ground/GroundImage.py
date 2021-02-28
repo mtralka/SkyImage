@@ -13,6 +13,7 @@ import pandas as pd
 from skimage.io import imread
 from skyimage.stations.Ground.utils.image import f_above_or_below
 from skyimage.stations.Ground.utils.utils import STDDelta
+from skyimage.stations.Sky import SkyScene
 from skyimage.utils.utils import Station as StationObject
 from skyimage.utils.utils import buffer_value
 
@@ -23,7 +24,7 @@ class GroundImage:
         target_time: datetime = None,
         direct_path: Optional[str] = None,
         ground_path: Optional[str] = None,
-        station: Optional[StationObject] = None,
+        station: Union[StationObject, str] = None,
         time_delta: Optional[int] = None,
         file_format: str = "jpg",
         mask_path: Optional[str] = "skyimage\\stations\\Ground\\mask.npy",
@@ -33,6 +34,13 @@ class GroundImage:
         self.target_time: datetime = target_time
         self.direct_path: str = direct_path
         self.file_format = file_format
+
+        if isinstance(station, StationObject):
+            self.station = station
+        elif isinstance(station, str):
+            self.station = StationObject(name=station)
+        else:
+            raise ValueError("`station` must be a str or type Station")
 
         if direct_path and ground_path:
             warnings.warn(
@@ -49,7 +57,7 @@ class GroundImage:
             assert target_time, "`target_time` required when not using `direct_path`"
             assert station, "`station` required when not using `direct_path"
 
-            self.__find_matching_image(target_time, station.name, ground_path)
+            self.__find_matching_image(target_time, self.station.name, ground_path)
         else:
             if not time_delta:
                 self.time_delta: int = self.time_delta()
@@ -82,7 +90,7 @@ class GroundImage:
     @property
     def name(self) -> str:
         date: str = self.j_day_full
-        time: str = str(self.actual_time.strftime("%H:%M"))
+        time: str = str(self.actual_time.strftime("%H%M"))
         return f"{date}-{time}"
 
     def __str__(self) -> str:
@@ -107,15 +115,24 @@ class GroundImage:
     def __repr__(self) -> str:
         return f"<GroundImage {self.name}>"
 
+    def __eq__(self, o: object) -> bool:
+        if isinstance(o, SkyScene):
+            if o.j_day_full == self.j_day_full:
+                return True
+        return False
+
     def time_delta(self) -> int:
         delta = self.actual_time - self.target_time
         return delta.seconds
 
+    @staticmethod
     def __show_image(img: ndarray) -> None:
         plt.imshow(img)
         plt.show()
 
+    @staticmethod
     def __save_image(img: ndarray, file_name: str) -> None:
+
         plt.imsave(file_name, img.astype("uint8"))
 
     def __find_matching_image(
@@ -202,13 +219,17 @@ class GroundImage:
     def run_all(
         self,
         show_image: bool = False,
-        save_image: bool = False,
-        show_time: bool = False,
+        save_image: Optional[bool] = None,
+        show_time: Optional[bool] = None,
     ) -> None:
 
         start_time: datetime = datetime.now()
-        self.show_image = show_image
-        self.save_image = save_image
+
+        if save_image:
+            self.save_image = save_image
+        if show_image:
+            self.show_image = show_image
+
         self.extract()
         self.process()
 
@@ -350,7 +371,8 @@ class GroundImage:
 
         if self.save_image:
             img_file_name = self.name + "_cld_mask.png"
-            self.__save_image(img_file_name, cloud_mask)
+            self.__save_image(cloud_mask, img_file_name)
+            self.graph(save=True)
 
         percent_cloud: float = round(
             ((pixel_total - number_clear) / pixel_total) * 100, 2
@@ -372,6 +394,8 @@ class GroundImage:
             "SI": self.SI_stats,
             "n_total": self.n_total,
             "prcnt_cld": self.prcnt_cld,
+            "time" : self.actual_time.strftime("%H%M"),
+            "seconds_delta" : self.time_delta
         }
 
         if as_dataframe:
@@ -379,7 +403,7 @@ class GroundImage:
 
         return results
 
-    def show_graph(self, save: Optional[bool] = None, file_name: Optional[str] = None):
+    def graph(self, save: Optional[bool] = False):
 
         if not hasattr(self, "BI") or not hasattr(self, "SI"):
             raise ValueError("GroundImage object must have `BI` and `SI` values")
@@ -402,7 +426,7 @@ class GroundImage:
         cb = plt.colorbar()
 
         if save:
-            plt.savefig(file_name, dpi=100)
+            plt.savefig(self.name + "_decision_boundary", dpi=100)
             # TODO fix
             # one of these works
             cb.remove()
