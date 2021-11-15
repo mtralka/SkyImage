@@ -26,71 +26,14 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from typing import Optional
-
-import matplotlib.pyplot as plt
-import numpy as np
-from skimage.io import imread
+<pre><code class="python">import numpy as np
 
 
 &#34;&#34;&#34;
 
-image.py
-image and pixel processing utilities for Ground class
+pixel processing utilities for GroundImage class
 
 &#34;&#34;&#34;
-
-
-def open_image(path: str):
-    return imread(path)
-
-
-def open_mask(path: Optional[str] = &#34;skyimage\\stations\\Ground\\mask.npy&#34;):
-
-    return np.load(path)
-
-
-def show_image(img):
-    plt.imshow(img)
-    plt.show()
-
-
-def save_image(name: str, img):
-    plt.imsave(name, img)
-
-
-def extract_color_bands(img):
-
-    R = img[:, :, 0] / 255
-    G = img[:, :, 1] / 255
-    B = img[:, :, 2] / 255
-
-    return R, G, B
-
-
-def calc_SI(R, B):
-
-    SI = (B - R) / (B + R)
-    # SI[SI == 0] = np.nan
-
-    return SI
-
-
-def calc_BI(R, G, B):
-
-    BI = (R + G + B) / 3
-    # BI[BI == 0] = np.nan
-
-    return BI
-
-
-def extract_stats(array) -&gt; dict:
-
-    mean = round(np.nanmean(array), 2)
-    max = round(np.nanmax(array), 2)
-    min = round(np.nanmin(array), 2)
-
-    return {&#34;mean&#34;: mean, &#34;max&#34;: max, &#34;min&#34;: min}
 
 
 def f_above_or_below(p: np.ndarray, boundary: np.ndarray) -&gt; int:
@@ -146,76 +89,6 @@ def f_above_or_below(p: np.ndarray, boundary: np.ndarray) -&gt; int:
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="skyimage.stations.Ground.utils.image.calc_BI"><code class="name flex">
-<span>def <span class="ident">calc_BI</span></span>(<span>R, G, B)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def calc_BI(R, G, B):
-
-    BI = (R + G + B) / 3
-    # BI[BI == 0] = np.nan
-
-    return BI</code></pre>
-</details>
-</dd>
-<dt id="skyimage.stations.Ground.utils.image.calc_SI"><code class="name flex">
-<span>def <span class="ident">calc_SI</span></span>(<span>R, B)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def calc_SI(R, B):
-
-    SI = (B - R) / (B + R)
-    # SI[SI == 0] = np.nan
-
-    return SI</code></pre>
-</details>
-</dd>
-<dt id="skyimage.stations.Ground.utils.image.extract_color_bands"><code class="name flex">
-<span>def <span class="ident">extract_color_bands</span></span>(<span>img)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def extract_color_bands(img):
-
-    R = img[:, :, 0] / 255
-    G = img[:, :, 1] / 255
-    B = img[:, :, 2] / 255
-
-    return R, G, B</code></pre>
-</details>
-</dd>
-<dt id="skyimage.stations.Ground.utils.image.extract_stats"><code class="name flex">
-<span>def <span class="ident">extract_stats</span></span>(<span>array) ‑> dict</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def extract_stats(array) -&gt; dict:
-
-    mean = round(np.nanmean(array), 2)
-    max = round(np.nanmax(array), 2)
-    min = round(np.nanmin(array), 2)
-
-    return {&#34;mean&#34;: mean, &#34;max&#34;: max, &#34;min&#34;: min}</code></pre>
-</details>
-</dd>
 <dt id="skyimage.stations.Ground.utils.image.f_above_or_below"><code class="name flex">
 <span>def <span class="ident">f_above_or_below</span></span>(<span>p: numpy.ndarray, boundary: numpy.ndarray) ‑> int</span>
 </code></dt>
@@ -292,60 +165,6 @@ else (implied below) <code>0</code></dd>
         return 1</code></pre>
 </details>
 </dd>
-<dt id="skyimage.stations.Ground.utils.image.open_image"><code class="name flex">
-<span>def <span class="ident">open_image</span></span>(<span>path: str)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def open_image(path: str):
-    return imread(path)</code></pre>
-</details>
-</dd>
-<dt id="skyimage.stations.Ground.utils.image.open_mask"><code class="name flex">
-<span>def <span class="ident">open_mask</span></span>(<span>path: Union[str, NoneType] = 'skyimage\\stations\\Ground\\mask.npy')</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def open_mask(path: Optional[str] = &#34;skyimage\\stations\\Ground\\mask.npy&#34;):
-
-    return np.load(path)</code></pre>
-</details>
-</dd>
-<dt id="skyimage.stations.Ground.utils.image.save_image"><code class="name flex">
-<span>def <span class="ident">save_image</span></span>(<span>name: str, img)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def save_image(name: str, img):
-    plt.imsave(name, img)</code></pre>
-</details>
-</dd>
-<dt id="skyimage.stations.Ground.utils.image.show_image"><code class="name flex">
-<span>def <span class="ident">show_image</span></span>(<span>img)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def show_image(img):
-    plt.imshow(img)
-    plt.show()</code></pre>
-</details>
-</dd>
 </dl>
 </section>
 <section>
@@ -363,16 +182,8 @@ else (implied below) <code>0</code></dd>
 </ul>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
-<ul class="two-column">
-<li><code><a title="skyimage.stations.Ground.utils.image.calc_BI" href="#skyimage.stations.Ground.utils.image.calc_BI">calc_BI</a></code></li>
-<li><code><a title="skyimage.stations.Ground.utils.image.calc_SI" href="#skyimage.stations.Ground.utils.image.calc_SI">calc_SI</a></code></li>
-<li><code><a title="skyimage.stations.Ground.utils.image.extract_color_bands" href="#skyimage.stations.Ground.utils.image.extract_color_bands">extract_color_bands</a></code></li>
-<li><code><a title="skyimage.stations.Ground.utils.image.extract_stats" href="#skyimage.stations.Ground.utils.image.extract_stats">extract_stats</a></code></li>
+<ul class="">
 <li><code><a title="skyimage.stations.Ground.utils.image.f_above_or_below" href="#skyimage.stations.Ground.utils.image.f_above_or_below">f_above_or_below</a></code></li>
-<li><code><a title="skyimage.stations.Ground.utils.image.open_image" href="#skyimage.stations.Ground.utils.image.open_image">open_image</a></code></li>
-<li><code><a title="skyimage.stations.Ground.utils.image.open_mask" href="#skyimage.stations.Ground.utils.image.open_mask">open_mask</a></code></li>
-<li><code><a title="skyimage.stations.Ground.utils.image.save_image" href="#skyimage.stations.Ground.utils.image.save_image">save_image</a></code></li>
-<li><code><a title="skyimage.stations.Ground.utils.image.show_image" href="#skyimage.stations.Ground.utils.image.show_image">show_image</a></code></li>
 </ul>
 </li>
 </ul>

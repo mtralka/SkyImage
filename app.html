@@ -26,66 +26,57 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from typing import Dict
+<pre><code class="python">from datetime import date
+from datetime import datetime
 from typing import List
 from typing import Optional
 from typing import Union
 
+from matplotlib.pyplot import savefig
 import pandas as pd
 
-from skyimage.stations import Ground
-from skyimage.stations import Sky
-from skyimage.utils.validators import validate_coords
+from skyimage.stations.Ground.GroundControl import GroundControl
+from skyimage.stations.Sky.SkyControl import SkyControl
+from skyimage.utils.utils import Station as StationObject
+from skyimage.utils.utils import buffer_value
 from skyimage.utils.validators import validate_datetime
 from skyimage.utils.validators import validate_file_path
-from skyimage.utils.validators import validate_modis_target_sublayers
-from skyimage.utils.validators import validate_station_positions
-from skyimage.utils.validators import validate_year
 
 
 class SkyImage:
     &#34;&#34;&#34;
-    Control object for reconciling Sky and Ground objects
+    Control object for orchestrating `SkyControl` and `GroundControl` objects
 
 
     Attributes
     ----------
-    year: int
+    `year`: int
         Year to extract data for
 
-    j_day : int or str
+    `j_day` : int or str
         Julian days to extract data for
 
-    station : str
+    `station` : str
         Name of target station
 
-    station_positions : dict
-        Dict of all possible station positions
+    `sky_path` : str
+        File path to sky station data
 
-    coords: Optional[list or int]
-        Spatial coordinates of `station`
+    `ground_path` : str
+        File path to ground station data
 
-    modis_path : str
-        File path to MODIS platform data
-
-    ground_path : str
-        File path to ground platform data
-
-    modis_file_format : Optional[str]
-        File format of parent file to `target_sublayers`
-
-    modis_target_layers: list
-        Matching sublayers to each MODIS scene
-
-    save_images: bool
+    `save_images`: bool
         Boolean for saving photo and cloud mask results
 
-    show_images: bool
+    `show_images`: bool
         Boolean for showing photo and cloud mask results
 
     Methods
     -------
-    results
+    `run()`
+        Run all computations to specifications
+
+    `results()`
         return process results
 
     &#34;&#34;&#34;
@@ -95,62 +86,100 @@ class SkyImage:
         year: int = None,
         j_day: Union[int, str] = None,
         station: str = None,
-        station_positions: Dict = None,
-        coords: Optional[Union[list, int]] = None,
-        modis_path: str = None,
+        sky_path: str = None,
         ground_path: str = None,
-        modis_file_format: Optional[str] = &#34;hdf&#34;,
-        modis_target_sublayers: Optional[List] = None,
-        save_images: Optional[bool] = None,
-        show_images: Optional[bool] = None,
+        save_images: Optional[bool] = False,
+        show_images: Optional[bool] = False,
+        show_time_stats: Optional[bool] = False,
     ):
 
         self.ground_path = validate_file_path(ground_path, &#34;ground&#34;)
-        self.modis_path = validate_file_path(modis_path, &#34;MODIS&#34;)
-        self.modis_target_layers = validate_modis_target_sublayers(
-            modis_target_sublayers
-        )
-        self.station_positions = validate_station_positions(station_positions)
-        self.station_name: str = station
-        self.coords = validate_coords(coords, station, self.station_positions)
-        self.j_days, self.stds = validate_datetime(j_day, year)
-        self.year = validate_year(year)
-        self.modis_file_format = modis_file_format
+        self.modis_path = validate_file_path(sky_path, &#34;MODIS&#34;)
+
+        self.station = StationObject(name=station)
+
+        # create datetime objects asap
+        # app return j_day and j_day_full properties
+        _, self.stds = validate_datetime(j_day, year)
+        stds_dict: dict = {}
+        for std in self.stds:
+            j_day = buffer_value(std.timetuple().tm_yday, 3)
+            stds_dict[str(std.year) + j_day] = std
+
+        self.stds = stds_dict
         self.save_images: bool = save_images
         self.show_images: bool = show_images
+        self.show_time_stats: bool = show_time_stats
+
+    @property
+    def j_days(self) -&gt; List[str]:
+        j_days: list = []
+        for target in self.stds.values():
+            j_day = target.timetuple().tm_yday
+            j_days.append(buffer_value(j_day, 3))
+        return j_days
+
+    @property
+    def j_days_full(self, abbrev: bool = False) -&gt; List[str]:
+
+        return list(self.stds.keys())
+
+    @property
+    def j_days_abrev(self) -&gt; str:
+        j_days: list = list(self.stds.keys())
+        first: str = j_days[0]
+        last: str = j_days[-1]
+
+        return f&#34;{first}-{last}&#34;
+
+    @property
+    def datetimes(self) -&gt; List[datetime]:
+        return list(self.stds.values())
+
+    def __str__(self) -&gt; str:
+        return f&#34;&#34;&#34;
+        {self.sky}
+
+        {self.ground}
+        &#34;&#34;&#34;
 
     def run(self):
 
-        self.Sky = Sky(
-            j_day=self.j_days,
-            year=self.year,
-            path=self.modis_path,
-            coords=self.coords,
-            station=self.station_name,
+        self.sky = SkyControl(
+            stds=self.stds, path=self.modis_path, station=self.station
         )
 
-        matched_stds: dict = self.Sky.extract_stds()
+        self.sky.run_all(show_time=self.show_time_stats)
 
-        self.Ground = Ground(
-            year=self.year,
+        matched_stds: dict = self.sky.extract_stds()
+
+        self.ground = GroundControl(
             path=self.ground_path,
-            coords=self.coords,
-            station=self.station_name,
+            station=self.station,
             stds=matched_stds,
             save_images=self.save_images,
             show_images=self.show_images,
         )
-        # self.Ground = Ground(self)
 
-    def results(
-        self, as_dataframe: Optional[bool] = False, save_path: Optional[str] = &#34;&#34;
-    ):
+        self.ground.run_all(show_time=self.show_time_stats)
 
-        if not hasattr(self, &#34;Sky&#34;) or not hasattr(self, &#34;Ground&#34;):
-            raise ValueError(&#34;Sky or Ground model uninitiated&#34;)
+    def results(self, as_dataframe: Optional[bool] = False, save: bool = False):
 
-        sky_results: dict = self.Sky.results(as_dataframe=False)
-        ground_results: dict = self.Ground.results(as_dataframe=False)
+        if not hasattr(self, &#34;sky&#34;):
+            raise AssertionError(
+                &#34;SkyControl object required, no SkyImage objects present&#34;
+            )
+
+        if not hasattr(self, &#34;ground&#34;):
+            raise AssertionError(
+                &#34;GroundControl object required, no GroundImage objects present&#34;
+            )
+
+        if save and not as_dataframe:
+            as_dataframe = True
+
+        sky_results: dict = self.sky.results(as_dataframe=False)
+        ground_results: dict = self.ground.results(as_dataframe=False)
 
         if not as_dataframe:
             return {&#34;SKY&#34;: sky_results, &#34;GROUND&#34;: ground_results}
@@ -162,8 +191,8 @@ class SkyImage:
 
         combined_df = pd.merge(sky_df, ground_df, left_index=True, right_index=True)
 
-        if save_path:
-            combined_df.to_csv(save_path)
+        if save:
+            combined_df.to_csv(f&#34;SkyImage_Results_{self.j_days_abrev}.csv&#34;)
 
         return combined_df</code></pre>
 </details>
@@ -179,37 +208,29 @@ class SkyImage:
 <dl>
 <dt id="skyimage.app.SkyImage"><code class="flex name class">
 <span>class <span class="ident">SkyImage</span></span>
-<span>(</span><span>year: int = None, j_day: Union[int, str] = None, station: str = None, station_positions: Dict = None, coords: Union[list, int, NoneType] = None, modis_path: str = None, ground_path: str = None, modis_file_format: Union[str, NoneType] = 'hdf', modis_target_sublayers: Union[List, NoneType] = None, save_images: Union[bool, NoneType] = None, show_images: Union[bool, NoneType] = None)</span>
+<span>(</span><span>year: int = None, j_day: Union[int, str] = None, station: str = None, sky_path: str = None, ground_path: str = None, save_images: Union[bool, NoneType] = False, show_images: Union[bool, NoneType] = False, show_time_stats: Union[bool, NoneType] = False)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Control object for reconciling Sky and Ground objects</p>
+<div class="desc"><p>Control object for orchestrating <code>SkyControl</code> and <code>GroundControl</code> objects</p>
 <h2 id="attributes">Attributes</h2>
-<dl>
-<dt><strong><code>year</code></strong> :&ensp;<code>int</code></dt>
-<dd>Year to extract data for</dd>
-<dt><strong><code>j_day</code></strong> :&ensp;<code>int</code> or <code>str</code></dt>
-<dd>Julian days to extract data for</dd>
-<dt><strong><code>station</code></strong> :&ensp;<code>str</code></dt>
-<dd>Name of target station</dd>
-<dt><strong><code>station_positions</code></strong> :&ensp;<code>dict</code></dt>
-<dd>Dict of all possible station positions</dd>
-<dt><strong><code>coords</code></strong> :&ensp;<code>Optional[list</code> or <code>int]</code></dt>
-<dd>Spatial coordinates of <code>station</code></dd>
-<dt><strong><code>modis_path</code></strong> :&ensp;<code>str</code></dt>
-<dd>File path to MODIS platform data</dd>
-<dt><strong><code>ground_path</code></strong> :&ensp;<code>str</code></dt>
-<dd>File path to ground platform data</dd>
-<dt><strong><code>modis_file_format</code></strong> :&ensp;<code>Optional[str]</code></dt>
-<dd>File format of parent file to <code>target_sublayers</code></dd>
-<dt><strong><code>modis_target_layers</code></strong> :&ensp;<code>list</code></dt>
-<dd>Matching sublayers to each MODIS scene</dd>
-<dt><strong><code>save_images</code></strong> :&ensp;<code>bool</code></dt>
-<dd>Boolean for saving photo and cloud mask results</dd>
-<dt><strong><code>show_images</code></strong> :&ensp;<code>bool</code></dt>
-<dd>Boolean for showing photo and cloud mask results</dd>
-</dl>
+<p><code>year</code>: int
+Year to extract data for</p>
+<p><code>j_day</code> : int or str
+Julian days to extract data for</p>
+<p><code>station</code> : str
+Name of target station</p>
+<p><code>sky_path</code> : str
+File path to sky station data</p>
+<p><code>ground_path</code> : str
+File path to ground station data</p>
+<p><code>save_images</code>: bool
+Boolean for saving photo and cloud mask results</p>
+<p><code>show_images</code>: bool
+Boolean for showing photo and cloud mask results</p>
 <h2 id="methods">Methods</h2>
-<p>results
+<p><code>run()</code>
+Run all computations to specifications</p>
+<p><code>results()</code>
 return process results</p></div>
 <details class="source">
 <summary>
@@ -217,47 +238,38 @@ return process results</p></div>
 </summary>
 <pre><code class="python">class SkyImage:
     &#34;&#34;&#34;
-    Control object for reconciling Sky and Ground objects
+    Control object for orchestrating `SkyControl` and `GroundControl` objects
 
 
     Attributes
     ----------
-    year: int
+    `year`: int
         Year to extract data for
 
-    j_day : int or str
+    `j_day` : int or str
         Julian days to extract data for
 
-    station : str
+    `station` : str
         Name of target station
 
-    station_positions : dict
-        Dict of all possible station positions
+    `sky_path` : str
+        File path to sky station data
 
-    coords: Optional[list or int]
-        Spatial coordinates of `station`
+    `ground_path` : str
+        File path to ground station data
 
-    modis_path : str
-        File path to MODIS platform data
-
-    ground_path : str
-        File path to ground platform data
-
-    modis_file_format : Optional[str]
-        File format of parent file to `target_sublayers`
-
-    modis_target_layers: list
-        Matching sublayers to each MODIS scene
-
-    save_images: bool
+    `save_images`: bool
         Boolean for saving photo and cloud mask results
 
-    show_images: bool
+    `show_images`: bool
         Boolean for showing photo and cloud mask results
 
     Methods
     -------
-    results
+    `run()`
+        Run all computations to specifications
+
+    `results()`
         return process results
 
     &#34;&#34;&#34;
@@ -267,62 +279,100 @@ return process results</p></div>
         year: int = None,
         j_day: Union[int, str] = None,
         station: str = None,
-        station_positions: Dict = None,
-        coords: Optional[Union[list, int]] = None,
-        modis_path: str = None,
+        sky_path: str = None,
         ground_path: str = None,
-        modis_file_format: Optional[str] = &#34;hdf&#34;,
-        modis_target_sublayers: Optional[List] = None,
-        save_images: Optional[bool] = None,
-        show_images: Optional[bool] = None,
+        save_images: Optional[bool] = False,
+        show_images: Optional[bool] = False,
+        show_time_stats: Optional[bool] = False,
     ):
 
         self.ground_path = validate_file_path(ground_path, &#34;ground&#34;)
-        self.modis_path = validate_file_path(modis_path, &#34;MODIS&#34;)
-        self.modis_target_layers = validate_modis_target_sublayers(
-            modis_target_sublayers
-        )
-        self.station_positions = validate_station_positions(station_positions)
-        self.station_name: str = station
-        self.coords = validate_coords(coords, station, self.station_positions)
-        self.j_days, self.stds = validate_datetime(j_day, year)
-        self.year = validate_year(year)
-        self.modis_file_format = modis_file_format
+        self.modis_path = validate_file_path(sky_path, &#34;MODIS&#34;)
+
+        self.station = StationObject(name=station)
+
+        # create datetime objects asap
+        # app return j_day and j_day_full properties
+        _, self.stds = validate_datetime(j_day, year)
+        stds_dict: dict = {}
+        for std in self.stds:
+            j_day = buffer_value(std.timetuple().tm_yday, 3)
+            stds_dict[str(std.year) + j_day] = std
+
+        self.stds = stds_dict
         self.save_images: bool = save_images
         self.show_images: bool = show_images
+        self.show_time_stats: bool = show_time_stats
+
+    @property
+    def j_days(self) -&gt; List[str]:
+        j_days: list = []
+        for target in self.stds.values():
+            j_day = target.timetuple().tm_yday
+            j_days.append(buffer_value(j_day, 3))
+        return j_days
+
+    @property
+    def j_days_full(self, abbrev: bool = False) -&gt; List[str]:
+
+        return list(self.stds.keys())
+
+    @property
+    def j_days_abrev(self) -&gt; str:
+        j_days: list = list(self.stds.keys())
+        first: str = j_days[0]
+        last: str = j_days[-1]
+
+        return f&#34;{first}-{last}&#34;
+
+    @property
+    def datetimes(self) -&gt; List[datetime]:
+        return list(self.stds.values())
+
+    def __str__(self) -&gt; str:
+        return f&#34;&#34;&#34;
+        {self.sky}
+
+        {self.ground}
+        &#34;&#34;&#34;
 
     def run(self):
 
-        self.Sky = Sky(
-            j_day=self.j_days,
-            year=self.year,
-            path=self.modis_path,
-            coords=self.coords,
-            station=self.station_name,
+        self.sky = SkyControl(
+            stds=self.stds, path=self.modis_path, station=self.station
         )
 
-        matched_stds: dict = self.Sky.extract_stds()
+        self.sky.run_all(show_time=self.show_time_stats)
 
-        self.Ground = Ground(
-            year=self.year,
+        matched_stds: dict = self.sky.extract_stds()
+
+        self.ground = GroundControl(
             path=self.ground_path,
-            coords=self.coords,
-            station=self.station_name,
+            station=self.station,
             stds=matched_stds,
             save_images=self.save_images,
             show_images=self.show_images,
         )
-        # self.Ground = Ground(self)
 
-    def results(
-        self, as_dataframe: Optional[bool] = False, save_path: Optional[str] = &#34;&#34;
-    ):
+        self.ground.run_all(show_time=self.show_time_stats)
 
-        if not hasattr(self, &#34;Sky&#34;) or not hasattr(self, &#34;Ground&#34;):
-            raise ValueError(&#34;Sky or Ground model uninitiated&#34;)
+    def results(self, as_dataframe: Optional[bool] = False, save: bool = False):
 
-        sky_results: dict = self.Sky.results(as_dataframe=False)
-        ground_results: dict = self.Ground.results(as_dataframe=False)
+        if not hasattr(self, &#34;sky&#34;):
+            raise AssertionError(
+                &#34;SkyControl object required, no SkyImage objects present&#34;
+            )
+
+        if not hasattr(self, &#34;ground&#34;):
+            raise AssertionError(
+                &#34;GroundControl object required, no GroundImage objects present&#34;
+            )
+
+        if save and not as_dataframe:
+            as_dataframe = True
+
+        sky_results: dict = self.sky.results(as_dataframe=False)
+        ground_results: dict = self.ground.results(as_dataframe=False)
 
         if not as_dataframe:
             return {&#34;SKY&#34;: sky_results, &#34;GROUND&#34;: ground_results}
@@ -334,15 +384,75 @@ return process results</p></div>
 
         combined_df = pd.merge(sky_df, ground_df, left_index=True, right_index=True)
 
-        if save_path:
-            combined_df.to_csv(save_path)
+        if save:
+            combined_df.to_csv(f&#34;SkyImage_Results_{self.j_days_abrev}.csv&#34;)
 
         return combined_df</code></pre>
 </details>
+<h3>Instance variables</h3>
+<dl>
+<dt id="skyimage.app.SkyImage.datetimes"><code class="name">var <span class="ident">datetimes</span> : List[datetime.datetime]</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def datetimes(self) -&gt; List[datetime]:
+    return list(self.stds.values())</code></pre>
+</details>
+</dd>
+<dt id="skyimage.app.SkyImage.j_days"><code class="name">var <span class="ident">j_days</span> : List[str]</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def j_days(self) -&gt; List[str]:
+    j_days: list = []
+    for target in self.stds.values():
+        j_day = target.timetuple().tm_yday
+        j_days.append(buffer_value(j_day, 3))
+    return j_days</code></pre>
+</details>
+</dd>
+<dt id="skyimage.app.SkyImage.j_days_abrev"><code class="name">var <span class="ident">j_days_abrev</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def j_days_abrev(self) -&gt; str:
+    j_days: list = list(self.stds.keys())
+    first: str = j_days[0]
+    last: str = j_days[-1]
+
+    return f&#34;{first}-{last}&#34;</code></pre>
+</details>
+</dd>
+<dt id="skyimage.app.SkyImage.j_days_full"><code class="name">var <span class="ident">j_days_full</span> : List[str]</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def j_days_full(self, abbrev: bool = False) -&gt; List[str]:
+
+    return list(self.stds.keys())</code></pre>
+</details>
+</dd>
+</dl>
 <h3>Methods</h3>
 <dl>
 <dt id="skyimage.app.SkyImage.results"><code class="name flex">
-<span>def <span class="ident">results</span></span>(<span>self, as_dataframe: Union[bool, NoneType] = False, save_path: Union[str, NoneType] = '')</span>
+<span>def <span class="ident">results</span></span>(<span>self, as_dataframe: Union[bool, NoneType] = False, save: bool = False)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -350,15 +460,23 @@ return process results</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def results(
-    self, as_dataframe: Optional[bool] = False, save_path: Optional[str] = &#34;&#34;
-):
+<pre><code class="python">def results(self, as_dataframe: Optional[bool] = False, save: bool = False):
 
-    if not hasattr(self, &#34;Sky&#34;) or not hasattr(self, &#34;Ground&#34;):
-        raise ValueError(&#34;Sky or Ground model uninitiated&#34;)
+    if not hasattr(self, &#34;sky&#34;):
+        raise AssertionError(
+            &#34;SkyControl object required, no SkyImage objects present&#34;
+        )
 
-    sky_results: dict = self.Sky.results(as_dataframe=False)
-    ground_results: dict = self.Ground.results(as_dataframe=False)
+    if not hasattr(self, &#34;ground&#34;):
+        raise AssertionError(
+            &#34;GroundControl object required, no GroundImage objects present&#34;
+        )
+
+    if save and not as_dataframe:
+        as_dataframe = True
+
+    sky_results: dict = self.sky.results(as_dataframe=False)
+    ground_results: dict = self.ground.results(as_dataframe=False)
 
     if not as_dataframe:
         return {&#34;SKY&#34;: sky_results, &#34;GROUND&#34;: ground_results}
@@ -370,8 +488,8 @@ return process results</p></div>
 
     combined_df = pd.merge(sky_df, ground_df, left_index=True, right_index=True)
 
-    if save_path:
-        combined_df.to_csv(save_path)
+    if save:
+        combined_df.to_csv(f&#34;SkyImage_Results_{self.j_days_abrev}.csv&#34;)
 
     return combined_df</code></pre>
 </details>
@@ -387,25 +505,23 @@ return process results</p></div>
 </summary>
 <pre><code class="python">def run(self):
 
-    self.Sky = Sky(
-        j_day=self.j_days,
-        year=self.year,
-        path=self.modis_path,
-        coords=self.coords,
-        station=self.station_name,
+    self.sky = SkyControl(
+        stds=self.stds, path=self.modis_path, station=self.station
     )
 
-    matched_stds: dict = self.Sky.extract_stds()
+    self.sky.run_all(show_time=self.show_time_stats)
 
-    self.Ground = Ground(
-        year=self.year,
+    matched_stds: dict = self.sky.extract_stds()
+
+    self.ground = GroundControl(
         path=self.ground_path,
-        coords=self.coords,
-        station=self.station_name,
+        station=self.station,
         stds=matched_stds,
         save_images=self.save_images,
         show_images=self.show_images,
-    )</code></pre>
+    )
+
+    self.ground.run_all(show_time=self.show_time_stats)</code></pre>
 </details>
 </dd>
 </dl>
@@ -428,7 +544,11 @@ return process results</p></div>
 <ul>
 <li>
 <h4><code><a title="skyimage.app.SkyImage" href="#skyimage.app.SkyImage">SkyImage</a></code></h4>
-<ul class="">
+<ul class="two-column">
+<li><code><a title="skyimage.app.SkyImage.datetimes" href="#skyimage.app.SkyImage.datetimes">datetimes</a></code></li>
+<li><code><a title="skyimage.app.SkyImage.j_days" href="#skyimage.app.SkyImage.j_days">j_days</a></code></li>
+<li><code><a title="skyimage.app.SkyImage.j_days_abrev" href="#skyimage.app.SkyImage.j_days_abrev">j_days_abrev</a></code></li>
+<li><code><a title="skyimage.app.SkyImage.j_days_full" href="#skyimage.app.SkyImage.j_days_full">j_days_full</a></code></li>
 <li><code><a title="skyimage.app.SkyImage.results" href="#skyimage.app.SkyImage.results">results</a></code></li>
 <li><code><a title="skyimage.app.SkyImage.run" href="#skyimage.app.SkyImage.run">run</a></code></li>
 </ul>

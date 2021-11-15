@@ -1,0 +1,848 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.9.2" />
+<title>skyimage.stations.Sky.SkyControl API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>skyimage.stations.Sky.SkyControl</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">from datetime import datetime
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Union
+
+import pandas as pd
+import rasterio as rio
+from rich.progress import track
+from skyimage.stations.Sky.SkyScene import SkyScene
+from skyimage.stations.Sky.utils.utils import SkyPlatform
+from skyimage.utils.utils import Station as StationObject
+from skyimage.utils.utils import buffer_value
+from skyimage.utils.validators import validate_datetime
+from skyimage.utils.validators import validate_file_path
+
+
+class SkyControl:
+    &#34;&#34;&#34;
+    Control object for interfacing with `GroundImage` objects
+
+    Attributes
+    ----------
+
+    `j_day` : int or str
+        Target Julian day
+
+    `year` : int
+            Target year
+
+    `path` : str
+        File path to Sky station data
+
+    `station` : StationObject or str
+        Target station object or station name
+
+    `stds` : list of datetime
+        Datetime objects to extract data for
+
+    `file_format` : str
+        Override default &#39;hdf&#39; file format
+
+    `target_platform` : str or `SkyPlatform`
+        Target Sky platform. Default = &#34;MODIS&#34;
+
+    Methods
+    -------
+    `instantiate_scene_objects()`
+        Create matching `SkyScene` objects to `self` search parameters
+
+    `run_all()`
+        Run all found `SkyScene` objects
+
+    `results()`
+        Return results from all processed `SkyScene` objects
+
+    @static_method
+    `get_metadata()`
+        Helper method to extract spatial file metadata
+
+    &#34;&#34;&#34;
+
+    def __init__(
+        self,
+        j_day: Optional[Union[int, str, list]] = None,
+        year: int = None,
+        path: str = None,
+        station: Union[StationObject, str] = None,
+        stds: Optional[dict] = None,
+        file_format: str = &#34;hdf&#34;,
+        target_platform: Union[SkyPlatform, str] = &#34;MODIS&#34;,
+    ):
+
+        self.path: str = validate_file_path(path, &#34;MODIS&#34;)
+
+        if isinstance(station, StationObject):
+            self.station = station
+        elif isinstance(station, str):
+            self.station = StationObject(name=station)
+        else:
+            raise ValueError(&#34;`station` must be a str or type Station&#34;)
+
+        if isinstance(target_platform, SkyPlatform):
+            self.platform = target_platform
+        elif isinstance(target_platform, str):
+            self.platform = SkyPlatform(platform=target_platform)
+        else:
+            raise ValueError(&#34;`target_platform` must be a str or type `SkyPlatform`&#34;)
+
+        if j_day and year:
+            # turn j_day + year into datetime objects
+            _, self.stds = validate_datetime(j_day, year)
+
+            stds_dict: dict = {}
+            for std in self.stds:
+                j_day = buffer_value(std.timetuple().tm_yday, 3)
+                stds_dict[str(std.year) + j_day] = std
+
+            self.stds = stds_dict
+
+        elif stds:
+            self.stds = stds
+        else:
+            raise ValueError(&#34;Must provide `j_day` and `year` or `stds`&#34;)
+
+        self.file_format: str = file_format
+        self.scenes: Dict[str, str] = self.__instantiate_scene_objects()
+
+    def __str__(self):
+        self_str: str = f&#34;&#34;&#34;
+        Sky station
+        --------
+        Data Path : {self.path}
+        File Format : {self.file_format}
+
+        Window Target
+        --------
+        Station : {self.station.name}
+        Coords : {self.station.coords}
+
+        {len(self.scenes)} scene(s) found
+        &#34;&#34;&#34;
+        for k, v in self.scenes.items():
+            self_str = self_str + str(v)
+
+        return self_str
+
+    @property
+    def j_days(self) -&gt; List[str]:
+        j_days: list = []
+        for target in self.stds.values():
+            j_day = target.timetuple().tm_yday
+            j_days.append(buffer_value(j_day, 3))
+        return j_days
+
+    @property
+    def j_days_full(self) -&gt; List[str]:
+        return list(self.stds.keys())
+
+    @property
+    def datetimes(self) -&gt; List[datetime]:
+        return list(self.stds.values())
+
+    def __instantiate_scene_objects(self) -&gt; Dict[str, SkyScene]:
+        &#34;&#34;&#34;Create matching `SkyScene` objects to `self` search parameters
+
+        Uses
+        ----------
+        `self.path` : str
+            Path to Sky directory
+
+        `self.station` : StationObject
+            object of target station
+
+        `self.file_format` : str
+            File format of target images
+
+        `self.stds` : Dict[year+jday, datetime]
+            Dictionary with datetime object values keyed
+            by year + julian day
+
+        Returns
+        ----------
+        `matching_scenes` : Dict[str, `SkyScene`]
+
+        &#34;&#34;&#34;
+        matching_scenes: dict = {}
+        for k, std in self.stds.items():
+
+            scn_obj = SkyScene(
+                sky_path=self.path,
+                station=self.station,
+                target_time=std,
+                file_format=self.file_format,
+            )
+
+            matching_scenes[k] = scn_obj
+
+        return matching_scenes
+
+    def run_all(self, show_time: bool = False) -&gt; None:
+        &#34;&#34;&#34;Run all found SkyScene objects
+
+        Parameters
+        ----------
+        show_time : bool
+            show time statistics
+
+        &#34;&#34;&#34;
+        start = datetime.now()
+        for sky_obj in track(self.scenes.values(), description=&#34;Sky Scenes&#34;):
+
+            if not isinstance(sky_obj, SkyScene):
+                raise ValueError(&#34;Iterable must be type `SkyScene`&#34;)
+
+            sky_obj.run_all(show_time=show_time)
+
+        if show_time:
+            print(&#34;SkyScene Done-&#34;, datetime.now() - start)
+
+    def results(
+        self, as_dataframe: Optional[bool] = False
+    ) -&gt; Union[dict, pd.DataFrame]:
+        &#34;&#34;&#34;Get processed results from all SkyScene objects
+
+        Parameters
+        ----------
+        as_dataframe : bool
+            return as pandas dataframe
+
+        Returns
+        ----------
+        Dict : dict
+            all results as Dict
+
+        &#34;&#34;&#34;
+        all_results: dict = {}
+
+        for sky_obj in self.scenes.values():
+
+            if not isinstance(sky_obj, SkyScene):
+                raise ValueError(&#34;Iterable must be type `SkyScene`&#34;)
+
+            name: str = sky_obj.j_day_full
+            results: dict = sky_obj.results()
+            all_results[name] = results
+
+        if as_dataframe:
+            return pd.DataFrame.from_dict(all_results, orient=&#34;index&#34;)
+
+        return all_results
+
+    def extract_stds(self) -&gt; dict:
+        &#34;&#34;&#34;Get matched `datetime`s from all
+         `SkyScene` objects
+
+        Returns
+        ----------
+        Dict : [str : datetime object]
+            results as Dict
+
+        &#34;&#34;&#34;
+
+        stds: dict = {}
+
+        # iterate through SkyImage objects
+        # and extract aquisition_time datetime
+        for k, v in self.scenes.items():
+            stds[k] = v.actual_datetime
+
+        return stds
+
+    @staticmethod
+    def get_metadata(target) -&gt; Dict:
+        &#34;&#34;&#34;Returns metadata of `target` spatial data file
+
+        Parameters
+        ----------
+        target : str
+            path to `target` spatial data file
+
+        Returns
+        ----------
+        Dict
+            Dictionary of metadata.
+
+        &#34;&#34;&#34;
+        with rio.open(target) as ds:
+            meta = ds.meta
+        return meta</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="skyimage.stations.Sky.SkyControl.SkyControl"><code class="flex name class">
+<span>class <span class="ident">SkyControl</span></span>
+<span>(</span><span>j_day: Union[int, str, list, NoneType] = None, year: int = None, path: str = None, station: Union[<a title="skyimage.utils.utils.Station" href="../../utils/utils.html#skyimage.utils.utils.Station">Station</a>, str] = None, stds: Union[dict, NoneType] = None, file_format: str = 'hdf', target_platform: Union[<a title="skyimage.stations.Sky.utils.utils.SkyPlatform" href="utils/utils.html#skyimage.stations.Sky.utils.utils.SkyPlatform">SkyPlatform</a>, str] = 'MODIS')</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Control object for interfacing with <code>GroundImage</code> objects</p>
+<h2 id="attributes">Attributes</h2>
+<p><code>j_day</code> : int or str
+Target Julian day</p>
+<p><code>year</code> : int
+Target year</p>
+<p><code>path</code> : str
+File path to Sky station data</p>
+<p><code>station</code> : StationObject or str
+Target station object or station name</p>
+<p><code>stds</code> : list of datetime
+Datetime objects to extract data for</p>
+<p><code>file_format</code> : str
+Override default 'hdf' file format</p>
+<p><code>target_platform</code> : str or <code>SkyPlatform</code>
+Target Sky platform. Default = "MODIS"</p>
+<h2 id="methods">Methods</h2>
+<p><code>instantiate_scene_objects()</code>
+Create matching <code>SkyScene</code> objects to <code>self</code> search parameters</p>
+<p><code>run_all()</code>
+Run all found <code>SkyScene</code> objects</p>
+<p><code>results()</code>
+Return results from all processed <code>SkyScene</code> objects</p>
+<p>@static_method
+<code>get_metadata()</code>
+Helper method to extract spatial file metadata</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class SkyControl:
+    &#34;&#34;&#34;
+    Control object for interfacing with `GroundImage` objects
+
+    Attributes
+    ----------
+
+    `j_day` : int or str
+        Target Julian day
+
+    `year` : int
+            Target year
+
+    `path` : str
+        File path to Sky station data
+
+    `station` : StationObject or str
+        Target station object or station name
+
+    `stds` : list of datetime
+        Datetime objects to extract data for
+
+    `file_format` : str
+        Override default &#39;hdf&#39; file format
+
+    `target_platform` : str or `SkyPlatform`
+        Target Sky platform. Default = &#34;MODIS&#34;
+
+    Methods
+    -------
+    `instantiate_scene_objects()`
+        Create matching `SkyScene` objects to `self` search parameters
+
+    `run_all()`
+        Run all found `SkyScene` objects
+
+    `results()`
+        Return results from all processed `SkyScene` objects
+
+    @static_method
+    `get_metadata()`
+        Helper method to extract spatial file metadata
+
+    &#34;&#34;&#34;
+
+    def __init__(
+        self,
+        j_day: Optional[Union[int, str, list]] = None,
+        year: int = None,
+        path: str = None,
+        station: Union[StationObject, str] = None,
+        stds: Optional[dict] = None,
+        file_format: str = &#34;hdf&#34;,
+        target_platform: Union[SkyPlatform, str] = &#34;MODIS&#34;,
+    ):
+
+        self.path: str = validate_file_path(path, &#34;MODIS&#34;)
+
+        if isinstance(station, StationObject):
+            self.station = station
+        elif isinstance(station, str):
+            self.station = StationObject(name=station)
+        else:
+            raise ValueError(&#34;`station` must be a str or type Station&#34;)
+
+        if isinstance(target_platform, SkyPlatform):
+            self.platform = target_platform
+        elif isinstance(target_platform, str):
+            self.platform = SkyPlatform(platform=target_platform)
+        else:
+            raise ValueError(&#34;`target_platform` must be a str or type `SkyPlatform`&#34;)
+
+        if j_day and year:
+            # turn j_day + year into datetime objects
+            _, self.stds = validate_datetime(j_day, year)
+
+            stds_dict: dict = {}
+            for std in self.stds:
+                j_day = buffer_value(std.timetuple().tm_yday, 3)
+                stds_dict[str(std.year) + j_day] = std
+
+            self.stds = stds_dict
+
+        elif stds:
+            self.stds = stds
+        else:
+            raise ValueError(&#34;Must provide `j_day` and `year` or `stds`&#34;)
+
+        self.file_format: str = file_format
+        self.scenes: Dict[str, str] = self.__instantiate_scene_objects()
+
+    def __str__(self):
+        self_str: str = f&#34;&#34;&#34;
+        Sky station
+        --------
+        Data Path : {self.path}
+        File Format : {self.file_format}
+
+        Window Target
+        --------
+        Station : {self.station.name}
+        Coords : {self.station.coords}
+
+        {len(self.scenes)} scene(s) found
+        &#34;&#34;&#34;
+        for k, v in self.scenes.items():
+            self_str = self_str + str(v)
+
+        return self_str
+
+    @property
+    def j_days(self) -&gt; List[str]:
+        j_days: list = []
+        for target in self.stds.values():
+            j_day = target.timetuple().tm_yday
+            j_days.append(buffer_value(j_day, 3))
+        return j_days
+
+    @property
+    def j_days_full(self) -&gt; List[str]:
+        return list(self.stds.keys())
+
+    @property
+    def datetimes(self) -&gt; List[datetime]:
+        return list(self.stds.values())
+
+    def __instantiate_scene_objects(self) -&gt; Dict[str, SkyScene]:
+        &#34;&#34;&#34;Create matching `SkyScene` objects to `self` search parameters
+
+        Uses
+        ----------
+        `self.path` : str
+            Path to Sky directory
+
+        `self.station` : StationObject
+            object of target station
+
+        `self.file_format` : str
+            File format of target images
+
+        `self.stds` : Dict[year+jday, datetime]
+            Dictionary with datetime object values keyed
+            by year + julian day
+
+        Returns
+        ----------
+        `matching_scenes` : Dict[str, `SkyScene`]
+
+        &#34;&#34;&#34;
+        matching_scenes: dict = {}
+        for k, std in self.stds.items():
+
+            scn_obj = SkyScene(
+                sky_path=self.path,
+                station=self.station,
+                target_time=std,
+                file_format=self.file_format,
+            )
+
+            matching_scenes[k] = scn_obj
+
+        return matching_scenes
+
+    def run_all(self, show_time: bool = False) -&gt; None:
+        &#34;&#34;&#34;Run all found SkyScene objects
+
+        Parameters
+        ----------
+        show_time : bool
+            show time statistics
+
+        &#34;&#34;&#34;
+        start = datetime.now()
+        for sky_obj in track(self.scenes.values(), description=&#34;Sky Scenes&#34;):
+
+            if not isinstance(sky_obj, SkyScene):
+                raise ValueError(&#34;Iterable must be type `SkyScene`&#34;)
+
+            sky_obj.run_all(show_time=show_time)
+
+        if show_time:
+            print(&#34;SkyScene Done-&#34;, datetime.now() - start)
+
+    def results(
+        self, as_dataframe: Optional[bool] = False
+    ) -&gt; Union[dict, pd.DataFrame]:
+        &#34;&#34;&#34;Get processed results from all SkyScene objects
+
+        Parameters
+        ----------
+        as_dataframe : bool
+            return as pandas dataframe
+
+        Returns
+        ----------
+        Dict : dict
+            all results as Dict
+
+        &#34;&#34;&#34;
+        all_results: dict = {}
+
+        for sky_obj in self.scenes.values():
+
+            if not isinstance(sky_obj, SkyScene):
+                raise ValueError(&#34;Iterable must be type `SkyScene`&#34;)
+
+            name: str = sky_obj.j_day_full
+            results: dict = sky_obj.results()
+            all_results[name] = results
+
+        if as_dataframe:
+            return pd.DataFrame.from_dict(all_results, orient=&#34;index&#34;)
+
+        return all_results
+
+    def extract_stds(self) -&gt; dict:
+        &#34;&#34;&#34;Get matched `datetime`s from all
+         `SkyScene` objects
+
+        Returns
+        ----------
+        Dict : [str : datetime object]
+            results as Dict
+
+        &#34;&#34;&#34;
+
+        stds: dict = {}
+
+        # iterate through SkyImage objects
+        # and extract aquisition_time datetime
+        for k, v in self.scenes.items():
+            stds[k] = v.actual_datetime
+
+        return stds
+
+    @staticmethod
+    def get_metadata(target) -&gt; Dict:
+        &#34;&#34;&#34;Returns metadata of `target` spatial data file
+
+        Parameters
+        ----------
+        target : str
+            path to `target` spatial data file
+
+        Returns
+        ----------
+        Dict
+            Dictionary of metadata.
+
+        &#34;&#34;&#34;
+        with rio.open(target) as ds:
+            meta = ds.meta
+        return meta</code></pre>
+</details>
+<h3>Static methods</h3>
+<dl>
+<dt id="skyimage.stations.Sky.SkyControl.SkyControl.get_metadata"><code class="name flex">
+<span>def <span class="ident">get_metadata</span></span>(<span>target) ‑> Dict</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns metadata of <code>target</code> spatial data file</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>target</code></strong> :&ensp;<code>str</code></dt>
+<dd>path to <code>target</code> spatial data file</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Dict</code></dt>
+<dd>Dictionary of metadata.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod
+def get_metadata(target) -&gt; Dict:
+    &#34;&#34;&#34;Returns metadata of `target` spatial data file
+
+    Parameters
+    ----------
+    target : str
+        path to `target` spatial data file
+
+    Returns
+    ----------
+    Dict
+        Dictionary of metadata.
+
+    &#34;&#34;&#34;
+    with rio.open(target) as ds:
+        meta = ds.meta
+    return meta</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="skyimage.stations.Sky.SkyControl.SkyControl.datetimes"><code class="name">var <span class="ident">datetimes</span> : List[datetime.datetime]</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def datetimes(self) -&gt; List[datetime]:
+    return list(self.stds.values())</code></pre>
+</details>
+</dd>
+<dt id="skyimage.stations.Sky.SkyControl.SkyControl.j_days"><code class="name">var <span class="ident">j_days</span> : List[str]</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def j_days(self) -&gt; List[str]:
+    j_days: list = []
+    for target in self.stds.values():
+        j_day = target.timetuple().tm_yday
+        j_days.append(buffer_value(j_day, 3))
+    return j_days</code></pre>
+</details>
+</dd>
+<dt id="skyimage.stations.Sky.SkyControl.SkyControl.j_days_full"><code class="name">var <span class="ident">j_days_full</span> : List[str]</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def j_days_full(self) -&gt; List[str]:
+    return list(self.stds.keys())</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="skyimage.stations.Sky.SkyControl.SkyControl.extract_stds"><code class="name flex">
+<span>def <span class="ident">extract_stds</span></span>(<span>self) ‑> dict</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get matched <code>datetime</code>s from all
+<code>SkyScene</code> objects</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>Dict</code></strong> :&ensp;<code>[str : datetime object]</code></dt>
+<dd>results as Dict</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def extract_stds(self) -&gt; dict:
+    &#34;&#34;&#34;Get matched `datetime`s from all
+     `SkyScene` objects
+
+    Returns
+    ----------
+    Dict : [str : datetime object]
+        results as Dict
+
+    &#34;&#34;&#34;
+
+    stds: dict = {}
+
+    # iterate through SkyImage objects
+    # and extract aquisition_time datetime
+    for k, v in self.scenes.items():
+        stds[k] = v.actual_datetime
+
+    return stds</code></pre>
+</details>
+</dd>
+<dt id="skyimage.stations.Sky.SkyControl.SkyControl.results"><code class="name flex">
+<span>def <span class="ident">results</span></span>(<span>self, as_dataframe: Union[bool, NoneType] = False) ‑> Union[dict, pandas.core.frame.DataFrame]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get processed results from all SkyScene objects</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>as_dataframe</code></strong> :&ensp;<code>bool</code></dt>
+<dd>return as pandas dataframe</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>Dict</code></strong> :&ensp;<code>dict</code></dt>
+<dd>all results as Dict</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def results(
+    self, as_dataframe: Optional[bool] = False
+) -&gt; Union[dict, pd.DataFrame]:
+    &#34;&#34;&#34;Get processed results from all SkyScene objects
+
+    Parameters
+    ----------
+    as_dataframe : bool
+        return as pandas dataframe
+
+    Returns
+    ----------
+    Dict : dict
+        all results as Dict
+
+    &#34;&#34;&#34;
+    all_results: dict = {}
+
+    for sky_obj in self.scenes.values():
+
+        if not isinstance(sky_obj, SkyScene):
+            raise ValueError(&#34;Iterable must be type `SkyScene`&#34;)
+
+        name: str = sky_obj.j_day_full
+        results: dict = sky_obj.results()
+        all_results[name] = results
+
+    if as_dataframe:
+        return pd.DataFrame.from_dict(all_results, orient=&#34;index&#34;)
+
+    return all_results</code></pre>
+</details>
+</dd>
+<dt id="skyimage.stations.Sky.SkyControl.SkyControl.run_all"><code class="name flex">
+<span>def <span class="ident">run_all</span></span>(<span>self, show_time: bool = False) ‑> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Run all found SkyScene objects</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>show_time</code></strong> :&ensp;<code>bool</code></dt>
+<dd>show time statistics</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def run_all(self, show_time: bool = False) -&gt; None:
+    &#34;&#34;&#34;Run all found SkyScene objects
+
+    Parameters
+    ----------
+    show_time : bool
+        show time statistics
+
+    &#34;&#34;&#34;
+    start = datetime.now()
+    for sky_obj in track(self.scenes.values(), description=&#34;Sky Scenes&#34;):
+
+        if not isinstance(sky_obj, SkyScene):
+            raise ValueError(&#34;Iterable must be type `SkyScene`&#34;)
+
+        sky_obj.run_all(show_time=show_time)
+
+    if show_time:
+        print(&#34;SkyScene Done-&#34;, datetime.now() - start)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="skyimage.stations.Sky" href="index.html">skyimage.stations.Sky</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="skyimage.stations.Sky.SkyControl.SkyControl" href="#skyimage.stations.Sky.SkyControl.SkyControl">SkyControl</a></code></h4>
+<ul class="two-column">
+<li><code><a title="skyimage.stations.Sky.SkyControl.SkyControl.datetimes" href="#skyimage.stations.Sky.SkyControl.SkyControl.datetimes">datetimes</a></code></li>
+<li><code><a title="skyimage.stations.Sky.SkyControl.SkyControl.extract_stds" href="#skyimage.stations.Sky.SkyControl.SkyControl.extract_stds">extract_stds</a></code></li>
+<li><code><a title="skyimage.stations.Sky.SkyControl.SkyControl.get_metadata" href="#skyimage.stations.Sky.SkyControl.SkyControl.get_metadata">get_metadata</a></code></li>
+<li><code><a title="skyimage.stations.Sky.SkyControl.SkyControl.j_days" href="#skyimage.stations.Sky.SkyControl.SkyControl.j_days">j_days</a></code></li>
+<li><code><a title="skyimage.stations.Sky.SkyControl.SkyControl.j_days_full" href="#skyimage.stations.Sky.SkyControl.SkyControl.j_days_full">j_days_full</a></code></li>
+<li><code><a title="skyimage.stations.Sky.SkyControl.SkyControl.results" href="#skyimage.stations.Sky.SkyControl.SkyControl.results">results</a></code></li>
+<li><code><a title="skyimage.stations.Sky.SkyControl.SkyControl.run_all" href="#skyimage.stations.Sky.SkyControl.SkyControl.run_all">run_all</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.2</a>.</p>
+</footer>
+</body>
+</html>

@@ -1,0 +1,1016 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.9.2" />
+<title>skyimage.stations.Sky.SkyScene API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>skyimage.stations.Sky.SkyScene</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">from datetime import datetime
+import glob
+import logging
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Union
+import warnings
+
+import pandas as pd
+import rasterio as rio
+from scipy import stats
+from skyimage.stations.Ground import GroundImage
+from skyimage.stations.Sky.utils.utils import SkyPlatform
+from skyimage.stations.Sky.utils.utils import binary_to_decimal
+from skyimage.stations.Sky.utils.utils import decimal_to_binary
+from skyimage.utils.utils import Station as StationObject
+from skyimage.utils.utils import buffer_value
+
+
+class SkyScene:
+    def __init__(
+        self,
+        direct_path: Optional[str] = None,
+        target_time: datetime = None,
+        station: Union[StationObject, str] = None,
+        sky_path: str = None,
+        file_format: str = &#34;hdf&#34;,
+    ):
+
+        self.target_time: datetime = target_time
+        self.direct_path: str = direct_path
+        self.file_format = file_format
+
+        if direct_path and sky_path:
+            warnings.warn(
+                &#34;Both `sky_path and `direct_path` passed,\
+                defaulting to `direct_path`&#34;,
+                UserWarning,
+                stacklevel=2,
+            )
+
+            self.direct_path = direct_path
+        elif not direct_path:
+
+            assert sky_path, &#34;`sky_path` required when not using `direct_path`&#34;
+            assert target_time, &#34;`target_time` required when not using `direct_path`&#34;
+
+            self.__find_matching_scene(target_time, sky_path)
+
+        if isinstance(station, StationObject):
+            self.station = station
+        elif isinstance(station, str):
+            self.station = StationObject(name=station)
+        else:
+            raise ValueError(&#34;`station` must be a str or type Station&#34;)
+
+        self.target_sublayers: List[str] = SkyPlatform(platform=&#34;MODIS&#34;)
+        self.processed: bool = False
+
+        self.sub_layers: list
+        self.raw_data: dict
+        self.actual_datetime: datetime
+        self.data: dict
+
+    @property
+    def j_day(self) -&gt; str:
+        j_day: int = self.target_time.timetuple().tm_yday
+        return buffer_value(j_day, 3)
+
+    @property
+    def j_day_full(self) -&gt; str:
+        j_day: int = self.target_time.timetuple().tm_yday
+        year: int = self.target_time.year
+        return str(year) + buffer_value(j_day, 3)
+
+    @property
+    def name(self) -&gt; str:
+        return self.sub_layers.name + self.j_day_full
+
+    def __str__(self) -&gt; str:
+        self_str: str = f&#34;&#34;&#34;
+            {self.target_sublayers.name}
+            {self.j_day_full}
+            &#34;&#34;&#34;
+
+        if self.processed:
+            self_str = (
+                self_str
+                + f&#34;&#34;&#34;
+                {self.data}
+                &#34;&#34;&#34;
+            )
+        return self_str
+
+    def __repr__(self) -&gt; str:
+        return f&#34;&lt;SkyImage {self.target_sublayers.name} {self.j_day_full}&gt;&#34;
+
+    def __eq__(self, o: object) -&gt; bool:
+        if isinstance(o, GroundImage):
+            if o.j_day_full == self.j_day_full:
+                return True
+        return False
+
+    def __find_matching_scene(self, target_time: datetime, path: str) -&gt; None:
+        &#34;&#34;&#34;Find path to desired scene
+
+        Uses
+        ----------
+
+        `self.file_format` : str
+            File format of target image
+
+        Parameters
+        ----------
+
+        `target_time` : datetime
+            target date of image
+
+        `path` : str
+            Path for image search
+
+        Defines
+        ----------
+        `self.direct_path`
+            path to target scene
+
+        &#34;&#34;&#34;
+        year: str = str(target_time.year)
+        j_day: str = self.j_day
+        file_format = self.file_format
+
+        matching_file_list = list(
+            glob.iglob(path + f&#34;/{year}/*A{year + j_day}*.{file_format}&#34;)
+        )
+
+        if not matching_file_list:
+            raise FileNotFoundError(f&#34;Ground scene {str(target_time)} not found&#34;)
+        elif len(matching_file_list) &gt; 1:
+            raise LookupError(f&#34;Multiple matching files found for {str(target_time)}&#34;)
+        else:
+            logging.info(f&#34;Ground scene {str(target_time)} found&#34;)
+
+        self.direct_path = matching_file_list[0]
+
+    def run_all(
+        self,
+        show_time: bool = False,
+    ) -&gt; None:
+        &#34;&#34;&#34;Run all requied processing
+
+        Parameters
+        ----------
+        show_time : bool
+            show time statistics
+
+        &#34;&#34;&#34;
+
+        start_time: datetime = datetime.now()
+        self.extract_sublayers()
+        self.extract()
+        self.process()
+
+        if show_time:
+            print(self.j_day_full + &#34;-&#34;, datetime.now() - start_time)
+
+    def extract_sublayers(self) -&gt; None:
+        &#34;&#34;&#34;Extract sublayers from `self.direct_path`
+
+        Uses
+        ----------
+
+        `self.direct_path` : str
+            direct path to target scene
+
+        `self.target_sublayers` : SkyPlatform
+            target scene layers
+
+        Defines
+        ----------
+        `self.direct_path`
+            path to target image
+
+        &#34;&#34;&#34;
+        found_layers: dict = {}
+
+        with rio.open(self.direct_path) as ds:
+            for name in ds.subdatasets:
+                for target in self.target_sublayers.layers:
+                    if target in name:
+                        logging.info(f&#34;{target} layer found&#34;)
+                        abbrev = SkyPlatform.make_abbreviation(target)
+                        found_layers[abbrev] = name
+
+        for target in self.target_sublayers.layers:
+            abbrev = SkyPlatform.make_abbreviation(target)
+            if abbrev not in found_layers.keys():
+                raise FileNotFoundError(
+                    f&#34;Could not find {target} in sublayers. Check {self.direct_path}&#34;
+                )
+        self.sub_layers = found_layers
+
+    def extract(self) -&gt; None:
+        &#34;&#34;&#34;Extract windowed data array `self.raw_data` from `sublayer_paths`
+
+        Uses
+        ----------
+
+        `self.station` : Station
+            Target `Station` object
+
+        `self.sub_layers` : list
+            found target sub layers
+
+        Defines
+        ----------
+        `self.raw_data` : dict
+            Dict of raw data values
+
+        &#34;&#34;&#34;
+        # current window is 3X3 pixels
+        # TODO add custom window
+        lat = self.station.latitude
+        lon = self.station.longitude
+        poi_dict = {}
+
+        for key, val in self.sub_layers.items():
+            with rio.open(val) as ds:
+
+                self.crs = ds.read_crs()
+                py, px = ds.index(lon, lat)
+                # WINDOW ADJUST
+                # first is 3x3, next is 2X2, next 1
+                # window = rio.windows.Window(px - 1, py - 1, 3, 3)
+                window = rio.windows.Window(px, py - 1, 2, 2)
+                # window = rio.windows.Window(px, py, 1, 1)
+                arr = ds.read(1, window=window)
+                logging.info(f&#34;{key}\n{window}\n{arr}&#34;)
+                poi_dict[key] = arr
+
+        self.raw_data: dict = poi_dict
+
+    def process(self) -&gt; None:
+        &#34;&#34;&#34;Process `self.raw_data`
+
+        Uses
+        ----------
+        `self.target_sublayers` : `SkyPlatform`
+            Platform sublayer object
+
+        `self.raw_data` : dict
+            Dict of raw data values
+
+        Defines
+        ----------
+        `self.actual_datetime` : datetime
+            Time of scenery aquisition
+
+        `self.data` : dict
+            Processed information
+            concerning image
+
+        &#34;&#34;&#34;
+
+        processed_dict: dict = {}
+        num_mappings: Dict[str] = self.target_sublayers.num_map
+
+        for sub_layer in self.target_sublayers.essential:
+            if sub_layer not in self.raw_data.keys():
+                raise KeyError(
+                    f&#34;Unable to assert main {self.target_sublayers.name} statistics. \
+                    Check {sub_layer} sublayer&#34;
+                )
+
+        time_mode, _ = stats.mode(self.raw_data[&#34;CRGT&#34;])
+        time_mode: str = str(time_mode[0][0])
+
+        processed_dict[&#34;time_utc&#34;] = time_mode
+        self.actual_datetime = self.target_time.replace(
+            hour=int(time_mode[0:2]), minute=int(time_mode[2:])
+        )
+
+        avg_pixel_total = self.raw_data[&#34;NPA&#34;].sum()
+        processed_dict[&#34;n_TOTAL&#34;] = avg_pixel_total
+
+        crnm = self.raw_data[&#34;CRNM&#34;].flatten()
+
+        for pixel in crnm:
+
+            binary: str = decimal_to_binary(str(pixel))
+
+            for k, v in num_mappings.items():
+
+                start_bit, end_bit = [int(x) for x in v.split(&#34;-&#34;)]
+                end_i = len(binary) - start_bit
+                start_i = end_i - (end_bit - start_bit) - 1
+
+                mapped_octet: str = binary[start_i:end_i:1]
+                mapped_decimal: int = binary_to_decimal(mapped_octet)
+
+                processed_dict[k] = mapped_decimal + processed_dict.get(k, 0)
+
+        for k, v in num_mappings.items():
+
+            n_present_pixels: int = processed_dict.get(k, 0)
+            prcnt_of_total: float = round((n_present_pixels / avg_pixel_total) * 100, 2)
+
+            processed_dict[f&#34;prcnt_{k}&#34;] = prcnt_of_total
+
+        self.processed: bool = True
+        self.data: dict = processed_dict
+
+    def results(self, as_dataframe: bool = False) -&gt; Union[dict, pd.DataFrame]:
+
+        if not self.processed:
+            raise AssertionError(&#34;Object not processed&#34;)
+
+        if as_dataframe:
+            return pd.DataFrame.from_dict(self.data, orient=&#34;index&#34;)
+
+        return self.data</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="skyimage.stations.Sky.SkyScene.SkyScene"><code class="flex name class">
+<span>class <span class="ident">SkyScene</span></span>
+<span>(</span><span>direct_path: Union[str, NoneType] = None, target_time: datetime.datetime = None, station: Union[<a title="skyimage.utils.utils.Station" href="../../utils/utils.html#skyimage.utils.utils.Station">Station</a>, str] = None, sky_path: str = None, file_format: str = 'hdf')</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class SkyScene:
+    def __init__(
+        self,
+        direct_path: Optional[str] = None,
+        target_time: datetime = None,
+        station: Union[StationObject, str] = None,
+        sky_path: str = None,
+        file_format: str = &#34;hdf&#34;,
+    ):
+
+        self.target_time: datetime = target_time
+        self.direct_path: str = direct_path
+        self.file_format = file_format
+
+        if direct_path and sky_path:
+            warnings.warn(
+                &#34;Both `sky_path and `direct_path` passed,\
+                defaulting to `direct_path`&#34;,
+                UserWarning,
+                stacklevel=2,
+            )
+
+            self.direct_path = direct_path
+        elif not direct_path:
+
+            assert sky_path, &#34;`sky_path` required when not using `direct_path`&#34;
+            assert target_time, &#34;`target_time` required when not using `direct_path`&#34;
+
+            self.__find_matching_scene(target_time, sky_path)
+
+        if isinstance(station, StationObject):
+            self.station = station
+        elif isinstance(station, str):
+            self.station = StationObject(name=station)
+        else:
+            raise ValueError(&#34;`station` must be a str or type Station&#34;)
+
+        self.target_sublayers: List[str] = SkyPlatform(platform=&#34;MODIS&#34;)
+        self.processed: bool = False
+
+        self.sub_layers: list
+        self.raw_data: dict
+        self.actual_datetime: datetime
+        self.data: dict
+
+    @property
+    def j_day(self) -&gt; str:
+        j_day: int = self.target_time.timetuple().tm_yday
+        return buffer_value(j_day, 3)
+
+    @property
+    def j_day_full(self) -&gt; str:
+        j_day: int = self.target_time.timetuple().tm_yday
+        year: int = self.target_time.year
+        return str(year) + buffer_value(j_day, 3)
+
+    @property
+    def name(self) -&gt; str:
+        return self.sub_layers.name + self.j_day_full
+
+    def __str__(self) -&gt; str:
+        self_str: str = f&#34;&#34;&#34;
+            {self.target_sublayers.name}
+            {self.j_day_full}
+            &#34;&#34;&#34;
+
+        if self.processed:
+            self_str = (
+                self_str
+                + f&#34;&#34;&#34;
+                {self.data}
+                &#34;&#34;&#34;
+            )
+        return self_str
+
+    def __repr__(self) -&gt; str:
+        return f&#34;&lt;SkyImage {self.target_sublayers.name} {self.j_day_full}&gt;&#34;
+
+    def __eq__(self, o: object) -&gt; bool:
+        if isinstance(o, GroundImage):
+            if o.j_day_full == self.j_day_full:
+                return True
+        return False
+
+    def __find_matching_scene(self, target_time: datetime, path: str) -&gt; None:
+        &#34;&#34;&#34;Find path to desired scene
+
+        Uses
+        ----------
+
+        `self.file_format` : str
+            File format of target image
+
+        Parameters
+        ----------
+
+        `target_time` : datetime
+            target date of image
+
+        `path` : str
+            Path for image search
+
+        Defines
+        ----------
+        `self.direct_path`
+            path to target scene
+
+        &#34;&#34;&#34;
+        year: str = str(target_time.year)
+        j_day: str = self.j_day
+        file_format = self.file_format
+
+        matching_file_list = list(
+            glob.iglob(path + f&#34;/{year}/*A{year + j_day}*.{file_format}&#34;)
+        )
+
+        if not matching_file_list:
+            raise FileNotFoundError(f&#34;Ground scene {str(target_time)} not found&#34;)
+        elif len(matching_file_list) &gt; 1:
+            raise LookupError(f&#34;Multiple matching files found for {str(target_time)}&#34;)
+        else:
+            logging.info(f&#34;Ground scene {str(target_time)} found&#34;)
+
+        self.direct_path = matching_file_list[0]
+
+    def run_all(
+        self,
+        show_time: bool = False,
+    ) -&gt; None:
+        &#34;&#34;&#34;Run all requied processing
+
+        Parameters
+        ----------
+        show_time : bool
+            show time statistics
+
+        &#34;&#34;&#34;
+
+        start_time: datetime = datetime.now()
+        self.extract_sublayers()
+        self.extract()
+        self.process()
+
+        if show_time:
+            print(self.j_day_full + &#34;-&#34;, datetime.now() - start_time)
+
+    def extract_sublayers(self) -&gt; None:
+        &#34;&#34;&#34;Extract sublayers from `self.direct_path`
+
+        Uses
+        ----------
+
+        `self.direct_path` : str
+            direct path to target scene
+
+        `self.target_sublayers` : SkyPlatform
+            target scene layers
+
+        Defines
+        ----------
+        `self.direct_path`
+            path to target image
+
+        &#34;&#34;&#34;
+        found_layers: dict = {}
+
+        with rio.open(self.direct_path) as ds:
+            for name in ds.subdatasets:
+                for target in self.target_sublayers.layers:
+                    if target in name:
+                        logging.info(f&#34;{target} layer found&#34;)
+                        abbrev = SkyPlatform.make_abbreviation(target)
+                        found_layers[abbrev] = name
+
+        for target in self.target_sublayers.layers:
+            abbrev = SkyPlatform.make_abbreviation(target)
+            if abbrev not in found_layers.keys():
+                raise FileNotFoundError(
+                    f&#34;Could not find {target} in sublayers. Check {self.direct_path}&#34;
+                )
+        self.sub_layers = found_layers
+
+    def extract(self) -&gt; None:
+        &#34;&#34;&#34;Extract windowed data array `self.raw_data` from `sublayer_paths`
+
+        Uses
+        ----------
+
+        `self.station` : Station
+            Target `Station` object
+
+        `self.sub_layers` : list
+            found target sub layers
+
+        Defines
+        ----------
+        `self.raw_data` : dict
+            Dict of raw data values
+
+        &#34;&#34;&#34;
+        # current window is 3X3 pixels
+        # TODO add custom window
+        lat = self.station.latitude
+        lon = self.station.longitude
+        poi_dict = {}
+
+        for key, val in self.sub_layers.items():
+            with rio.open(val) as ds:
+
+                self.crs = ds.read_crs()
+                py, px = ds.index(lon, lat)
+                # WINDOW ADJUST
+                # first is 3x3, next is 2X2, next 1
+                # window = rio.windows.Window(px - 1, py - 1, 3, 3)
+                window = rio.windows.Window(px, py - 1, 2, 2)
+                # window = rio.windows.Window(px, py, 1, 1)
+                arr = ds.read(1, window=window)
+                logging.info(f&#34;{key}\n{window}\n{arr}&#34;)
+                poi_dict[key] = arr
+
+        self.raw_data: dict = poi_dict
+
+    def process(self) -&gt; None:
+        &#34;&#34;&#34;Process `self.raw_data`
+
+        Uses
+        ----------
+        `self.target_sublayers` : `SkyPlatform`
+            Platform sublayer object
+
+        `self.raw_data` : dict
+            Dict of raw data values
+
+        Defines
+        ----------
+        `self.actual_datetime` : datetime
+            Time of scenery aquisition
+
+        `self.data` : dict
+            Processed information
+            concerning image
+
+        &#34;&#34;&#34;
+
+        processed_dict: dict = {}
+        num_mappings: Dict[str] = self.target_sublayers.num_map
+
+        for sub_layer in self.target_sublayers.essential:
+            if sub_layer not in self.raw_data.keys():
+                raise KeyError(
+                    f&#34;Unable to assert main {self.target_sublayers.name} statistics. \
+                    Check {sub_layer} sublayer&#34;
+                )
+
+        time_mode, _ = stats.mode(self.raw_data[&#34;CRGT&#34;])
+        time_mode: str = str(time_mode[0][0])
+
+        processed_dict[&#34;time_utc&#34;] = time_mode
+        self.actual_datetime = self.target_time.replace(
+            hour=int(time_mode[0:2]), minute=int(time_mode[2:])
+        )
+
+        avg_pixel_total = self.raw_data[&#34;NPA&#34;].sum()
+        processed_dict[&#34;n_TOTAL&#34;] = avg_pixel_total
+
+        crnm = self.raw_data[&#34;CRNM&#34;].flatten()
+
+        for pixel in crnm:
+
+            binary: str = decimal_to_binary(str(pixel))
+
+            for k, v in num_mappings.items():
+
+                start_bit, end_bit = [int(x) for x in v.split(&#34;-&#34;)]
+                end_i = len(binary) - start_bit
+                start_i = end_i - (end_bit - start_bit) - 1
+
+                mapped_octet: str = binary[start_i:end_i:1]
+                mapped_decimal: int = binary_to_decimal(mapped_octet)
+
+                processed_dict[k] = mapped_decimal + processed_dict.get(k, 0)
+
+        for k, v in num_mappings.items():
+
+            n_present_pixels: int = processed_dict.get(k, 0)
+            prcnt_of_total: float = round((n_present_pixels / avg_pixel_total) * 100, 2)
+
+            processed_dict[f&#34;prcnt_{k}&#34;] = prcnt_of_total
+
+        self.processed: bool = True
+        self.data: dict = processed_dict
+
+    def results(self, as_dataframe: bool = False) -&gt; Union[dict, pd.DataFrame]:
+
+        if not self.processed:
+            raise AssertionError(&#34;Object not processed&#34;)
+
+        if as_dataframe:
+            return pd.DataFrame.from_dict(self.data, orient=&#34;index&#34;)
+
+        return self.data</code></pre>
+</details>
+<h3>Instance variables</h3>
+<dl>
+<dt id="skyimage.stations.Sky.SkyScene.SkyScene.j_day"><code class="name">var <span class="ident">j_day</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def j_day(self) -&gt; str:
+    j_day: int = self.target_time.timetuple().tm_yday
+    return buffer_value(j_day, 3)</code></pre>
+</details>
+</dd>
+<dt id="skyimage.stations.Sky.SkyScene.SkyScene.j_day_full"><code class="name">var <span class="ident">j_day_full</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def j_day_full(self) -&gt; str:
+    j_day: int = self.target_time.timetuple().tm_yday
+    year: int = self.target_time.year
+    return str(year) + buffer_value(j_day, 3)</code></pre>
+</details>
+</dd>
+<dt id="skyimage.stations.Sky.SkyScene.SkyScene.name"><code class="name">var <span class="ident">name</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def name(self) -&gt; str:
+    return self.sub_layers.name + self.j_day_full</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="skyimage.stations.Sky.SkyScene.SkyScene.extract"><code class="name flex">
+<span>def <span class="ident">extract</span></span>(<span>self) ‑> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Extract windowed data array <code>self.raw_data</code> from <code>sublayer_paths</code></p>
+<h2 id="uses">Uses</h2>
+<p><code>self.station</code> : Station
+Target <code>Station</code> object</p>
+<p><code>self.sub_layers</code> : list
+found target sub layers</p>
+<h2 id="defines">Defines</h2>
+<p><code>self.raw_data</code> : dict
+Dict of raw data values</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def extract(self) -&gt; None:
+    &#34;&#34;&#34;Extract windowed data array `self.raw_data` from `sublayer_paths`
+
+    Uses
+    ----------
+
+    `self.station` : Station
+        Target `Station` object
+
+    `self.sub_layers` : list
+        found target sub layers
+
+    Defines
+    ----------
+    `self.raw_data` : dict
+        Dict of raw data values
+
+    &#34;&#34;&#34;
+    # current window is 3X3 pixels
+    # TODO add custom window
+    lat = self.station.latitude
+    lon = self.station.longitude
+    poi_dict = {}
+
+    for key, val in self.sub_layers.items():
+        with rio.open(val) as ds:
+
+            self.crs = ds.read_crs()
+            py, px = ds.index(lon, lat)
+            # WINDOW ADJUST
+            # first is 3x3, next is 2X2, next 1
+            # window = rio.windows.Window(px - 1, py - 1, 3, 3)
+            window = rio.windows.Window(px, py - 1, 2, 2)
+            # window = rio.windows.Window(px, py, 1, 1)
+            arr = ds.read(1, window=window)
+            logging.info(f&#34;{key}\n{window}\n{arr}&#34;)
+            poi_dict[key] = arr
+
+    self.raw_data: dict = poi_dict</code></pre>
+</details>
+</dd>
+<dt id="skyimage.stations.Sky.SkyScene.SkyScene.extract_sublayers"><code class="name flex">
+<span>def <span class="ident">extract_sublayers</span></span>(<span>self) ‑> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Extract sublayers from <code>self.direct_path</code></p>
+<h2 id="uses">Uses</h2>
+<p><code>self.direct_path</code> : str
+direct path to target scene</p>
+<p><code>self.target_sublayers</code> : SkyPlatform
+target scene layers</p>
+<h2 id="defines">Defines</h2>
+<p><code>self.direct_path</code>
+path to target image</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def extract_sublayers(self) -&gt; None:
+    &#34;&#34;&#34;Extract sublayers from `self.direct_path`
+
+    Uses
+    ----------
+
+    `self.direct_path` : str
+        direct path to target scene
+
+    `self.target_sublayers` : SkyPlatform
+        target scene layers
+
+    Defines
+    ----------
+    `self.direct_path`
+        path to target image
+
+    &#34;&#34;&#34;
+    found_layers: dict = {}
+
+    with rio.open(self.direct_path) as ds:
+        for name in ds.subdatasets:
+            for target in self.target_sublayers.layers:
+                if target in name:
+                    logging.info(f&#34;{target} layer found&#34;)
+                    abbrev = SkyPlatform.make_abbreviation(target)
+                    found_layers[abbrev] = name
+
+    for target in self.target_sublayers.layers:
+        abbrev = SkyPlatform.make_abbreviation(target)
+        if abbrev not in found_layers.keys():
+            raise FileNotFoundError(
+                f&#34;Could not find {target} in sublayers. Check {self.direct_path}&#34;
+            )
+    self.sub_layers = found_layers</code></pre>
+</details>
+</dd>
+<dt id="skyimage.stations.Sky.SkyScene.SkyScene.process"><code class="name flex">
+<span>def <span class="ident">process</span></span>(<span>self) ‑> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Process <code>self.raw_data</code></p>
+<h2 id="uses">Uses</h2>
+<p><code>self.target_sublayers</code> : <code>SkyPlatform</code>
+Platform sublayer object</p>
+<p><code>self.raw_data</code> : dict
+Dict of raw data values</p>
+<h2 id="defines">Defines</h2>
+<p><code>self.actual_datetime</code> : datetime
+Time of scenery aquisition</p>
+<p><code>self.data</code> : dict
+Processed information
+concerning image</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def process(self) -&gt; None:
+    &#34;&#34;&#34;Process `self.raw_data`
+
+    Uses
+    ----------
+    `self.target_sublayers` : `SkyPlatform`
+        Platform sublayer object
+
+    `self.raw_data` : dict
+        Dict of raw data values
+
+    Defines
+    ----------
+    `self.actual_datetime` : datetime
+        Time of scenery aquisition
+
+    `self.data` : dict
+        Processed information
+        concerning image
+
+    &#34;&#34;&#34;
+
+    processed_dict: dict = {}
+    num_mappings: Dict[str] = self.target_sublayers.num_map
+
+    for sub_layer in self.target_sublayers.essential:
+        if sub_layer not in self.raw_data.keys():
+            raise KeyError(
+                f&#34;Unable to assert main {self.target_sublayers.name} statistics. \
+                Check {sub_layer} sublayer&#34;
+            )
+
+    time_mode, _ = stats.mode(self.raw_data[&#34;CRGT&#34;])
+    time_mode: str = str(time_mode[0][0])
+
+    processed_dict[&#34;time_utc&#34;] = time_mode
+    self.actual_datetime = self.target_time.replace(
+        hour=int(time_mode[0:2]), minute=int(time_mode[2:])
+    )
+
+    avg_pixel_total = self.raw_data[&#34;NPA&#34;].sum()
+    processed_dict[&#34;n_TOTAL&#34;] = avg_pixel_total
+
+    crnm = self.raw_data[&#34;CRNM&#34;].flatten()
+
+    for pixel in crnm:
+
+        binary: str = decimal_to_binary(str(pixel))
+
+        for k, v in num_mappings.items():
+
+            start_bit, end_bit = [int(x) for x in v.split(&#34;-&#34;)]
+            end_i = len(binary) - start_bit
+            start_i = end_i - (end_bit - start_bit) - 1
+
+            mapped_octet: str = binary[start_i:end_i:1]
+            mapped_decimal: int = binary_to_decimal(mapped_octet)
+
+            processed_dict[k] = mapped_decimal + processed_dict.get(k, 0)
+
+    for k, v in num_mappings.items():
+
+        n_present_pixels: int = processed_dict.get(k, 0)
+        prcnt_of_total: float = round((n_present_pixels / avg_pixel_total) * 100, 2)
+
+        processed_dict[f&#34;prcnt_{k}&#34;] = prcnt_of_total
+
+    self.processed: bool = True
+    self.data: dict = processed_dict</code></pre>
+</details>
+</dd>
+<dt id="skyimage.stations.Sky.SkyScene.SkyScene.results"><code class="name flex">
+<span>def <span class="ident">results</span></span>(<span>self, as_dataframe: bool = False) ‑> Union[dict, pandas.core.frame.DataFrame]</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def results(self, as_dataframe: bool = False) -&gt; Union[dict, pd.DataFrame]:
+
+    if not self.processed:
+        raise AssertionError(&#34;Object not processed&#34;)
+
+    if as_dataframe:
+        return pd.DataFrame.from_dict(self.data, orient=&#34;index&#34;)
+
+    return self.data</code></pre>
+</details>
+</dd>
+<dt id="skyimage.stations.Sky.SkyScene.SkyScene.run_all"><code class="name flex">
+<span>def <span class="ident">run_all</span></span>(<span>self, show_time: bool = False) ‑> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Run all requied processing</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>show_time</code></strong> :&ensp;<code>bool</code></dt>
+<dd>show time statistics</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def run_all(
+    self,
+    show_time: bool = False,
+) -&gt; None:
+    &#34;&#34;&#34;Run all requied processing
+
+    Parameters
+    ----------
+    show_time : bool
+        show time statistics
+
+    &#34;&#34;&#34;
+
+    start_time: datetime = datetime.now()
+    self.extract_sublayers()
+    self.extract()
+    self.process()
+
+    if show_time:
+        print(self.j_day_full + &#34;-&#34;, datetime.now() - start_time)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="skyimage.stations.Sky" href="index.html">skyimage.stations.Sky</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="skyimage.stations.Sky.SkyScene.SkyScene" href="#skyimage.stations.Sky.SkyScene.SkyScene">SkyScene</a></code></h4>
+<ul class="two-column">
+<li><code><a title="skyimage.stations.Sky.SkyScene.SkyScene.extract" href="#skyimage.stations.Sky.SkyScene.SkyScene.extract">extract</a></code></li>
+<li><code><a title="skyimage.stations.Sky.SkyScene.SkyScene.extract_sublayers" href="#skyimage.stations.Sky.SkyScene.SkyScene.extract_sublayers">extract_sublayers</a></code></li>
+<li><code><a title="skyimage.stations.Sky.SkyScene.SkyScene.j_day" href="#skyimage.stations.Sky.SkyScene.SkyScene.j_day">j_day</a></code></li>
+<li><code><a title="skyimage.stations.Sky.SkyScene.SkyScene.j_day_full" href="#skyimage.stations.Sky.SkyScene.SkyScene.j_day_full">j_day_full</a></code></li>
+<li><code><a title="skyimage.stations.Sky.SkyScene.SkyScene.name" href="#skyimage.stations.Sky.SkyScene.SkyScene.name">name</a></code></li>
+<li><code><a title="skyimage.stations.Sky.SkyScene.SkyScene.process" href="#skyimage.stations.Sky.SkyScene.SkyScene.process">process</a></code></li>
+<li><code><a title="skyimage.stations.Sky.SkyScene.SkyScene.results" href="#skyimage.stations.Sky.SkyScene.SkyScene.results">results</a></code></li>
+<li><code><a title="skyimage.stations.Sky.SkyScene.SkyScene.run_all" href="#skyimage.stations.Sky.SkyScene.SkyScene.run_all">run_all</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.2</a>.</p>
+</footer>
+</body>
+</html>

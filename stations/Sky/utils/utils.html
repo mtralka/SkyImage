@@ -26,7 +26,11 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from typing import Union
+<pre><code class="python">from typing import List
+from typing import Optional
+from typing import Union
+
+from skyimage.stations.Sky.ScenePlatforms import MODIS
 
 
 def decimal_to_binary(decimal: Union[int, str]) -&gt; str:
@@ -76,7 +80,67 @@ def binary_to_decimal(binary: str) -&gt; int:
     &gt;&gt;&gt; __decimal_to_binary(110001)
     49
     &#34;&#34;&#34;
-    return int(binary, 2)</code></pre>
+    return int(binary, 2)
+
+
+class SkyPlatform:
+    def __init__(
+        self, platform: str, override_layers: Optional[Union[str, list]] = None
+    ):
+
+        self.possible_platforms = {&#34;MODIS&#34;: MODIS}
+
+        if not override_layers:
+            if platform not in self.possible_platforms:
+                raise ValueError(f&#34;`platform` layers for {platform} not found&#34;)
+            else:
+                self.name = platform
+                self.platform = self.possible_platforms[platform]
+        else:
+            self.layers = override_layers
+
+    def __str__(self) -&gt; str:
+        return f&#34;&#34;&#34;
+        {self.name}
+        {len(self.layers)} Layer(s)
+        {len(self.essential)} essential layer(s)
+
+        Layers
+        -------
+        {self.layers}
+
+        Essential Layers
+        -------
+        {self.essential}
+
+        Number Mappings
+        -------
+        {self.num_map}
+        &#34;&#34;&#34;
+
+    def __repr__(self) -&gt; str:
+        return f&#34;&lt;{self.name} Sublayers&gt;&#34;
+
+    @property
+    def layers(self) -&gt; List[str]:
+        return self.platform.LAYERS
+
+    @property
+    def essential(self) -&gt; List[str]:
+        return self.platform.ESSENTIAL
+
+    @property
+    def num_map(self) -&gt; List[str]:
+        return self.platform.NUM_MAPPINGS
+
+    @staticmethod
+    def make_abbreviation(target: str) -&gt; str:
+        &#34;&#34;&#34;Make abbreviation of str
+
+        Join first letter of each word
+
+        &#34;&#34;&#34;
+        return &#34;&#34;.join([word[0] for word in target.split()]).upper()</code></pre>
 </details>
 </section>
 <section>
@@ -189,6 +253,141 @@ def binary_to_decimal(binary: str) -&gt; int:
 </dl>
 </section>
 <section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="skyimage.stations.Sky.utils.utils.SkyPlatform"><code class="flex name class">
+<span>class <span class="ident">SkyPlatform</span></span>
+<span>(</span><span>platform: str, override_layers: Union[str, list, NoneType] = None)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class SkyPlatform:
+    def __init__(
+        self, platform: str, override_layers: Optional[Union[str, list]] = None
+    ):
+
+        self.possible_platforms = {&#34;MODIS&#34;: MODIS}
+
+        if not override_layers:
+            if platform not in self.possible_platforms:
+                raise ValueError(f&#34;`platform` layers for {platform} not found&#34;)
+            else:
+                self.name = platform
+                self.platform = self.possible_platforms[platform]
+        else:
+            self.layers = override_layers
+
+    def __str__(self) -&gt; str:
+        return f&#34;&#34;&#34;
+        {self.name}
+        {len(self.layers)} Layer(s)
+        {len(self.essential)} essential layer(s)
+
+        Layers
+        -------
+        {self.layers}
+
+        Essential Layers
+        -------
+        {self.essential}
+
+        Number Mappings
+        -------
+        {self.num_map}
+        &#34;&#34;&#34;
+
+    def __repr__(self) -&gt; str:
+        return f&#34;&lt;{self.name} Sublayers&gt;&#34;
+
+    @property
+    def layers(self) -&gt; List[str]:
+        return self.platform.LAYERS
+
+    @property
+    def essential(self) -&gt; List[str]:
+        return self.platform.ESSENTIAL
+
+    @property
+    def num_map(self) -&gt; List[str]:
+        return self.platform.NUM_MAPPINGS
+
+    @staticmethod
+    def make_abbreviation(target: str) -&gt; str:
+        &#34;&#34;&#34;Make abbreviation of str
+
+        Join first letter of each word
+
+        &#34;&#34;&#34;
+        return &#34;&#34;.join([word[0] for word in target.split()]).upper()</code></pre>
+</details>
+<h3>Static methods</h3>
+<dl>
+<dt id="skyimage.stations.Sky.utils.utils.SkyPlatform.make_abbreviation"><code class="name flex">
+<span>def <span class="ident">make_abbreviation</span></span>(<span>target: str) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Make abbreviation of str</p>
+<p>Join first letter of each word</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod
+def make_abbreviation(target: str) -&gt; str:
+    &#34;&#34;&#34;Make abbreviation of str
+
+    Join first letter of each word
+
+    &#34;&#34;&#34;
+    return &#34;&#34;.join([word[0] for word in target.split()]).upper()</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="skyimage.stations.Sky.utils.utils.SkyPlatform.essential"><code class="name">var <span class="ident">essential</span> : List[str]</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def essential(self) -&gt; List[str]:
+    return self.platform.ESSENTIAL</code></pre>
+</details>
+</dd>
+<dt id="skyimage.stations.Sky.utils.utils.SkyPlatform.layers"><code class="name">var <span class="ident">layers</span> : List[str]</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def layers(self) -&gt; List[str]:
+    return self.platform.LAYERS</code></pre>
+</details>
+</dd>
+<dt id="skyimage.stations.Sky.utils.utils.SkyPlatform.num_map"><code class="name">var <span class="ident">num_map</span> : List[str]</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def num_map(self) -&gt; List[str]:
+    return self.platform.NUM_MAPPINGS</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
 </section>
 </article>
 <nav id="sidebar">
@@ -206,6 +405,19 @@ def binary_to_decimal(binary: str) -&gt; int:
 <ul class="">
 <li><code><a title="skyimage.stations.Sky.utils.utils.binary_to_decimal" href="#skyimage.stations.Sky.utils.utils.binary_to_decimal">binary_to_decimal</a></code></li>
 <li><code><a title="skyimage.stations.Sky.utils.utils.decimal_to_binary" href="#skyimage.stations.Sky.utils.utils.decimal_to_binary">decimal_to_binary</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="skyimage.stations.Sky.utils.utils.SkyPlatform" href="#skyimage.stations.Sky.utils.utils.SkyPlatform">SkyPlatform</a></code></h4>
+<ul class="">
+<li><code><a title="skyimage.stations.Sky.utils.utils.SkyPlatform.essential" href="#skyimage.stations.Sky.utils.utils.SkyPlatform.essential">essential</a></code></li>
+<li><code><a title="skyimage.stations.Sky.utils.utils.SkyPlatform.layers" href="#skyimage.stations.Sky.utils.utils.SkyPlatform.layers">layers</a></code></li>
+<li><code><a title="skyimage.stations.Sky.utils.utils.SkyPlatform.make_abbreviation" href="#skyimage.stations.Sky.utils.utils.SkyPlatform.make_abbreviation">make_abbreviation</a></code></li>
+<li><code><a title="skyimage.stations.Sky.utils.utils.SkyPlatform.num_map" href="#skyimage.stations.Sky.utils.utils.SkyPlatform.num_map">num_map</a></code></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

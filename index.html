@@ -30,9 +30,9 @@
 import logging
 import sys
 
-from skyimage.app import SkyImage as SkyImage
-from skyimage.stations import Ground
-from skyimage.stations import Sky
+from rich.traceback import install as rich_trace
+
+from skyimage.app import SkyImage
 
 
 if not sys.warnoptions:
@@ -41,8 +41,9 @@ if not sys.warnoptions:
     warnings.simplefilter(&#34;default&#34;)
 
 reload(logging)
-logging.basicConfig(filename=&#34;logger.log&#34;, level=logging.DEBUG)
+logging.basicConfig(filename=&#34;logger.log&#34;, level=logging.INFO)
 
+rich_trace()
 
 &#34;Sky Image&#34;</code></pre>
 </details>

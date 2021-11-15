@@ -27,86 +27,18 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">import datetime
-import json
+import os
 from typing import List
-import warnings
 
-from skyimage.utils.models import Stations
+
+def validate_file_path(path: str, name: str) -&gt; str:
+    assert os.path.isdir(path), f&#34;{name} is not a directory&#34;
+
+    return path
 
 
 def validate_year(year: str or int) -&gt; int:
     return int(year)
-
-
-def validate_coords(
-    coords: List[float], selected_station: str, stations: Stations
-) -&gt; List[float]:
-
-    valid_coords = []
-
-    if coords and len(coords) == 2:
-        # TODO add coordinate validation
-        valid_coords = coords
-    elif selected_station:
-        if selected_station in stations:
-            target_station = stations[selected_station]
-            valid_coords = [target_station[&#34;lat&#34;], target_station[&#34;lon&#34;]]
-
-        if len(valid_coords) == 0:
-            raise KeyError(&#34;Selected Station not found&#34;)
-    else:
-        raise ValueError(&#34;lat / lon poi or station name not defined&#34;)
-
-    return valid_coords
-
-
-def validate_station_positions(positions: str or List[str] = None) -&gt; Stations:
-    valid_positions = []
-
-    if positions:
-        warnings.warn(
-            &#34;Overridding default station positions \
-                        Make sure station coordinate projections match that of the files&#34;,
-            UserWarning,
-            stacklevel=2,
-        )
-        valid_positions = positions
-
-    else:
-        with open(&#34;skyimage\\stations.json&#34;) as f:
-            valid_positions = json.load(f)
-
-    return valid_positions
-
-
-def validate_modis_target_sublayers(target_layers: List[str]) -&gt; List[str]:
-
-    valid_layers = []
-
-    if target_layers:
-        valid_layers = target_layers
-
-        warnings.warn(
-            &#34;Overridding default MODIS target layers. \
-                        Some layers are required for this program to function. Consult documentation&#34;,
-            UserWarning,
-            stacklevel=2,
-        )
-    else:
-        valid_layers = [
-            &#34;Coarse Resolution Granule Time&#34;,
-            &#34;Coarse Resolution Number Mapping&#34;,
-            &#34;n pixels averaged&#34;,
-        ]
-
-    return valid_layers
-
-
-def validate_file_path(path: str, name: str) -&gt; str:
-    if not path:
-        raise LookupError(f&#34;{name} path not specified&#34;)
-
-    return path
 
 
 def validate_datetime(j_day: str or int or list, year: int) -&gt; List[str] and list:
@@ -168,37 +100,6 @@ def validate_datetime(j_day: str or int or list, year: int) -&gt; List[str] and 
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="skyimage.utils.validators.validate_coords"><code class="name flex">
-<span>def <span class="ident">validate_coords</span></span>(<span>coords: List[float], selected_station: str, stations: Dict[str, Dict[str, float]]) ‑> List[float]</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def validate_coords(
-    coords: List[float], selected_station: str, stations: Stations
-) -&gt; List[float]:
-
-    valid_coords = []
-
-    if coords and len(coords) == 2:
-        # TODO add coordinate validation
-        valid_coords = coords
-    elif selected_station:
-        if selected_station in stations:
-            target_station = stations[selected_station]
-            valid_coords = [target_station[&#34;lat&#34;], target_station[&#34;lon&#34;]]
-
-        if len(valid_coords) == 0:
-            raise KeyError(&#34;Selected Station not found&#34;)
-    else:
-        raise ValueError(&#34;lat / lon poi or station name not defined&#34;)
-
-    return valid_coords</code></pre>
-</details>
-</dd>
 <dt id="skyimage.utils.validators.validate_datetime"><code class="name flex">
 <span>def <span class="ident">validate_datetime</span></span>(<span>j_day: str, year: int) ‑> list</span>
 </code></dt>
@@ -270,70 +171,9 @@ def validate_datetime(j_day: str or int or list, year: int) -&gt; List[str] and 
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def validate_file_path(path: str, name: str) -&gt; str:
-    if not path:
-        raise LookupError(f&#34;{name} path not specified&#34;)
+    assert os.path.isdir(path), f&#34;{name} is not a directory&#34;
 
     return path</code></pre>
-</details>
-</dd>
-<dt id="skyimage.utils.validators.validate_modis_target_sublayers"><code class="name flex">
-<span>def <span class="ident">validate_modis_target_sublayers</span></span>(<span>target_layers: List[str]) ‑> List[str]</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def validate_modis_target_sublayers(target_layers: List[str]) -&gt; List[str]:
-
-    valid_layers = []
-
-    if target_layers:
-        valid_layers = target_layers
-
-        warnings.warn(
-            &#34;Overridding default MODIS target layers. \
-                        Some layers are required for this program to function. Consult documentation&#34;,
-            UserWarning,
-            stacklevel=2,
-        )
-    else:
-        valid_layers = [
-            &#34;Coarse Resolution Granule Time&#34;,
-            &#34;Coarse Resolution Number Mapping&#34;,
-            &#34;n pixels averaged&#34;,
-        ]
-
-    return valid_layers</code></pre>
-</details>
-</dd>
-<dt id="skyimage.utils.validators.validate_station_positions"><code class="name flex">
-<span>def <span class="ident">validate_station_positions</span></span>(<span>positions: str = None) ‑> Dict[str, Dict[str, float]]</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def validate_station_positions(positions: str or List[str] = None) -&gt; Stations:
-    valid_positions = []
-
-    if positions:
-        warnings.warn(
-            &#34;Overridding default station positions \
-                        Make sure station coordinate projections match that of the files&#34;,
-            UserWarning,
-            stacklevel=2,
-        )
-        valid_positions = positions
-
-    else:
-        with open(&#34;skyimage\\stations.json&#34;) as f:
-            valid_positions = json.load(f)
-
-    return valid_positions</code></pre>
 </details>
 </dd>
 <dt id="skyimage.utils.validators.validate_year"><code class="name flex">
@@ -367,11 +207,8 @@ def validate_datetime(j_day: str or int or list, year: int) -&gt; List[str] and 
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="skyimage.utils.validators.validate_coords" href="#skyimage.utils.validators.validate_coords">validate_coords</a></code></li>
 <li><code><a title="skyimage.utils.validators.validate_datetime" href="#skyimage.utils.validators.validate_datetime">validate_datetime</a></code></li>
 <li><code><a title="skyimage.utils.validators.validate_file_path" href="#skyimage.utils.validators.validate_file_path">validate_file_path</a></code></li>
-<li><code><a title="skyimage.utils.validators.validate_modis_target_sublayers" href="#skyimage.utils.validators.validate_modis_target_sublayers">validate_modis_target_sublayers</a></code></li>
-<li><code><a title="skyimage.utils.validators.validate_station_positions" href="#skyimage.utils.validators.validate_station_positions">validate_station_positions</a></code></li>
 <li><code><a title="skyimage.utils.validators.validate_year" href="#skyimage.utils.validators.validate_year">validate_year</a></code></li>
 </ul>
 </li>

@@ -26,7 +26,10 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from typing import Union
+<pre><code class="python">import json
+from typing import List
+from typing import Optional
+from typing import Union
 import warnings
 
 
@@ -44,7 +47,72 @@ def buffer_value(value: Union[str, int], buffer_length: int) -&gt; str:
     elif type(value) is str:
         return f&#34;{int(value):0{buffer_length}}&#34;
     else:
-        raise TypeError(&#34;Value must be int or string&#34;)</code></pre>
+        raise TypeError(&#34;Value must be int or string&#34;)
+
+
+class Station:
+    &#34;&#34;&#34;
+    Station object
+
+    Attributes
+    ----------
+
+    &#39;name&#39; : str
+        Station name
+
+    `coords` : List[float, float]
+        Station coordinates
+
+    `latitude` : float
+        Station latitude
+
+    `longitude` : float
+        Station longitude
+
+    `path` : str
+        Override to JSON of possible stations
+
+    Raises
+    ----------
+
+    KeyError
+        if `name` not found in `path`
+
+    &#34;&#34;&#34;
+
+    def __init__(
+        self,
+        name: str,
+        coords: Optional[List[float]] = None,
+        path: str = &#34;skyimage\\stations.json&#34;,
+    ):
+
+        self.name = name
+        self.path = path
+        if coords:
+            self.coords = coords
+        else:
+            self.coords = self.__find_coords()
+
+    @property
+    def latitude(self) -&gt; float:
+        return self.coords[0]
+
+    @property
+    def longitude(self) -&gt; float:
+        return self.coords[1]
+
+    def __find_coords(self) -&gt; List[float]:
+
+        with open(self.path) as f:
+            valid_positions = json.load(f)
+
+        if self.name in valid_positions:
+            target_station = valid_positions[self.name]
+        else:
+            raise KeyError(&#34;Selected Station not found&#34;)
+
+        return [target_station[&#34;lat&#34;], target_station[&#34;lon&#34;]]</code></pre>
 </details>
 </section>
 <section>
@@ -83,6 +151,127 @@ def buffer_value(value: Union[str, int], buffer_length: int) -&gt; str:
 </dl>
 </section>
 <section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="skyimage.utils.utils.Station"><code class="flex name class">
+<span>class <span class="ident">Station</span></span>
+<span>(</span><span>name: str, coords: Union[List[float], NoneType] = None, path: str = 'skyimage\\stations.json')</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Station object</p>
+<h2 id="attributes">Attributes</h2>
+<p>'name' : str
+Station name</p>
+<p><code>coords</code> : List[float, float]
+Station coordinates</p>
+<p><code>latitude</code> : float
+Station latitude</p>
+<p><code>longitude</code> : float
+Station longitude</p>
+<p><code>path</code> : str
+Override to JSON of possible stations</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>KeyError</code></dt>
+<dd>if <code>name</code> not found in <code>path</code></dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Station:
+    &#34;&#34;&#34;
+    Station object
+
+    Attributes
+    ----------
+
+    &#39;name&#39; : str
+        Station name
+
+    `coords` : List[float, float]
+        Station coordinates
+
+    `latitude` : float
+        Station latitude
+
+    `longitude` : float
+        Station longitude
+
+    `path` : str
+        Override to JSON of possible stations
+
+    Raises
+    ----------
+
+    KeyError
+        if `name` not found in `path`
+
+    &#34;&#34;&#34;
+
+    def __init__(
+        self,
+        name: str,
+        coords: Optional[List[float]] = None,
+        path: str = &#34;skyimage\\stations.json&#34;,
+    ):
+
+        self.name = name
+        self.path = path
+        if coords:
+            self.coords = coords
+        else:
+            self.coords = self.__find_coords()
+
+    @property
+    def latitude(self) -&gt; float:
+        return self.coords[0]
+
+    @property
+    def longitude(self) -&gt; float:
+        return self.coords[1]
+
+    def __find_coords(self) -&gt; List[float]:
+
+        with open(self.path) as f:
+            valid_positions = json.load(f)
+
+        if self.name in valid_positions:
+            target_station = valid_positions[self.name]
+        else:
+            raise KeyError(&#34;Selected Station not found&#34;)
+
+        return [target_station[&#34;lat&#34;], target_station[&#34;lon&#34;]]</code></pre>
+</details>
+<h3>Instance variables</h3>
+<dl>
+<dt id="skyimage.utils.utils.Station.latitude"><code class="name">var <span class="ident">latitude</span> : float</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def latitude(self) -&gt; float:
+    return self.coords[0]</code></pre>
+</details>
+</dd>
+<dt id="skyimage.utils.utils.Station.longitude"><code class="name">var <span class="ident">longitude</span> : float</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def longitude(self) -&gt; float:
+    return self.coords[1]</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
 </section>
 </article>
 <nav id="sidebar">
@@ -99,6 +288,17 @@ def buffer_value(value: Union[str, int], buffer_length: int) -&gt; str:
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
 <li><code><a title="skyimage.utils.utils.buffer_value" href="#skyimage.utils.utils.buffer_value">buffer_value</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="skyimage.utils.utils.Station" href="#skyimage.utils.utils.Station">Station</a></code></h4>
+<ul class="">
+<li><code><a title="skyimage.utils.utils.Station.latitude" href="#skyimage.utils.utils.Station.latitude">latitude</a></code></li>
+<li><code><a title="skyimage.utils.utils.Station.longitude" href="#skyimage.utils.utils.Station.longitude">longitude</a></code></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
