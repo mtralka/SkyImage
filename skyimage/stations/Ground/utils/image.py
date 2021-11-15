@@ -1,68 +1,11 @@
-from typing import Optional
-
-import matplotlib.pyplot as plt
 import numpy as np
-from skimage.io import imread
 
 
 """
 
-image.py
-image and pixel processing utilities for Ground class
+pixel processing utilities for GroundImage class
 
 """
-
-
-def open_image(path: str):
-    return imread(path)
-
-
-def open_mask(path: Optional[str] = "skyimage\\stations\\Ground\\mask.npy"):
-
-    return np.load(path)
-
-
-def show_image(img):
-    plt.imshow(img)
-    plt.show()
-
-
-def save_image(name: str, img):
-    plt.imsave(name, img)
-
-
-def extract_color_bands(img):
-
-    R = img[:, :, 0] / 255
-    G = img[:, :, 1] / 255
-    B = img[:, :, 2] / 255
-
-    return R, G, B
-
-
-def calc_SI(R, B):
-
-    SI = (B - R) / (B + R)
-    # SI[SI == 0] = np.nan
-
-    return SI
-
-
-def calc_BI(R, G, B):
-
-    BI = (R + G + B) / 3
-    # BI[BI == 0] = np.nan
-
-    return BI
-
-
-def extract_stats(array) -> dict:
-
-    mean = round(np.nanmean(array), 2)
-    max = round(np.nanmax(array), 2)
-    min = round(np.nanmin(array), 2)
-
-    return {"mean": mean, "max": max, "min": min}
 
 
 def f_above_or_below(p: np.ndarray, boundary: np.ndarray) -> int:

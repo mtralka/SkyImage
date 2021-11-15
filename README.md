@@ -1,8 +1,14 @@
 # SkyImage
 
+**Purpose**
+
+Workflow to create a novel cloud validation dataset based on ground-based images of the sky and Sentinel-2 / MODIS imagery. See [https://doi.org/10.1016/j.jag.2020.102253](https://doi.org/10.1016/j.jag.2020.102253) - funded by NASA grant [80NSSC19M0222, 80NSSC19K1592]
+
+
 This project and documentation is a work in progress and is thus subject to unexpected change.
 
 Please check out the [Interaction Documentation](https://mtralka.github.io/SkyImage/)
+
 
 ## Quick Start Guide
 
