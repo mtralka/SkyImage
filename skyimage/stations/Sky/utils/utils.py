@@ -1,4 +1,8 @@
+from typing import List
+from typing import Optional
 from typing import Union
+
+from skyimage.stations.Sky.ScenePlatforms import MODIS
 
 
 def decimal_to_binary(decimal: Union[int, str]) -> str:
@@ -49,3 +53,63 @@ def binary_to_decimal(binary: str) -> int:
     49
     """
     return int(binary, 2)
+
+
+class SkyPlatform:
+    def __init__(
+        self, platform: str, override_layers: Optional[Union[str, list]] = None
+    ):
+
+        self.possible_platforms = {"MODIS": MODIS}
+
+        if not override_layers:
+            if platform not in self.possible_platforms:
+                raise ValueError(f"`platform` layers for {platform} not found")
+            else:
+                self.name = platform
+                self.platform = self.possible_platforms[platform]
+        else:
+            self.layers = override_layers
+
+    def __str__(self) -> str:
+        return f"""
+        {self.name}
+        {len(self.layers)} Layer(s)
+        {len(self.essential)} essential layer(s)
+
+        Layers
+        -------
+        {self.layers}
+
+        Essential Layers
+        -------
+        {self.essential}
+
+        Number Mappings
+        -------
+        {self.num_map}
+        """
+
+    def __repr__(self) -> str:
+        return f"<{self.name} Sublayers>"
+
+    @property
+    def layers(self) -> List[str]:
+        return self.platform.LAYERS
+
+    @property
+    def essential(self) -> List[str]:
+        return self.platform.ESSENTIAL
+
+    @property
+    def num_map(self) -> List[str]:
+        return self.platform.NUM_MAPPINGS
+
+    @staticmethod
+    def make_abbreviation(target: str) -> str:
+        """Make abbreviation of str
+
+        Join first letter of each word
+
+        """
+        return "".join([word[0] for word in target.split()]).upper()
